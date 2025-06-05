@@ -7,64 +7,72 @@ const MixologistSection: React.FC = () => {
   const recipes = [
     {
       name: "Kilifi Sunset",
-      image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?ixlib=rb-4.0.3",
-      ingredients: ["2oz Vodka", "1oz Triple Sec", "Cranberry juice", "Lime wedge"],
-      description: "A coastal-inspired cocktail with tropical vibes"
+      image: "https://images.unsplash.com/photo-1603969072881-b0fc7f3d77d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      ingredients: ["2oz Premium Vodka", "1oz Cointreau", "Fresh cranberry juice", "Lime zest"],
+      description: "A coastal-inspired cocktail with sophisticated tropical notes"
     },
     {
       name: "Barrush Old Fashioned", 
-      image: "https://images.unsplash.com/photo-1500673922987-e212871fec22?ixlib=rb-4.0.3",
-      ingredients: ["2oz Whiskey", "Sugar cube", "Angostura bitters", "Orange peel"],
-      description: "Our signature twist on the classic old fashioned"
+      image: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      ingredients: ["2oz Single Malt Whiskey", "Demerara sugar", "Angostura bitters", "Orange peel"],
+      description: "Our signature interpretation of the timeless classic"
     },
     {
       name: "Coastal Breeze",
-      image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?ixlib=rb-4.0.3",
-      ingredients: ["2oz White Rum", "Coconut cream", "Pineapple juice", "Mint"],
-      description: "Refreshing tropical cocktail perfect for warm evenings"
+      image: "https://images.unsplash.com/photo-1601924582970-9238bcb495d9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      ingredients: ["2oz Aged White Rum", "Fresh coconut cream", "Pressed pineapple", "Mint leaves"],
+      description: "Tropical elegance perfect for Kilifi's golden evenings"
     }
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-b from-barrush-burgundy/20 to-barrush-charcoal">
-      <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-barrush-gold mb-6">
-            Be Your Own Mixologist
+    <section className="py-24 bg-gradient-to-b from-black via-barrush-burgundy/20 to-black relative">
+      <div className="absolute inset-0 opacity-10 bg-wood-texture"></div>
+      
+      <div className="container mx-auto px-6 relative z-10">
+        <div className="text-center mb-20">
+          <h2 className="text-5xl md:text-6xl font-bold text-barrush-gold mb-6 font-serif">
+            Master Mixology
           </h2>
-          <p className="text-xl text-barrush-cream max-w-2xl mx-auto">
-            Master the art of cocktail making with our signature recipes
+          <div className="w-24 h-0.5 bg-barrush-gold mx-auto mb-8"></div>
+          <p className="text-xl text-barrush-cream/90 max-w-3xl mx-auto leading-relaxed">
+            Elevate your home bar with our signature cocktail recipes, crafted by professional mixologists
           </p>
         </div>
         
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-10 max-w-7xl mx-auto">
           {recipes.map((recipe, index) => (
             <Card 
               key={index}
-              className="bg-barrush-charcoal/80 border-barrush-gold border hover:border-barrush-gold/80 transition-all duration-300 hover:scale-105 overflow-hidden"
+              className="bg-gradient-to-b from-black/60 to-barrush-burgundy/40 border-barrush-gold/30 border-2 hover:border-barrush-gold transition-all duration-500 hover:scale-105 backdrop-blur-sm group overflow-hidden"
             >
               <div 
-                className="h-48 bg-cover bg-center"
+                className="h-64 bg-cover bg-center relative"
                 style={{ backgroundImage: `url(${recipe.image})` }}
-              />
-              <CardContent className="p-6">
-                <h3 className="text-xl font-bold text-barrush-gold mb-3">
+              >
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+              </div>
+              <CardContent className="p-8">
+                <h3 className="text-2xl font-bold text-barrush-gold mb-4 font-serif">
                   {recipe.name}
                 </h3>
-                <p className="text-barrush-cream/80 mb-4">
+                <p className="text-barrush-cream/90 mb-6 leading-relaxed">
                   {recipe.description}
                 </p>
-                <div className="mb-4">
-                  <h4 className="text-barrush-gold font-semibold mb-2">Ingredients:</h4>
-                  <ul className="text-sm text-barrush-cream space-y-1">
+                <div className="mb-6">
+                  <h4 className="text-barrush-gold font-bold mb-3 text-lg">Ingredients:</h4>
+                  <ul className="text-barrush-cream/80 space-y-2">
                     {recipe.ingredients.map((ingredient, idx) => (
-                      <li key={idx}>• {ingredient}</li>
+                      <li key={idx} className="flex items-center">
+                        <span className="w-2 h-2 bg-barrush-gold rounded-full mr-3"></span>
+                        {ingredient}
+                      </li>
                     ))}
                   </ul>
                 </div>
                 <Button 
                   variant="outline" 
-                  className="w-full border-barrush-gold text-barrush-gold hover:bg-barrush-gold hover:text-barrush-charcoal"
+                  className="w-full border-barrush-gold text-barrush-gold hover:bg-barrush-gold hover:text-black font-bold py-3 transition-all duration-300"
                 >
                   Download Recipe
                 </Button>
@@ -73,14 +81,14 @@ const MixologistSection: React.FC = () => {
           ))}
         </div>
         
-        <div className="text-center mt-12">
-          <div className="bg-barrush-gold/10 border border-barrush-gold rounded-lg p-6 max-w-md mx-auto">
-            <h4 className="text-lg font-bold text-barrush-gold mb-2">
-              📸 Show Off Your Skills!
+        <div className="text-center mt-16">
+          <div className="bg-gradient-to-r from-barrush-gold/10 via-barrush-burgundy/20 to-barrush-gold/10 border border-barrush-gold/30 rounded-xl p-8 max-w-2xl mx-auto backdrop-blur-sm">
+            <h4 className="text-2xl font-bold text-barrush-gold mb-4 font-serif">
+              🍸 Showcase Your Craft
             </h4>
-            <p className="text-barrush-cream">
-              Tag <span className="text-barrush-gold font-bold">@BarrushDelivery</span> in your mixology creations 
-              and get featured on our page!
+            <p className="text-barrush-cream/90 text-lg leading-relaxed">
+              Share your mixology masterpieces with <span className="text-barrush-gold font-bold">@BarrushDelivery</span> 
+              and join our community of sophisticated cocktail enthusiasts.
             </p>
           </div>
         </div>

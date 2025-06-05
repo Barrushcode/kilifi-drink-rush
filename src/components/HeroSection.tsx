@@ -10,41 +10,45 @@ const HeroSection: React.FC = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image */}
+      {/* Background Image - High-end bar atmosphere */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `linear-gradient(rgba(26, 26, 26, 0.7), rgba(26, 26, 26, 0.7)), url('https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')`
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')`
         }}
       />
       
+      {/* Elegant overlay pattern */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/60" />
+      
       {/* Content */}
-      <div className="relative z-10 text-center max-w-4xl mx-auto px-6">
+      <div className="relative z-10 text-center max-w-5xl mx-auto px-6">
         <div className="animate-fade-in">
-          <h1 className="text-5xl md:text-7xl font-bold text-barrush-gold mb-6 tracking-tight">
+          <h1 className="text-6xl md:text-8xl font-bold text-barrush-gold mb-8 tracking-wider font-serif">
             BARRUSH
           </h1>
-          <p className="text-2xl md:text-3xl text-barrush-cream mb-8 font-light">
+          <div className="w-32 h-0.5 bg-barrush-gold mx-auto mb-8"></div>
+          <p className="text-3xl md:text-4xl text-barrush-cream mb-6 font-light tracking-wide">
             Get Your Drink Rush On
           </p>
-          <p className="text-lg text-barrush-cream/80 mb-12 max-w-2xl mx-auto">
-            Premium alcohol delivery in Kilifi County. Fast, stylish, and delivered with care.
+          <p className="text-xl text-barrush-cream/90 mb-16 max-w-3xl mx-auto leading-relaxed">
+            Premium spirits, curated wines, and craft cocktails delivered with sophistication to Kilifi County's finest addresses.
           </p>
           
           <Button 
             onClick={scrollToProducts}
             size="lg"
-            className="bg-barrush-gold hover:bg-barrush-gold/90 text-barrush-charcoal font-semibold px-8 py-6 text-lg transition-all duration-300 hover:scale-105"
+            className="bg-barrush-gold hover:bg-barrush-gold/90 text-black font-bold px-12 py-8 text-xl transition-all duration-500 hover:scale-110 shadow-2xl border border-barrush-gold/50 hover:shadow-barrush-gold/30"
           >
-            Browse Our Drinks
+            EXPLORE COLLECTION
           </Button>
         </div>
       </div>
       
       {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <div className="w-6 h-10 border-2 border-barrush-gold rounded-full flex justify-center">
-          <div className="w-1 h-3 bg-barrush-gold rounded-full mt-2"></div>
+      <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <div className="w-8 h-12 border-2 border-barrush-gold rounded-full flex justify-center opacity-80">
+          <div className="w-1.5 h-4 bg-barrush-gold rounded-full mt-3"></div>
         </div>
       </div>
     </section>
