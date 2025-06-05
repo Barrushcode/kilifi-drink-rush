@@ -22,6 +22,24 @@ const MixologistSection: React.FC = () => {
       image: "https://images.unsplash.com/photo-1601924582970-9238bcb495d9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
       ingredients: ["2oz Aged White Rum", "Fresh coconut cream", "Pressed pineapple", "Mint leaves"],
       description: "Tropical elegance perfect for Kilifi's golden evenings"
+    },
+    {
+      name: "Malindi Martini",
+      image: "https://images.unsplash.com/photo-1556855810-d8a9c0a30a9d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      ingredients: ["2.5oz Premium Gin", "0.5oz Dry Vermouth", "Olive garnish", "Lemon twist"],
+      description: "Crystal clear sophistication with a coastal twist"
+    },
+    {
+      name: "Watamu Whiskey Sour",
+      image: "https://images.unsplash.com/photo-1609368342768-de62c1fb1935?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      ingredients: ["2oz Bourbon", "1oz Fresh lemon juice", "0.75oz Simple syrup", "Egg white", "Cherry garnish"],
+      description: "Smooth, frothy perfection with a sweet-tart balance"
+    },
+    {
+      name: "Diani Daiquiri",
+      image: "https://images.unsplash.com/photo-1587223962930-cb7297d9d8ca?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      ingredients: ["2oz White Rum", "1oz Fresh lime juice", "0.75oz Simple syrup", "Lime wheel"],
+      description: "Clean, refreshing classic perfect for beach-side sipping"
     }
   ];
 
@@ -40,7 +58,7 @@ const MixologistSection: React.FC = () => {
           </p>
         </div>
         
-        <div className="grid md:grid-cols-3 gap-10 max-w-7xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-7xl mx-auto">
           {recipes.map((recipe, index) => (
             <Card 
               key={index}
