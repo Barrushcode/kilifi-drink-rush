@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,13 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				barrush: {
+					charcoal: '#1a1a1a',
+					burgundy: '#722f37',
+					gold: '#d4af37',
+					wood: '#8b4513',
+					cream: '#f5f5dc'
 				}
 			},
 			borderRadius: {
@@ -84,11 +92,36 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'fade-in': {
+					'0%': {
+						opacity: '0',
+						transform: 'translateY(20px)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'translateY(0)'
+					}
+				},
+				'slide-up': {
+					'0%': {
+						opacity: '0',
+						transform: 'translateY(30px)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'translateY(0)'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.6s ease-out',
+				'slide-up': 'slide-up 0.8s ease-out',
+			},
+			backgroundImage: {
+				'wood-texture': "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><defs><pattern id=\"wood\" x=\"0\" y=\"0\" width=\"20\" height=\"100\" patternUnits=\"userSpaceOnUse\"><rect fill=\"%238b4513\" width=\"20\" height=\"100\"/><rect fill=\"%23a0522d\" width=\"1\" height=\"100\" x=\"5\"/><rect fill=\"%23a0522d\" width=\"1\" height=\"100\" x=\"15\"/></pattern></defs><rect fill=\"url(%23wood)\" width=\"100\" height=\"100\"/></svg>')"
 			}
 		}
 	},
