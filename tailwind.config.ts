@@ -68,11 +68,12 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				barrush: {
-					charcoal: '#0a0a0a',
-					burgundy: '#5a1a1a',
-					gold: '#d4af37',
-					wood: '#6b3410',
-					cream: '#f7f3e8'
+					slate: '#1a1a1a',
+					midnight: '#0f1419',
+					platinum: '#e5e5e5',
+					copper: '#c9a96e',
+					steel: '#374151',
+					smoke: '#6b7280'
 				}
 			},
 			borderRadius: {
@@ -100,7 +101,7 @@ export default {
 				'fade-in': {
 					'0%': {
 						opacity: '0',
-						transform: 'translateY(30px)'
+						transform: 'translateY(20px)'
 					},
 					'100%': {
 						opacity: '1',
@@ -121,12 +122,12 @@ export default {
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
-				'fade-in': 'fade-in 0.8s ease-out',
-				'slide-up': 'slide-up 1.0s ease-out',
+				'fade-in': 'fade-in 0.6s ease-out',
+				'slide-up': 'slide-up 0.8s ease-out',
 			},
 			backgroundImage: {
-				'wood-texture': `radial-gradient(ellipse at center, rgba(139, 69, 19, 0.15) 0%, rgba(101, 67, 33, 0.1) 50%, transparent 70%),
-								 linear-gradient(90deg, rgba(139, 69, 19, 0.05) 0%, transparent 50%, rgba(139, 69, 19, 0.05) 100%)`
+				'urban-gradient': 'linear-gradient(135deg, rgba(15, 20, 25, 0.9) 0%, rgba(26, 26, 26, 0.8) 100%)',
+				'glass-effect': 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)'
 			},
 			backdropBlur: {
 				'xs': '2px',

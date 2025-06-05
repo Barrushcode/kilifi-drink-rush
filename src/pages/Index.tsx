@@ -20,7 +20,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-barrush-charcoal">
+    <div className="min-h-screen bg-barrush-midnight">
       <HeroSection />
       <AboutSection />
       <HowItWorksSection />
