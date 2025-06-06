@@ -74,7 +74,7 @@ const ProductCatalog: React.FC = () => {
             </div>
             
             <div className="flex flex-wrap gap-3 justify-center">
-              {categories.map(category => <Badge key={category} variant={selectedCategory === category ? "default" : "outline"} className={`cursor-pointer px-6 py-2 text-sm font-medium transition-all duration-300 ${selectedCategory === category ? "bg-barrush-copper text-barrush-midnight hover:bg-barrush-copper/90" : "border-barrush-steel/40 text-barrush-copper hover:bg-barrush-copper/20 hover:border-barrush-copper"}`} onClick={() => setSelectedCategory(category)}>
+              {categories.map(category => <Badge key={category} variant={selectedCategory === category ? "default" : "outline"} onClick={() => setSelectedCategory(category)} className="pink">
                   {category}
                 </Badge>)}
             </div>
