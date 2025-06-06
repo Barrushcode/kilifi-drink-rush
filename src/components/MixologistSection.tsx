@@ -68,7 +68,7 @@ const MixologistSection: React.FC = () => {
                       </li>)}
                   </ul>
                 </div>
-                <Button variant="outline" className="w-full border-barrush-copper text-barrush-copper hover:bg-barrush-copper hover:text-barrush-midnight font-bold py-3 transition-all duration-300">
+                <Button variant="outline" className="w-full border-barrush-copper font-bold py-3 transition-all duration-300 bg-cyan-500 hover:bg-cyan-400 text-sky-950">
                   Download Recipe
                 </Button>
               </CardContent>
