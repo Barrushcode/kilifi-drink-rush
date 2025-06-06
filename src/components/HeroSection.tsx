@@ -22,7 +22,7 @@ const HeroSection: React.FC = () => {
           <h1 className="text-7xl md:text-9xl font-bold mb-8 tracking-tight font-serif text-[#f61cdb]">
             BARRUSH
           </h1>
-          <div className="w-20 h-px bg-barrush-copper mx-auto mb-8"></div>
+          <div className="w-20 h-px mx-auto mb-8 bg-cyan-500 rounded-xl"></div>
           <p className="text-3xl md:text-4xl text-barrush-platinum mb-6 font-light">
             Get Your Drink Rush On
           </p>
