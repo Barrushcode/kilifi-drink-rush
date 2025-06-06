@@ -11,19 +11,19 @@ export type Database = {
     Tables: {
       products: {
         Row: {
-          dsecription: string | null
+          description: string | null
           id: number
           name: string
           price: string | null
         }
         Insert: {
-          dsecription?: string | null
+          description?: string | null
           id?: number
           name: string
           price?: string | null
         }
         Update: {
-          dsecription?: string | null
+          description?: string | null
           id?: number
           name?: string
           price?: string | null
