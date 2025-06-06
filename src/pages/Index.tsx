@@ -8,7 +8,6 @@ import DeliveryZonesSection from '@/components/DeliveryZonesSection';
 import MixologistSection from '@/components/MixologistSection';
 import ProductCatalog from '@/components/ProductCatalog';
 import ProductUploadSection from '@/components/ProductUploadSection';
-import CheckoutSection from '@/components/CheckoutSection';
 import SupportSection from '@/components/SupportSection';
 import Footer from '@/components/Footer';
 
@@ -27,8 +26,6 @@ const Index = () => {
       <DeliveryZonesSection />
       <MixologistSection />
       <ProductCatalog />
-      <ProductUploadSection />
-      <CheckoutSection />
       <SupportSection />
       <Footer />
     </div>
