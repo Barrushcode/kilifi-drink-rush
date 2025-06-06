@@ -14,7 +14,7 @@ const HeroSection: React.FC = () => {
     }} />
       
       {/* Modern overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-barrush-midnight/20 via-transparent to-barrush-midnight/60" />
+      <div className="absolute inset-0 bg-gradient-to-b from-barrush-midnight/20 via-transparent to-barrush-midnight/60 text-8xl font-bold text-[#f426df]" />
       
       {/* Content */}
       <div className="relative z-10 text-center max-w-6xl mx-auto px-6">
@@ -22,8 +22,10 @@ const HeroSection: React.FC = () => {
           <h1 className="text-7xl md:text-9xl font-bold text-barrush-copper mb-8 tracking-tight font-serif">
             BARRUSH
           </h1>
-          <div className="w-20 h-px bg-barrush-copper mx-auto mb-8 text-transparent"></div>
-          <p className="centerthetext\n">BARRUSH</p>
+          <div className="w-20 h-px bg-barrush-copper mx-auto mb-8"></div>
+          <p className="text-3xl md:text-4xl text-barrush-platinum mb-6 font-light">
+            Get Your Drink Rush On
+          </p>
           <p className="text-xl text-barrush-platinum/80 mb-16 max-w-3xl mx-auto leading-relaxed">
             Premium spirits and curated cocktails delivered with urban sophistication across Kilifi County.
           </p>
