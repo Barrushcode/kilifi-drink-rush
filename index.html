@@ -24,28 +24,31 @@
   </head>
 
   <body>
-   <section id="products">
-  <h2>Our Cocktails</h2>
-  <ul id="product-list" style="list-style:none; padding:0;"></ul>
-</section>
-<script>
-  fetch("https://docs.google.com/spreadsheets/d/e/2PACX-.../pub?output=csv")
-    .then((response) => response.text())
-    .then((data) => {
-      const rows = data.split("\n").slice(1); // skip headers
-      rows.forEach((row) => {
-        const [name, description, price] = row.split(",");
-        if (name && description && price) {
-          const productHTML = `
-            <div class="product">
-              <h3>${name}</h3>
-              <p>${description}</p>
-              <p><strong>${price}</strong></p>
+    <section id="products">
+    <h2>Our Cocktails</h2>
+    <ul id="product-list" style="list-style: none; padding: 0;"></ul>
+  </section>
+
+  <script>
+    fetch("https://opensheet.elk.sh/1Ww0FbPOH785ypnaFSkuXXSYF_UkCeZraC7pjufSiIZE/YOUR_TAB_NAME")
+      .then(response => response.json())
+      .then(products => {
+        const list = document.getElementById("product-list");
+        products.forEach(product => {
+          const li = document.createElement("li");
+          li.innerHTML = `
+            <div style="margin-bottom: 20px;">
+              <strong style="font-size: 1.2em;">${product.name}</strong><br>
+              <span>${product.description}</span><br>
+              <span style="color: green; font-weight: bold;">${product.price}</span>
             </div>
           `;
-          document.body.innerHTML += productHTML;
-        }
+          list.appendChild(li);
+        });
+      })
+      .catch(error => {
+        console.error("Error fetching product data:", error);
       });
-    });
-</script>
+  </script>
+  </body>
 </html>
