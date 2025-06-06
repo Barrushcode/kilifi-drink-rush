@@ -19,7 +19,7 @@ const HeroSection: React.FC = () => {
       {/* Content */}
       <div className="relative z-10 text-center max-w-6xl mx-auto px-6">
         <div className="animate-fade-in">
-          <h1 className="text-7xl md:text-9xl font-bold text-barrush-copper mb-8 tracking-tight font-serif">
+          <h1 className="text-7xl md:text-9xl font-bold mb-8 tracking-tight font-serif text-[#f61cdb]">
             BARRUSH
           </h1>
           <div className="w-20 h-px bg-barrush-copper mx-auto mb-8"></div>
