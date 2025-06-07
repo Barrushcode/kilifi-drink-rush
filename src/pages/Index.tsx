@@ -1,12 +1,9 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import AgeVerification from '@/components/AgeVerification';
 import HeroSection from '@/components/HeroSection';
-import AboutSection from '@/components/AboutSection';
 import HowItWorksSection from '@/components/HowItWorksSection';
 import DeliveryZonesSection from '@/components/DeliveryZonesSection';
-import SupportSection from '@/components/SupportSection';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -21,7 +18,6 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-barrush-midnight">
       <HeroSection />
-      <AboutSection />
       <HowItWorksSection />
       <DeliveryZonesSection />
       
@@ -86,7 +82,6 @@ const Index = () => {
         </div>
       </section>
 
-      <SupportSection />
       <Footer />
     </div>
   );
