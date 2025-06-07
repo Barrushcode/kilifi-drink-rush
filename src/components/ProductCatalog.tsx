@@ -33,6 +33,8 @@ const ProductCatalog: React.FC = () => {
   const fetchProducts = async () => {
     try {
       setLoading(true);
+      setError(null);
+      
       const { data, error } = await supabase
         .from('products')
         .select('id, name, description, price');
@@ -54,7 +56,7 @@ const ProductCatalog: React.FC = () => {
       setProducts(transformedProducts);
     } catch (error) {
       console.error('Error fetching products:', error);
-      setError('Failed to load products');
+      setError('Failed to load products. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -136,8 +138,8 @@ const ProductCatalog: React.FC = () => {
             <h2 className="text-5xl md:text-6xl font-bold mb-6 font-serif text-rose-600">
               Premium Collection
             </h2>
-            <p className="text-xl text-red-400">{error}</p>
-            <Button onClick={fetchProducts} className="mt-4 bg-rose-600 hover:bg-rose-500">
+            <p className="text-xl text-red-400 mb-4">{error}</p>
+            <Button onClick={fetchProducts} className="bg-rose-600 hover:bg-rose-500">
               Try Again
             </Button>
           </div>
@@ -235,7 +237,7 @@ const ProductCatalog: React.FC = () => {
         <div className="text-center mt-16">
           <div className="bg-glass-effect border border-barrush-steel/30 rounded-xl p-8 max-w-2xl mx-auto backdrop-blur-md">
             <p className="text-barrush-platinum/90 text-lg">
-              <strong className="text-barrush-copper bg-slate-50">Growing Collection:</strong> Our catalog expands weekly with 
+              <strong className="text-barrush-copper">Growing Collection:</strong> Our catalog expands weekly with 
               premium selections sourced for the modern connoisseur.
             </p>
           </div>
