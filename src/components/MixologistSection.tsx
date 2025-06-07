@@ -50,7 +50,7 @@ const MixologistSection: React.FC = () => {
               <div className="h-64 bg-cover bg-center relative" style={{
             backgroundImage: `url(${recipe.image})`
           }}>
-                <div className="absolute inset-0 bg-gradient-to-t from-barrush-midnight/80 to-transparent"></div>
+                <div className="insertmartinicocktailpic"></div>
               </div>
               <CardContent className="p-8">
                 <h3 className="text-2xl font-bold mb-4 font-serif text-green-200">
