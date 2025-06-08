@@ -17,8 +17,12 @@ const Navigation = () => {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-barrush-midnight/90 backdrop-blur-md border-b border-barrush-steel/30">
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          <Link to="/" className="text-2xl font-bold font-serif text-rose-600">
-            Barrush
+          <Link to="/" className="flex items-center">
+            <img 
+              src="/lovable-uploads/817c7ccd-c1cf-4844-8188-1b0d231cd0b9.png" 
+              alt="Barrushke Delivery" 
+              className="h-12 w-auto"
+            />
           </Link>
           
           <NavigationMenu>
