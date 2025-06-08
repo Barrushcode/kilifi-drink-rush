@@ -47,9 +47,9 @@ const MixologistSection: React.FC = () => {
         
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-7xl mx-auto">
           {recipes.map((recipe, index) => <Card key={index} className="bg-glass-effect border-barrush-steel/30 border hover:border-barrush-copper/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden">
-              <div className="h-64 bg-cover bg-center relative" style={{
+              <div style={{
             backgroundImage: `url(${recipe.image})`
-          }}>
+          }} className="add  picture ">
                 <div className="insertmartinicocktailpic"></div>
               </div>
               <CardContent className="p-8">
