@@ -60,7 +60,7 @@ const MixologistSection: React.FC = () => {
                   {recipe.description}
                 </p>
                 <div className="mb-6">
-                  <h4 className="font-bold mb-3 text-lg text-cyan-950">Ingredients:</h4>
+                  <h4 className="font-bold mb-3 text-lg text-teal-500">Ingredients:</h4>
                   <ul className="text-barrush-platinum/80 space-y-2">
                     {recipe.ingredients.map((ingredient, idx) => <li key={idx} className="flex items-center">
                         <span className="w-1.5 h-1.5 bg-barrush-copper rounded-full mr-3"></span>
