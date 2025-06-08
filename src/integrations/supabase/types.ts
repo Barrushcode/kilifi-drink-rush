@@ -14,19 +14,19 @@ export type Database = {
           description: string | null
           id: number
           name: string
-          price: string | null
+          price: number | null
         }
         Insert: {
           description?: string | null
           id?: number
           name: string
-          price?: string | null
+          price?: number | null
         }
         Update: {
           description?: string | null
           id?: number
           name?: string
-          price?: string | null
+          price?: number | null
         }
         Relationships: []
       }
