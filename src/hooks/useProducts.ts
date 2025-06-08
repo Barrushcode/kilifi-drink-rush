@@ -62,7 +62,7 @@ export const useProducts = () => {
       const transformedProducts: Product[] = (data || []).map((product, index) => ({
         id: product.id,
         name: product.name || 'Unknown Product',
-        price: product.price || '0',
+        price: product.price ? product.price.toString() : '0',
         description: product.description || '',
         category: getCategoryFromName(product.name),
         image: getDefaultImage(index)
