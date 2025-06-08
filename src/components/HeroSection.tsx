@@ -19,7 +19,7 @@ const HeroSection: React.FC = () => {
       {/* Content */}
       <div className="relative z-10 text-center max-w-6xl mx-auto px-6">
         <div className="animate-fade-in">
-          <h1 className="text-7xl md:text-9xl font-bold mb-8 tracking-tight font-serif text-[#f61cdb]">
+          <h1 className="text-7xl font-bold mb-8 tracking-tight font-serif md:text-[(#800020] text-[#f762cd]">
             BARRUSH
           </h1>
           <div className="w-20 h-px mx-auto mb-8 bg-cyan-500 rounded-xl"></div>
@@ -30,9 +30,7 @@ const HeroSection: React.FC = () => {
             Premium spirits and curated cocktails delivered with urban sophistication across Kilifi County.
           </p>
           
-          <Button onClick={scrollToProducts} size="lg" className="text-barrush-midnight font-bold px-16 py-6 text-xl transition-all duration-300 hover:scale-105 shadow-2xl bg-red-300 hover:bg-red-200">
-            EXPLORE COLLECTION
-          </Button>
+          <Button onClick={scrollToProducts} size="lg" className="text-barrush-midnight font-bold px-16 py-6 text-xl transition-all duration-300 hover:scale-105 shadow-2xl bg-[(#800020] bg-[#800080]">Let's Order</Button>
         </div>
       </div>
       
