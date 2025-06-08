@@ -36,7 +36,7 @@ const Footer: React.FC = () => {
             <div className="space-y-2 text-barrush-cream">
               <p className="text-zinc-50"><strong>Business Hours:</strong> 9 AM - 11 PM</p>
               <p className="bg-gray-500 text-neutral-50"><strong>Delivery Zones:</strong> Tezo, Mnarani, Bofa</p>
-              <p className="text-green-400">🚴‍♂️ Eco-friendly bike delivery in Bofa</p>
+              
             </div>
           </div>
         </div>

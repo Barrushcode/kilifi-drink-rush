@@ -43,17 +43,7 @@ const HowItWorksSection: React.FC = () => {
             </Card>)}
         </div>
         
-        <div className="text-center mt-12">
-          <div className="bg-barrush-burgundy/30 border border-barrush-gold rounded-lg p-6 max-w-md mx-auto">
-            <h4 className="text-lg font-bold text-barrush-gold mb-2">
-              🚴‍♂️ Eco-Friendly Delivery
-            </h4>
-            <p className="text-barrush-cream text-zinc-50">
-              Special bike delivery service available in Bofa area for faster, 
-              environmentally conscious delivery
-            </p>
-          </div>
-        </div>
+        
       </div>
     </section>;
 };
