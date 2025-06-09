@@ -32,8 +32,8 @@ const SupportSection: React.FC = () => {
               </Button>
               
               <div className="text-barrush-cream/80 space-y-2">
-                <p><strong className="text-barrush-gold">Support Number:</strong> 0117808024</p>
-                <p className="text-sm">
+                <p className="text-zinc-100"><strong className="text-barrush-gold">Support Number:</strong> 0117808024</p>
+                <p className="text-sm text-zinc-100">
                   <em>Support only. Please place orders through the website.</em>
                 </p>
               </div>
@@ -53,7 +53,7 @@ const SupportSection: React.FC = () => {
               <CardContent className="p-6 text-center">
                 <div className="text-3xl mb-3">⏰</div>
                 <h4 className="text-lg font-bold text-barrush-gold mb-2 text-zinc-50">Response Time</h4>
-                <p className="text-barrush-cream text-zinc-50">Within 30 minutes</p>
+                <p className="text-barrush-cream text-zinc-50">Within 6 minutes</p>
               </CardContent>
             </Card>
           </div>
