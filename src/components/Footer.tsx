@@ -35,7 +35,7 @@ const Footer: React.FC = () => {
             <h4 className="text-xl font-bold text-barrush-gold mb-4 text-zinc-50">Service Info</h4>
             <div className="space-y-2 text-barrush-cream">
               <p className="text-zinc-50"><strong>Business Hours:</strong> 9 AM - 11 PM</p>
-              <p className="bg-gray-500 text-neutral-50"><strong>Delivery Zones:</strong> Tezo, Mnarani, Bofa</p>
+              <p className="text-white bg-inherit"><strong>Delivery Zones:</strong> Tezo, Mnarani, Bofa</p>
               
             </div>
           </div>
