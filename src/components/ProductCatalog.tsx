@@ -6,13 +6,29 @@ import ProductFilters from './ProductFilters';
 import ProductLoadingSkeleton from './ProductLoadingSkeleton';
 import { useProducts } from '@/hooks/useProducts';
 import { useProductFilters } from '@/hooks/useProductFilters';
+import { usePagination } from '@/hooks/usePagination';
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 
 const ProductCatalog: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
   
   const { products, loading, error, refetch } = useProducts();
   const { categories, filteredProducts } = useProductFilters(products, searchTerm, selectedCategory);
+  const { totalPages, hasNextPage, hasPreviousPage, startIndex, endIndex } = usePagination({
+    totalItems: filteredProducts.length,
+    itemsPerPage,
+    currentPage
+  });
+
+  const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
+
+  // Reset to first page when filters change
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedCategory]);
 
   if (loading) {
     return (
@@ -74,7 +90,7 @@ const ProductCatalog: React.FC = () => {
         
         {/* Products Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-7xl mx-auto">
-          {filteredProducts.map(product => (
+          {paginatedProducts.map(product => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
@@ -86,6 +102,79 @@ const ProductCatalog: React.FC = () => {
             </p>
           </div>
         )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-16">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    href="#" 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (hasPreviousPage) setCurrentPage(prev => prev - 1);
+                    }}
+                    className={`${!hasPreviousPage ? 'opacity-50 cursor-not-allowed' : 'text-barrush-platinum hover:text-rose-600'} bg-glass-effect border-barrush-steel/40`}
+                  />
+                </PaginationItem>
+                
+                {[...Array(totalPages)].map((_, index) => {
+                  const page = index + 1;
+                  const isCurrentPage = page === currentPage;
+                  
+                  // Show first page, last page, current page, and pages around current page
+                  if (
+                    page === 1 || 
+                    page === totalPages || 
+                    (page >= currentPage - 1 && page <= currentPage + 1)
+                  ) {
+                    return (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setCurrentPage(page);
+                          }}
+                          isActive={isCurrentPage}
+                          className={`${isCurrentPage 
+                            ? 'bg-rose-600 text-white border-rose-600' 
+                            : 'bg-glass-effect border-barrush-steel/40 text-barrush-platinum hover:text-rose-600'
+                          }`}
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
+                  }
+                  
+                  // Show ellipsis for gaps
+                  if (page === currentPage - 2 || page === currentPage + 2) {
+                    return (
+                      <PaginationItem key={page}>
+                        <PaginationEllipsis className="text-barrush-platinum/60" />
+                      </PaginationItem>
+                    );
+                  }
+                  
+                  return null;
+                })}
+                
+                <PaginationItem>
+                  <PaginationNext 
+                    href="#" 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (hasNextPage) setCurrentPage(prev => prev + 1);
+                    }}
+                    className={`${!hasNextPage ? 'opacity-50 cursor-not-allowed' : 'text-barrush-platinum hover:text-rose-600'} bg-glass-effect border-barrush-steel/40`}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
         
         <div className="text-center mt-16">
           <div className="bg-glass-effect border border-barrush-steel/30 rounded-xl p-8 max-w-2xl mx-auto backdrop-blur-md">
@@ -93,6 +182,11 @@ const ProductCatalog: React.FC = () => {
               <strong className="text-barrush-copper">Growing Collection:</strong> Our catalog expands weekly with 
               premium selections sourced for the modern connoisseur.
             </p>
+            {filteredProducts.length > 0 && (
+              <p className="text-barrush-platinum/70 text-sm mt-2">
+                Showing {startIndex + 1}-{Math.min(endIndex, filteredProducts.length)} of {filteredProducts.length} products
+              </p>
+            )}
           </div>
         </div>
       </div>
