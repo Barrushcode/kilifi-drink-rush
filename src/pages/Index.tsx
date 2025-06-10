@@ -4,6 +4,7 @@ import AgeVerification from '@/components/AgeVerification';
 import HeroSection from '@/components/HeroSection';
 import HowItWorksSection from '@/components/HowItWorksSection';
 import DeliveryZonesSection from '@/components/DeliveryZonesSection';
+import CheckoutSection from '@/components/CheckoutSection';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
