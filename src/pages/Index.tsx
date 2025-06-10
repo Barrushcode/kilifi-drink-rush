@@ -82,6 +82,9 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Add the checkout section before footer */}
+      <CheckoutSection />
+
       <Footer />
     </div>
   );
