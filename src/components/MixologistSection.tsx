@@ -21,7 +21,7 @@ const MixologistSection: React.FC = () => {
     description: "New York's signature cocktail with perfect balance"
   }, {
     name: "Negroni",
-    image: "https://images.unsplash.com/photo-1603969072881-b0fc7f3d77d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+    image: "/lovable-uploads/817c7ccd-c1cf-4844-8188-1b0d231cd0b9.png",
     ingredients: ["1oz Gin", "1oz Campari", "1oz Sweet Vermouth", "Orange peel"],
     description: "Italian aperitif with a perfect bitter-sweet harmony"
   }, {
@@ -82,8 +82,14 @@ const MixologistSection: React.FC = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-7xl mx-auto">
           {recipes.map((recipe, index) => (
             <Card key={index} className="bg-glass-effect border-barrush-steel/30 border hover:border-barrush-copper/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden">
-              <div className="h-64 bg-cover bg-center relative overflow-hidden" style={{backgroundImage: `url(${recipe.image})`, backgroundSize: 'cover', backgroundPosition: 'center center'}}>
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all duration-300"></div>
+              <div className="h-72 relative overflow-hidden" style={{
+                backgroundImage: `url(${recipe.image})`, 
+                backgroundSize: 'contain', 
+                backgroundPosition: 'center center',
+                backgroundRepeat: 'no-repeat',
+                backgroundColor: '#1a1a1a'
+              }}>
+                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/5 transition-all duration-300"></div>
               </div>
               <CardContent className="p-8">
                 <h3 className="text-2xl font-bold mb-4 font-serif text-green-200">
