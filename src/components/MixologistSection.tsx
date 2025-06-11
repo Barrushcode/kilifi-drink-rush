@@ -6,17 +6,17 @@ import { Button } from '@/components/ui/button';
 const MixologistSection: React.FC = () => {
   const recipes = [{
     name: "Old Fashioned",
-    image: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+    image: "/lovable-uploads/98d5aa2c-8b0d-452f-8ce0-b3a31d427f2d.png",
     ingredients: ["2oz Bourbon Whiskey", "2 dashes Angostura Bitters", "1 sugar cube", "Orange peel", "Ice"],
     description: "The timeless classic that never goes out of style"
   }, {
     name: "Martini",
-    image: "https://images.unsplash.com/photo-1556855810-d8a9c0a30a9d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+    image: "/lovable-uploads/eed458a0-c82d-483b-b67a-887e67da1b9c.png",
     ingredients: ["2.5oz Gin", "0.5oz Dry Vermouth", "Lemon twist or olive", "Ice"],
     description: "Sophistication in a glass - shaken or stirred"
   }, {
     name: "Manhattan",
-    image: "https://images.unsplash.com/photo-1609368342768-de62c1fb1935?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+    image: "/lovable-uploads/3d2d9178-c92a-47f5-b7cb-43eb099a90ff.png",
     ingredients: ["2oz Rye Whiskey", "1oz Sweet Vermouth", "2 dashes Angostura Bitters", "Cherry garnish"],
     description: "New York's signature cocktail with perfect balance"
   }, {
@@ -26,12 +26,12 @@ const MixologistSection: React.FC = () => {
     description: "Italian aperitif with a perfect bitter-sweet harmony"
   }, {
     name: "Whiskey Sour",
-    image: "https://images.unsplash.com/photo-1570197788417-0e82375c9371?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+    image: "/lovable-uploads/a3a04ef4-78fa-4911-8f2f-be21369dba75.png",
     ingredients: ["2oz Bourbon", "1oz Fresh lemon juice", "0.75oz Simple syrup", "Egg white (optional)", "Cherry garnish"],
     description: "Classic sour cocktail with perfect sweet-tart balance"
   }, {
     name: "Daiquiri",
-    image: "https://images.unsplash.com/photo-1587223962930-cb7297d9d8ca?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+    image: "/lovable-uploads/72bc2b2d-1f24-4b19-8f90-68e1f260d2b1.png",
     ingredients: ["2oz White Rum", "1oz Fresh lime juice", "0.75oz Simple syrup", "Lime wheel"],
     description: "Ernest Hemingway's favorite - clean and refreshing"
   }, {
@@ -41,27 +41,27 @@ const MixologistSection: React.FC = () => {
     description: "Cuban classic with refreshing mint and lime"
   }, {
     name: "Cosmopolitan",
-    image: "https://images.unsplash.com/photo-1541546213646-1de78faa9271?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+    image: "/lovable-uploads/96d89dca-3bcc-4670-b40b-a7bf842d8f48.png",
     ingredients: ["2oz Vodka", "1oz Cointreau", "0.5oz Fresh lime juice", "0.25oz Cranberry juice", "Lime wheel"],
     description: "Pink perfection made famous by Sex and the City"
   }, {
     name: "Margarita",
-    image: "https://images.unsplash.com/photo-1561515072-1f9bb8d1e3f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+    image: "/lovable-uploads/ce4a2004-2057-4be6-9e23-2a002763e200.png",
     ingredients: ["2oz Tequila", "1oz Cointreau", "1oz Fresh lime juice", "Salt rim", "Lime wheel"],
     description: "Mexico's gift to the world - perfect for any occasion"
   }, {
     name: "Espresso Martini",
-    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+    image: "/lovable-uploads/094b78f1-6048-40cd-84c7-60aab34b4eae.png",
     ingredients: ["2oz Vodka", "1oz Coffee liqueur", "1oz Fresh espresso", "3 Coffee beans"],
     description: "The perfect after-dinner cocktail with a coffee kick"
   }, {
     name: "Moscow Mule",
-    image: "https://images.unsplash.com/photo-1551024183-6d6dbaea96ed?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+    image: "/lovable-uploads/f91b31d7-2b11-4bef-b4bd-d54b10ae73de.png",
     ingredients: ["2oz Vodka", "0.5oz Fresh lime juice", "4oz Ginger beer", "Lime wheel", "Fresh mint"],
     description: "Served in copper mugs for the authentic experience"
   }, {
     name: "Piña Colada",
-    image: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+    image: "/lovable-uploads/384ba519-4954-4fe4-a346-d5b8de93f533.png",
     ingredients: ["2oz White Rum", "1oz Coconut cream", "1oz Heavy cream", "6oz Pineapple juice", "Pineapple wedge"],
     description: "Tropical paradise in a glass - escape to the islands"
   }];
