@@ -41,7 +41,7 @@ export const useProducts = () => {
       
       const { data, error } = await supabase
         .from('allthealcoholicproducts')
-        .select('Title, Description, Price, "Product image URL"');
+        .select('Title, Description, Price');
 
       console.log('Supabase response - data:', data);
       console.log('Supabase response - error:', error);
@@ -60,10 +60,10 @@ export const useProducts = () => {
         return {
           id: index + 1, // Generate ID since the table doesn't have one
           name: product.Title || 'Unknown Product',
-          price: product.Price ? product.Price.toString() : '0',
+          price: product.Price ? `KES ${product.Price.toLocaleString()}` : 'KES 0',
           description: product.Description || '',
           category: getCategoryFromName(product.Title),
-          image: product['Product image URL'] || `https://images.unsplash.com/photo-${[
+          image: `https://images.unsplash.com/photo-${[
             '1569529465841-dfecdab7503b',
             '1551538827-9c037cb4f32a', 
             '1582553352566-7b4cdcc2379c',

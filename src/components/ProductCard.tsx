@@ -42,7 +42,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         )}
         <div className="flex justify-between items-center">
           <span className="text-3xl font-bold text-barrush-platinum">
-            KES {typeof product.price === 'string' ? parseFloat(product.price).toLocaleString() : product.price}
+            {product.price}
           </span>
           <Button className="text-barrush-midnight font-bold px-6 py-3 transition-all duration-300 hover:scale-105 bg-rose-600 hover:bg-rose-500">
             Add to Cart
