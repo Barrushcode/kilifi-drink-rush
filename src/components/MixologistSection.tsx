@@ -1,6 +1,8 @@
+
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+
 const MixologistSection: React.FC = () => {
   const recipes = [{
     name: "Old Fashioned",
@@ -24,7 +26,7 @@ const MixologistSection: React.FC = () => {
     description: "Italian aperitif with a perfect bitter-sweet harmony"
   }, {
     name: "Whiskey Sour",
-    image: "https://images.unsplash.com/photo-1609368342768-de62c1fb1935?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+    image: "https://images.unsplash.com/photo-1570197788417-0e82375c9371?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
     ingredients: ["2oz Bourbon", "1oz Fresh lemon juice", "0.75oz Simple syrup", "Egg white (optional)", "Cherry garnish"],
     description: "Classic sour cocktail with perfect sweet-tart balance"
   }, {
@@ -32,8 +34,40 @@ const MixologistSection: React.FC = () => {
     image: "https://images.unsplash.com/photo-1587223962930-cb7297d9d8ca?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
     ingredients: ["2oz White Rum", "1oz Fresh lime juice", "0.75oz Simple syrup", "Lime wheel"],
     description: "Ernest Hemingway's favorite - clean and refreshing"
+  }, {
+    name: "Mojito",
+    image: "https://images.unsplash.com/photo-1571104508999-893933ded431?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+    ingredients: ["2oz White Rum", "1oz Fresh lime juice", "2 tsp Sugar", "6-8 Fresh mint leaves", "Soda water", "Ice"],
+    description: "Cuban classic with refreshing mint and lime"
+  }, {
+    name: "Cosmopolitan",
+    image: "https://images.unsplash.com/photo-1541546213646-1de78faa9271?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+    ingredients: ["2oz Vodka", "1oz Cointreau", "0.5oz Fresh lime juice", "0.25oz Cranberry juice", "Lime wheel"],
+    description: "Pink perfection made famous by Sex and the City"
+  }, {
+    name: "Margarita",
+    image: "https://images.unsplash.com/photo-1561515072-1f9bb8d1e3f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+    ingredients: ["2oz Tequila", "1oz Cointreau", "1oz Fresh lime juice", "Salt rim", "Lime wheel"],
+    description: "Mexico's gift to the world - perfect for any occasion"
+  }, {
+    name: "Espresso Martini",
+    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+    ingredients: ["2oz Vodka", "1oz Coffee liqueur", "1oz Fresh espresso", "3 Coffee beans"],
+    description: "The perfect after-dinner cocktail with a coffee kick"
+  }, {
+    name: "Moscow Mule",
+    image: "https://images.unsplash.com/photo-1551024183-6d6dbaea96ed?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+    ingredients: ["2oz Vodka", "0.5oz Fresh lime juice", "4oz Ginger beer", "Lime wheel", "Fresh mint"],
+    description: "Served in copper mugs for the authentic experience"
+  }, {
+    name: "Piña Colada",
+    image: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+    ingredients: ["2oz White Rum", "1oz Coconut cream", "1oz Heavy cream", "6oz Pineapple juice", "Pineapple wedge"],
+    description: "Tropical paradise in a glass - escape to the islands"
   }];
-  return <section className="py-24 bg-gradient-to-b from-barrush-slate to-barrush-midnight relative">
+
+  return (
+    <section className="py-24 bg-gradient-to-b from-barrush-slate to-barrush-midnight relative">
       <div className="container mx-auto px-6 relative z-10">
         <div className="text-center mb-20">
           <h2 className="text-5xl md:text-6xl font-bold mb-6 font-serif text-cyan-400">
@@ -46,11 +80,10 @@ const MixologistSection: React.FC = () => {
         </div>
         
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-7xl mx-auto">
-          {recipes.map((recipe, index) => <Card key={index} className="bg-glass-effect border-barrush-steel/30 border hover:border-barrush-copper/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden">
-              <div style={{
-            backgroundImage: `url(${recipe.image})`
-          }} className="add  picture ">
-                <div className="insertmartinicocktailpic"></div>
+          {recipes.map((recipe, index) => (
+            <Card key={index} className="bg-glass-effect border-barrush-steel/30 border hover:border-barrush-copper/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden">
+              <div className="h-48 bg-cover bg-center relative overflow-hidden" style={{backgroundImage: `url(${recipe.image})`}}>
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all duration-300"></div>
               </div>
               <CardContent className="p-8">
                 <h3 className="text-2xl font-bold mb-4 font-serif text-green-200">
@@ -62,17 +95,20 @@ const MixologistSection: React.FC = () => {
                 <div className="mb-6">
                   <h4 className="font-bold mb-3 text-lg text-teal-500">Ingredients:</h4>
                   <ul className="text-barrush-platinum/80 space-y-2">
-                    {recipe.ingredients.map((ingredient, idx) => <li key={idx} className="flex items-center">
+                    {recipe.ingredients.map((ingredient, idx) => (
+                      <li key={idx} className="flex items-center">
                         <span className="w-1.5 h-1.5 bg-barrush-copper rounded-full mr-3"></span>
                         {ingredient}
-                      </li>)}
+                      </li>
+                    ))}
                   </ul>
                 </div>
                 <Button variant="outline" className="w-full border-barrush-copper font-bold py-3 transition-all duration-300 bg-cyan-500 hover:bg-cyan-400 text-sky-950">
                   Download Recipe
                 </Button>
               </CardContent>
-            </Card>)}
+            </Card>
+          ))}
         </div>
         
         <div className="text-center mt-16">
@@ -87,6 +123,8 @@ const MixologistSection: React.FC = () => {
           </div>
         </div>
       </div>
-    </section>;
+    </section>
+  );
 };
+
 export default MixologistSection;
