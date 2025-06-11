@@ -1,9 +1,7 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
 const MixologistSection: React.FC = () => {
   const classicRecipes = [{
     name: "Old Fashioned",
@@ -36,7 +34,6 @@ const MixologistSection: React.FC = () => {
     ingredients: ["2oz White Rum", "1oz Fresh lime juice", "0.75oz Simple syrup", "Lime wheel"],
     description: "Ernest Hemingway's favorite - clean and refreshing"
   }];
-
   const modernRecipes = [{
     name: "Mojito",
     image: "/lovable-uploads/d5a394f1-75bd-4021-b1ee-89deaea33ab6.png",
@@ -68,18 +65,19 @@ const MixologistSection: React.FC = () => {
     ingredients: ["2oz White Rum", "1oz Coconut cream", "1oz Heavy cream", "6oz Pineapple juice", "Pineapple wedge"],
     description: "Tropical paradise in a glass - escape to the islands"
   }];
-
-  const RecipeGrid = ({ recipes }: { recipes: typeof classicRecipes }) => (
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-7xl mx-auto">
-      {recipes.map((recipe, index) => (
-        <Card key={index} className="bg-glass-effect border-barrush-steel/30 border hover:border-barrush-copper/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden">
+  const RecipeGrid = ({
+    recipes
+  }: {
+    recipes: typeof classicRecipes;
+  }) => <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-7xl mx-auto">
+      {recipes.map((recipe, index) => <Card key={index} className="bg-glass-effect border-barrush-steel/30 border hover:border-barrush-copper/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden">
           <div className="h-72 relative overflow-hidden" style={{
-            backgroundImage: `url(${recipe.image})`, 
-            backgroundSize: 'contain', 
-            backgroundPosition: 'center center',
-            backgroundRepeat: 'no-repeat',
-            backgroundColor: '#1a1a1a'
-          }}>
+        backgroundImage: `url(${recipe.image})`,
+        backgroundSize: 'contain',
+        backgroundPosition: 'center center',
+        backgroundRepeat: 'no-repeat',
+        backgroundColor: '#1a1a1a'
+      }}>
             <div className="absolute inset-0 bg-black/10 group-hover:bg-black/5 transition-all duration-300"></div>
           </div>
           <CardContent className="p-8">
@@ -92,25 +90,19 @@ const MixologistSection: React.FC = () => {
             <div className="mb-6">
               <h4 className="font-bold mb-3 text-lg text-teal-500">Ingredients:</h4>
               <ul className="text-barrush-platinum/80 space-y-2">
-                {recipe.ingredients.map((ingredient, idx) => (
-                  <li key={idx} className="flex items-center">
+                {recipe.ingredients.map((ingredient, idx) => <li key={idx} className="flex items-center">
                     <span className="w-1.5 h-1.5 bg-barrush-copper rounded-full mr-3"></span>
                     {ingredient}
-                  </li>
-                ))}
+                  </li>)}
               </ul>
             </div>
             <Button variant="outline" className="w-full border-barrush-copper font-bold py-3 transition-all duration-300 bg-cyan-500 hover:bg-cyan-400 text-sky-950">
               Download Recipe
             </Button>
           </CardContent>
-        </Card>
-      ))}
-    </div>
-  );
-
-  return (
-    <section className="py-24 bg-gradient-to-b from-barrush-slate to-barrush-midnight relative">
+        </Card>)}
+    </div>;
+  return <section className="py-24 bg-gradient-to-b from-barrush-slate to-barrush-midnight relative">
       <div className="container mx-auto px-6 relative z-10">
         <div className="text-center mb-20">
           <h2 className="text-5xl md:text-6xl font-bold mb-6 font-serif text-cyan-400">
@@ -124,10 +116,10 @@ const MixologistSection: React.FC = () => {
         
         <Tabs defaultValue="classic" className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-12 bg-glass-effect border border-barrush-steel/30">
-            <TabsTrigger value="classic" className="text-lg font-semibold text-barrush-platinum data-[state=active]:bg-barrush-copper data-[state=active]:text-white">
+            <TabsTrigger value="classic" className="text-lg font-semibold text-barrush-platinum data-[state=active]:text-white bg-zinc-950 hover:bg-zinc-800">
               Classic Cocktails
             </TabsTrigger>
-            <TabsTrigger value="modern" className="text-lg font-semibold text-barrush-platinum data-[state=active]:bg-barrush-copper data-[state=active]:text-white">
+            <TabsTrigger value="modern" className="text-lg font-semibold text-barrush-platinum data-[state=active]:text-white bg-fuchsia-800 hover:bg-fuchsia-700">
               Modern Favorites
             </TabsTrigger>
           </TabsList>
@@ -153,8 +145,6 @@ const MixologistSection: React.FC = () => {
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default MixologistSection;
