@@ -32,29 +32,16 @@ export const useProducts = () => {
     return 'Spirits';
   };
 
-  // Helper function to get default images based on category
-  const getDefaultImage = (index: number): string => {
-    const images = [
-      "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1582553352566-7b4cdcc2379c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1612528443702-f6741f70a049?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1558642891-54be180ea339?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1549796014-6aa0e2eaaa43?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
-    ];
-    return images[index % images.length];
-  };
-
   const fetchProducts = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      console.log('Starting to fetch products from Supabase...');
+      console.log('Starting to fetch products from allthealcoholicproducts table...');
       
       const { data, error } = await supabase
-        .from('products')
-        .select('id, name, description, price');
+        .from('allthealcoholicproducts')
+        .select('Title, Description, Price, "Product image URL"');
 
       console.log('Supabase response - data:', data);
       console.log('Supabase response - error:', error);
@@ -67,16 +54,23 @@ export const useProducts = () => {
       console.log('Raw data from Supabase:', data);
       console.log('Number of products fetched:', data?.length || 0);
 
-      // Transform the data and add default images and categories
+      // Transform the data to match our Product interface
       const transformedProducts: Product[] = (data || []).map((product, index) => {
         console.log(`Transforming product ${index + 1}:`, product);
         return {
-          id: product.id,
-          name: product.name || 'Unknown Product',
-          price: product.price ? product.price.toString() : '0',
-          description: product.description || '',
-          category: getCategoryFromName(product.name),
-          image: getDefaultImage(index)
+          id: index + 1, // Generate ID since the table doesn't have one
+          name: product.Title || 'Unknown Product',
+          price: product.Price ? product.Price.toString() : '0',
+          description: product.Description || '',
+          category: getCategoryFromName(product.Title),
+          image: product['Product image URL'] || `https://images.unsplash.com/photo-${[
+            '1569529465841-dfecdab7503b',
+            '1551538827-9c037cb4f32a', 
+            '1582553352566-7b4cdcc2379c',
+            '1612528443702-f6741f70a049',
+            '1558642891-54be180ea339',
+            '1549796014-6aa0e2eaaa43'
+          ][index % 6]}?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80`
         };
       });
 
