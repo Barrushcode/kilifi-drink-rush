@@ -39,16 +39,31 @@ export const useProducts = () => {
       
       console.log('Starting to fetch products from allthealcoholicproducts table...');
       
-      const { data, error } = await supabase
+      const { data, error, count } = await supabase
         .from('allthealcoholicproducts')
-        .select('Title, Description, Price');
+        .select('Title, Description, Price', { count: 'exact' });
 
       console.log('Supabase response - data:', data);
       console.log('Supabase response - error:', error);
+      console.log('Supabase response - count:', count);
 
       if (error) {
         console.error('Supabase error:', error);
         throw error;
+      }
+
+      if (!data || data.length === 0) {
+        console.log('No data returned from query, but count shows:', count);
+        console.log('This might be an RLS policy issue or data access problem');
+        
+        // Try a simpler query to test access
+        const { data: testData, error: testError } = await supabase
+          .from('allthealcoholicproducts')
+          .select('*')
+          .limit(5);
+        
+        console.log('Test query with limit 5 - data:', testData);
+        console.log('Test query with limit 5 - error:', testError);
       }
 
       console.log('Raw data from Supabase:', data);
