@@ -50,24 +50,37 @@ export const useProducts = () => {
       setLoading(true);
       setError(null);
       
+      console.log('Starting to fetch products from Supabase...');
+      
       const { data, error } = await supabase
         .from('products')
         .select('id, name, description, price');
 
+      console.log('Supabase response - data:', data);
+      console.log('Supabase response - error:', error);
+
       if (error) {
+        console.error('Supabase error:', error);
         throw error;
       }
 
-      // Transform the data and add default images and categories
-      const transformedProducts: Product[] = (data || []).map((product, index) => ({
-        id: product.id,
-        name: product.name || 'Unknown Product',
-        price: product.price ? product.price.toString() : '0',
-        description: product.description || '',
-        category: getCategoryFromName(product.name),
-        image: getDefaultImage(index)
-      }));
+      console.log('Raw data from Supabase:', data);
+      console.log('Number of products fetched:', data?.length || 0);
 
+      // Transform the data and add default images and categories
+      const transformedProducts: Product[] = (data || []).map((product, index) => {
+        console.log(`Transforming product ${index + 1}:`, product);
+        return {
+          id: product.id,
+          name: product.name || 'Unknown Product',
+          price: product.price ? product.price.toString() : '0',
+          description: product.description || '',
+          category: getCategoryFromName(product.name),
+          image: getDefaultImage(index)
+        };
+      });
+
+      console.log('Transformed products:', transformedProducts);
       setProducts(transformedProducts);
     } catch (error) {
       console.error('Error fetching products:', error);
