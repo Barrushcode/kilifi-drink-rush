@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 const MixologistSection: React.FC = () => {
   const recipes = [{
     name: "Old Fashioned",
-    image: "/lovable-uploads/98d5aa2c-8b0d-452f-8ce0-b3a31d427f2d.png",
+    image: "/lovable-uploads/d3fc1dba-2426-4f52-b8af-cb3f2972d874.png",
     ingredients: ["2oz Bourbon Whiskey", "2 dashes Angostura Bitters", "1 sugar cube", "Orange peel", "Ice"],
     description: "The timeless classic that never goes out of style"
   }, {
@@ -36,7 +36,7 @@ const MixologistSection: React.FC = () => {
     description: "Ernest Hemingway's favorite - clean and refreshing"
   }, {
     name: "Mojito",
-    image: "https://images.unsplash.com/photo-1571104508999-893933ded431?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+    image: "/lovable-uploads/d5a394f1-75bd-4021-b1ee-89deaea33ab6.png",
     ingredients: ["2oz White Rum", "1oz Fresh lime juice", "2 tsp Sugar", "6-8 Fresh mint leaves", "Soda water", "Ice"],
     description: "Cuban classic with refreshing mint and lime"
   }, {
@@ -82,7 +82,7 @@ const MixologistSection: React.FC = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-7xl mx-auto">
           {recipes.map((recipe, index) => (
             <Card key={index} className="bg-glass-effect border-barrush-steel/30 border hover:border-barrush-copper/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden">
-              <div className="h-48 bg-cover bg-center relative overflow-hidden" style={{backgroundImage: `url(${recipe.image})`}}>
+              <div className="h-64 bg-cover bg-center relative overflow-hidden" style={{backgroundImage: `url(${recipe.image})`, backgroundSize: 'cover', backgroundPosition: 'center center'}}>
                 <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all duration-300"></div>
               </div>
               <CardContent className="p-8">
