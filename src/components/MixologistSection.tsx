@@ -116,7 +116,7 @@ const MixologistSection: React.FC = () => {
         
         <Tabs defaultValue="classic" className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-12 bg-glass-effect border border-barrush-steel/30">
-            <TabsTrigger value="classic" className="text-lg font-semibold text-barrush-platinum data-[state=active]:text-white bg-zinc-950 hover:bg-zinc-800">
+            <TabsTrigger value="classic" className="text-lg font-semibold bg-zinc-950 hover:bg-zinc-800 text-zinc-50">
               Classic Cocktails
             </TabsTrigger>
             <TabsTrigger value="modern" className="text-lg font-semibold text-barrush-platinum data-[state=active]:text-white bg-fuchsia-800 hover:bg-fuchsia-700">
