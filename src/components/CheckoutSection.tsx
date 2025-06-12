@@ -75,7 +75,7 @@ const CheckoutSection: React.FC = () => {
           {/* Order Summary */}
           <Card className="bg-barrush-charcoal/80 border-barrush-gold border">
             <CardHeader>
-              <CardTitle className="text-barrush-gold">Order Summary</CardTitle>
+              <CardTitle className="text-barrush-gold text-zinc-50">Order Summary</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between text-white">
@@ -94,7 +94,7 @@ const CheckoutSection: React.FC = () => {
               </div>
               
               <div className="mt-6 pt-6 border-t border-barrush-burgundy">
-                <h4 className="font-semibold text-barrush-gold mb-3">Payment Options</h4>
+                <h4 className="font-semibold text-barrush-gold mb-3 text-zinc-50">Payment Options</h4>
                 <p className="text-sm text-white mb-4">
                   Choose your preferred payment method:
                 </p>
@@ -112,7 +112,7 @@ const CheckoutSection: React.FC = () => {
             {/* Shipping Information */}
             <Card className="bg-barrush-charcoal/80 border-barrush-gold border">
               <CardHeader>
-                <CardTitle className="text-barrush-gold">Shipping Information</CardTitle>
+                <CardTitle className="text-barrush-gold text-zinc-50">Shipping Information</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -177,7 +177,7 @@ const CheckoutSection: React.FC = () => {
             {/* Alternative Payment Info */}
             <Card className="bg-barrush-burgundy/20 border-barrush-burgundy border">
               <CardContent className="p-6">
-                <h4 className="font-semibold text-barrush-gold mb-3">Alternative Payment</h4>
+                <h4 className="font-semibold text-barrush-gold mb-3 text-zinc-50">Alternative Payment</h4>
                 <p className="text-white mb-4">
                   You can also pay directly via M-PESA:
                 </p>
