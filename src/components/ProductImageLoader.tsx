@@ -44,25 +44,16 @@ const ProductImageLoader: React.FC<ProductImageLoaderProps> = ({
       {loading && (
         <Skeleton className="absolute inset-0 bg-barrush-steel/20" />
       )}
-      <div 
-        className={`h-full bg-cover bg-center transition-opacity duration-300 ${
+      <img
+        src={imageSrc}
+        alt={alt}
+        className={`w-full h-full object-cover transition-opacity duration-300 ${
           loading ? 'opacity-0' : 'opacity-100'
         }`}
-        style={{
-          backgroundImage: `url(${imageSrc})`
-        }}
         onLoad={handleImageLoad}
         onError={handleImageError}
-      >
-        <img
-          src={imageSrc}
-          alt={alt}
-          className="hidden"
-          onLoad={handleImageLoad}
-          onError={handleImageError}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-barrush-midnight/60 to-transparent group-hover:from-barrush-midnight/40 transition-all duration-300"></div>
-      </div>
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-barrush-midnight/60 to-transparent group-hover:from-barrush-midnight/40 transition-all duration-300"></div>
     </div>
   );
 };
