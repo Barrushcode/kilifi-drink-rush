@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,16 +5,14 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import StripeCheckout from './StripeCheckout';
 import PaystackCheckout from './PaystackCheckout';
-
 const CheckoutSection: React.FC = () => {
   const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'paystack'>('paystack');
   const totalAmount = 2500; // Example amount in KES
 
-  return (
-    <div className="min-h-screen bg-barrush-midnight py-12">
+  return <div className="min-h-screen bg-barrush-midnight py-12">
       <div className="container mx-auto px-6 max-w-4xl">
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-barrush-gold mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-barrush-gold mb-4 text-zinc-50">
             Checkout
           </h1>
           <p className="text-xl text-white">
@@ -27,7 +24,7 @@ const CheckoutSection: React.FC = () => {
           {/* Order Summary */}
           <Card className="bg-barrush-charcoal/80 border-barrush-gold border">
             <CardHeader>
-              <CardTitle className="text-barrush-gold">Order Summary</CardTitle>
+              <CardTitle className="text-barrush-gold text-zinc-50">Order Summary</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between text-white">
@@ -46,7 +43,7 @@ const CheckoutSection: React.FC = () => {
               </div>
               
               <div className="mt-6 pt-6 border-t border-barrush-burgundy">
-                <h4 className="font-semibold text-barrush-gold mb-3">Payment Options</h4>
+                <h4 className="font-semibold text-barrush-gold mb-3 text-zinc-50">Payment Options</h4>
                 <p className="text-sm text-white mb-4">
                   Choose your preferred payment method:
                 </p>
@@ -64,14 +61,10 @@ const CheckoutSection: React.FC = () => {
             {/* Payment Method Selection */}
             <Card className="bg-barrush-charcoal/80 border-barrush-gold border">
               <CardHeader>
-                <CardTitle className="text-barrush-gold">Select Payment Method</CardTitle>
+                <CardTitle className="text-barrush-gold text-zinc-50">Select Payment Method</CardTitle>
               </CardHeader>
               <CardContent>
-                <RadioGroup 
-                  value={paymentMethod} 
-                  onValueChange={(value: 'stripe' | 'paystack') => setPaymentMethod(value)}
-                  className="space-y-4"
-                >
+                <RadioGroup value={paymentMethod} onValueChange={(value: 'stripe' | 'paystack') => setPaymentMethod(value)} className="space-y-4">
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="paystack" id="paystack" />
                     <Label htmlFor="paystack" className="text-white cursor-pointer">
@@ -89,16 +82,12 @@ const CheckoutSection: React.FC = () => {
             </Card>
 
             {/* Payment Component */}
-            {paymentMethod === 'stripe' ? (
-              <StripeCheckout amount={totalAmount} />
-            ) : (
-              <PaystackCheckout amount={totalAmount} />
-            )}
+            {paymentMethod === 'stripe' ? <StripeCheckout amount={totalAmount} /> : <PaystackCheckout amount={totalAmount} />}
 
             {/* Alternative Payment Info */}
             <Card className="bg-barrush-burgundy/20 border-barrush-burgundy border">
               <CardContent className="p-6">
-                <h4 className="font-semibold text-barrush-gold mb-3">Alternative Payment</h4>
+                <h4 className="font-semibold text-barrush-gold mb-3 text-zinc-50">Alternative Payment</h4>
                 <p className="text-white mb-4">
                   You can also pay directly via M-PESA:
                 </p>
@@ -115,8 +104,6 @@ const CheckoutSection: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default CheckoutSection;
