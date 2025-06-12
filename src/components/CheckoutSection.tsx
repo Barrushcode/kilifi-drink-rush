@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,7 +5,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import PaystackCheckout from './PaystackCheckout';
-
 const CheckoutSection: React.FC = () => {
   const [shippingDetails, setShippingDetails] = useState({
     firstName: '',
@@ -19,8 +17,9 @@ const CheckoutSection: React.FC = () => {
     city: '',
     instructions: ''
   });
-  const [errors, setErrors] = useState<{[key: string]: string}>({});
-
+  const [errors, setErrors] = useState<{
+    [key: string]: string;
+  }>({});
   const totalAmount = 2500; // Example amount in KES
 
   const handleInputChange = (field: string, value: string) => {
@@ -28,7 +27,7 @@ const CheckoutSection: React.FC = () => {
       ...prev,
       [field]: value
     }));
-    
+
     // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({
@@ -37,10 +36,10 @@ const CheckoutSection: React.FC = () => {
       }));
     }
   };
-
   const validateForm = () => {
-    const newErrors: {[key: string]: string} = {};
-    
+    const newErrors: {
+      [key: string]: string;
+    } = {};
     if (!shippingDetails.firstName.trim()) newErrors.firstName = 'First name is required';
     if (!shippingDetails.lastName.trim()) newErrors.lastName = 'Last name is required';
     if (!shippingDetails.phone.trim()) newErrors.phone = 'Phone number is required';
@@ -48,26 +47,23 @@ const CheckoutSection: React.FC = () => {
     if (!shippingDetails.street.trim()) newErrors.street = 'Street address is required';
     if (!shippingDetails.area.trim()) newErrors.area = 'Area is required';
     if (!shippingDetails.city.trim()) newErrors.city = 'City is required';
-    
+
     // Email validation
     if (shippingDetails.email && !/\S+@\S+\.\S+/.test(shippingDetails.email)) {
       newErrors.email = 'Please enter a valid email address';
     }
-    
+
     // Phone validation (Kenya format)
     if (shippingDetails.phone && !/^(\+254|0)[17]\d{8}$/.test(shippingDetails.phone)) {
       newErrors.phone = 'Please enter a valid Kenyan phone number';
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
-  return (
-    <div className="min-h-screen bg-barrush-midnight py-12">
+  return <div className="min-h-screen bg-barrush-midnight py-12">
       <div className="container mx-auto px-6 max-w-6xl">
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-barrush-gold mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-barrush-gold mb-4 text-zinc-50">
             Checkout
           </h1>
           <p className="text-xl text-white">
@@ -122,125 +118,55 @@ const CheckoutSection: React.FC = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="firstName" className="text-white">First Name *</Label>
-                    <Input
-                      id="firstName"
-                      value={shippingDetails.firstName}
-                      onChange={(e) => handleInputChange('firstName', e.target.value)}
-                      placeholder="Enter first name"
-                      className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400"
-                    />
-                    {errors.firstName && (
-                      <p className="text-red-400 text-sm">{errors.firstName}</p>
-                    )}
+                    <Input id="firstName" value={shippingDetails.firstName} onChange={e => handleInputChange('firstName', e.target.value)} placeholder="Enter first name" className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400" />
+                    {errors.firstName && <p className="text-red-400 text-sm">{errors.firstName}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="lastName" className="text-white">Last Name *</Label>
-                    <Input
-                      id="lastName"
-                      value={shippingDetails.lastName}
-                      onChange={(e) => handleInputChange('lastName', e.target.value)}
-                      placeholder="Enter last name"
-                      className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400"
-                    />
-                    {errors.lastName && (
-                      <p className="text-red-400 text-sm">{errors.lastName}</p>
-                    )}
+                    <Input id="lastName" value={shippingDetails.lastName} onChange={e => handleInputChange('lastName', e.target.value)} placeholder="Enter last name" className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400" />
+                    {errors.lastName && <p className="text-red-400 text-sm">{errors.lastName}</p>}
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="phone" className="text-white">Phone Number *</Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    value={shippingDetails.phone}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
-                    placeholder="0712345678 or +254712345678"
-                    className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400"
-                  />
-                  {errors.phone && (
-                    <p className="text-red-400 text-sm">{errors.phone}</p>
-                  )}
+                  <Input id="phone" type="tel" value={shippingDetails.phone} onChange={e => handleInputChange('phone', e.target.value)} placeholder="0712345678 or +254712345678" className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400" />
+                  {errors.phone && <p className="text-red-400 text-sm">{errors.phone}</p>}
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-white">Email Address *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={shippingDetails.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    placeholder="your@email.com"
-                    className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400"
-                  />
-                  {errors.email && (
-                    <p className="text-red-400 text-sm">{errors.email}</p>
-                  )}
+                  <Input id="email" type="email" value={shippingDetails.email} onChange={e => handleInputChange('email', e.target.value)} placeholder="your@email.com" className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400" />
+                  {errors.email && <p className="text-red-400 text-sm">{errors.email}</p>}
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="street" className="text-white">Street Address *</Label>
-                  <Input
-                    id="street"
-                    value={shippingDetails.street}
-                    onChange={(e) => handleInputChange('street', e.target.value)}
-                    placeholder="Street name and number"
-                    className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400"
-                  />
-                  {errors.street && (
-                    <p className="text-red-400 text-sm">{errors.street}</p>
-                  )}
+                  <Input id="street" value={shippingDetails.street} onChange={e => handleInputChange('street', e.target.value)} placeholder="Street name and number" className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400" />
+                  {errors.street && <p className="text-red-400 text-sm">{errors.street}</p>}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="building" className="text-white">Building/Apartment</Label>
-                    <Input
-                      id="building"
-                      value={shippingDetails.building}
-                      onChange={(e) => handleInputChange('building', e.target.value)}
-                      placeholder="Building name/number"
-                      className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400"
-                    />
+                    <Input id="building" value={shippingDetails.building} onChange={e => handleInputChange('building', e.target.value)} placeholder="Building name/number" className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="area" className="text-white">Area/Estate *</Label>
-                    <Input
-                      id="area"
-                      value={shippingDetails.area}
-                      onChange={(e) => handleInputChange('area', e.target.value)}
-                      placeholder="Area or estate name"
-                      className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400"
-                    />
-                    {errors.area && (
-                      <p className="text-red-400 text-sm">{errors.area}</p>
-                    )}
+                    <Input id="area" value={shippingDetails.area} onChange={e => handleInputChange('area', e.target.value)} placeholder="Area or estate name" className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400" />
+                    {errors.area && <p className="text-red-400 text-sm">{errors.area}</p>}
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="city" className="text-white">City *</Label>
-                  <Input
-                    id="city"
-                    value={shippingDetails.city}
-                    onChange={(e) => handleInputChange('city', e.target.value)}
-                    placeholder="Nairobi, Mombasa, etc."
-                    className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400"
-                  />
-                  {errors.city && (
-                    <p className="text-red-400 text-sm">{errors.city}</p>
-                  )}
+                  <Input id="city" value={shippingDetails.city} onChange={e => handleInputChange('city', e.target.value)} placeholder="Nairobi, Mombasa, etc." className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400" />
+                  {errors.city && <p className="text-red-400 text-sm">{errors.city}</p>}
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="instructions" className="text-white">Special Delivery Instructions</Label>
-                  <Textarea
-                    id="instructions"
-                    value={shippingDetails.instructions}
-                    onChange={(e) => handleInputChange('instructions', e.target.value)}
-                    placeholder="Gate code, directions, or special requests (optional)"
-                    className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400 min-h-[80px]"
-                  />
+                  <Textarea id="instructions" value={shippingDetails.instructions} onChange={e => handleInputChange('instructions', e.target.value)} placeholder="Gate code, directions, or special requests (optional)" className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400 min-h-[80px]" />
                 </div>
               </CardContent>
             </Card>
@@ -268,8 +194,6 @@ const CheckoutSection: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default CheckoutSection;
