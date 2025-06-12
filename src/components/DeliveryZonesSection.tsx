@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -37,7 +38,7 @@ const DeliveryZonesSection: React.FC = () => {
                 <h3 className="text-2xl font-bold text-barrush-gold mb-2 text-zinc-50">
                   {zone.name}
                 </h3>
-                <div className="textinwhite">
+                <div className="text-white text-xl font-semibold mb-4">
                   {zone.fee}
                 </div>
                 <p className="text-barrush-cream/80 mb-4 text-zinc-100">
