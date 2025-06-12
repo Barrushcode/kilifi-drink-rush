@@ -37,7 +37,7 @@ const DeliveryZonesSection: React.FC = () => {
                 <h3 className="text-2xl font-bold text-barrush-gold mb-2 text-zinc-50">
                   {zone.name}
                 </h3>
-                <div className="text-3xl font-bold text-barrush-white mb-4 bg-barrush-midnight">
+                <div className="textinwhite">
                   {zone.fee}
                 </div>
                 <p className="text-barrush-cream/80 mb-4 text-zinc-100">
