@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { ImageScrapingService } from '@/utils/ImageScrapingService';
 
 interface Product {
   id: number;
@@ -51,28 +52,24 @@ export const useProducts = () => {
 
       console.log('Successfully fetched data:', data);
 
-      // Transform the data to match our Product interface
-      const transformedProducts: Product[] = (data || []).map((product, index) => ({
-        id: index + 1,
-        name: product.Title || 'Unknown Product',
-        price: product.Price ? `KES ${Number(product.Price).toLocaleString()}` : 'Price on request',
-        description: product.Description || 'No description available',
-        category: getCategoryFromName(product.Title),
-        image: `https://images.unsplash.com/photo-${[
-          '1569529465841-dfecdab7503b',
-          '1551538827-9c037cb4f32a', 
-          '1582553352566-7b4cdcc2379c',
-          '1612528443702-f6741f70a049',
-          '1558642891-54be180ea339',
-          '1549796014-6aa0e2eaaa43',
-          '1574445459035-ad3c5fdb2a5e',
-          '1569529463704-d9fb8f4b6c8b',
-          '1582563353566-7b4cdcc2379c',
-          '1612528443702-f6741f70a049'
-        ][index % 10]}?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80`
-      }));
+      // Transform the data and fetch appropriate images
+      const transformedProducts: Product[] = await Promise.all(
+        (data || []).map(async (product, index) => {
+          // Fetch appropriate image for the product
+          const productImage = await ImageScrapingService.searchProductImage(product.Title || '');
+          
+          return {
+            id: index + 1,
+            name: product.Title || 'Unknown Product',
+            price: product.Price ? `KES ${Number(product.Price).toLocaleString()}` : 'Price on request',
+            description: product.Description || 'No description available',
+            category: getCategoryFromName(product.Title),
+            image: productImage
+          };
+        })
+      );
 
-      console.log('Transformed products:', transformedProducts);
+      console.log('Transformed products with images:', transformedProducts);
       setProducts(transformedProducts);
     } catch (error) {
       console.error('Error fetching products:', error);
