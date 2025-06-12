@@ -30,7 +30,7 @@ const HeroSection: React.FC = () => {
             Premium spirits and curated cocktails delivered with urban sophistication across Kilifi County.
           </p>
           
-          <Button onClick={scrollToProducts} size="lg" className="text-barrush-midnight font-bold px-16 py-6 text-xl transition-all duration-300 hover:scale-105 shadow-2xl bg-[(#800020] bg-[#800080]">Let's Order</Button>
+          <Button onClick={scrollToProducts} size="lg" className="font-bold px-16 py-6 text-xl transition-all duration-300 hover:scale-105 shadow-2xl bg-[(#800020] bg-[#800080] text-zinc-50">Let's Order</Button>
         </div>
       </div>
       
