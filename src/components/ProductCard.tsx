@@ -19,11 +19,16 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  const handleAddToCart = () => {
+    console.log(`Adding ${product.name} to cart`);
+    // Cart functionality to be implemented
+  };
+
   return (
     <Card className="bg-glass-effect border-barrush-steel/30 border hover:border-barrush-copper/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden">
       <ProductImageLoader
         src={product.image}
-        alt={product.name}
+        alt={`${product.name} - Premium ${product.category}`}
         className="h-64"
       />
       <CardContent className="p-8">
@@ -42,7 +47,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <span className="text-3xl font-bold text-barrush-platinum">
             {product.price}
           </span>
-          <Button className="text-barrush-midnight font-bold px-6 py-3 transition-all duration-300 hover:scale-105 bg-rose-600 hover:bg-rose-500">
+          <Button 
+            onClick={handleAddToCart}
+            className="text-barrush-midnight font-bold px-6 py-3 transition-all duration-300 hover:scale-105 bg-rose-600 hover:bg-rose-500"
+          >
             Add to Cart
           </Button>
         </div>

@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { ImageScrapingService } from '@/utils/ImageScrapingService';
+import { AIProductImageService } from '@/utils/AIProductImageService';
 
 interface Product {
   id: number;
@@ -52,24 +51,30 @@ export const useProducts = () => {
 
       console.log('Successfully fetched data:', data);
 
-      // Transform the data and fetch appropriate images
+      // Transform the data and generate AI images
       const transformedProducts: Product[] = await Promise.all(
         (data || []).map(async (product, index) => {
-          // Fetch appropriate image for the product
-          const productImage = await ImageScrapingService.searchProductImage(product.Title || '');
+          const category = getCategoryFromName(product.Title);
+          
+          // Generate AI image for the product
+          const productImage = await AIProductImageService.generateProductImage(
+            product.Title || 'Unknown Product',
+            category,
+            product.Description || ''
+          );
           
           return {
             id: index + 1,
             name: product.Title || 'Unknown Product',
             price: product.Price ? `KES ${Number(product.Price).toLocaleString()}` : 'Price on request',
             description: product.Description || 'No description available',
-            category: getCategoryFromName(product.Title),
+            category,
             image: productImage
           };
         })
       );
 
-      console.log('Transformed products with images:', transformedProducts);
+      console.log('Transformed products with AI-generated images:', transformedProducts);
       setProducts(transformedProducts);
     } catch (error) {
       console.error('Error fetching products:', error);
