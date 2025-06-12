@@ -37,57 +37,40 @@ export const useProducts = () => {
       setLoading(true);
       setError(null);
       
-      console.log('Starting to fetch products from allthealcoholicproducts table...');
+      console.log('Fetching products from allthealcoholicproducts table...');
       
-      const { data, error, count } = await supabase
+      const { data, error } = await supabase
         .from('allthealcoholicproducts')
-        .select('Title, Description, Price', { count: 'exact' });
-
-      console.log('Supabase response - data:', data);
-      console.log('Supabase response - error:', error);
-      console.log('Supabase response - count:', count);
+        .select('Title, Description, Price')
+        .limit(50); // Limit to 50 products for better performance
 
       if (error) {
         console.error('Supabase error:', error);
         throw error;
       }
 
-      if (!data || data.length === 0) {
-        console.log('No data returned from query, but count shows:', count);
-        console.log('This might be an RLS policy issue or data access problem');
-        
-        // Try a simpler query to test access
-        const { data: testData, error: testError } = await supabase
-          .from('allthealcoholicproducts')
-          .select('*')
-          .limit(5);
-        
-        console.log('Test query with limit 5 - data:', testData);
-        console.log('Test query with limit 5 - error:', testError);
-      }
-
-      console.log('Raw data from Supabase:', data);
-      console.log('Number of products fetched:', data?.length || 0);
+      console.log('Successfully fetched data:', data);
 
       // Transform the data to match our Product interface
-      const transformedProducts: Product[] = (data || []).map((product, index) => {
-        console.log(`Transforming product ${index + 1}:`, product);
-        return {
-          id: index + 1, // Generate ID since the table doesn't have one
-          name: product.Title || 'Unknown Product',
-          price: product.Price ? `KES ${product.Price.toLocaleString()}` : 'KES 0',
-          description: product.Description || '',
-          category: getCategoryFromName(product.Title),
-          image: `https://images.unsplash.com/photo-${[
-            '1569529465841-dfecdab7503b',
-            '1551538827-9c037cb4f32a', 
-            '1582553352566-7b4cdcc2379c',
-            '1612528443702-f6741f70a049',
-            '1558642891-54be180ea339',
-            '1549796014-6aa0e2eaaa43'
-          ][index % 6]}?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80`
-        };
-      });
+      const transformedProducts: Product[] = (data || []).map((product, index) => ({
+        id: index + 1,
+        name: product.Title || 'Unknown Product',
+        price: product.Price ? `KES ${Number(product.Price).toLocaleString()}` : 'Price on request',
+        description: product.Description || 'No description available',
+        category: getCategoryFromName(product.Title),
+        image: `https://images.unsplash.com/photo-${[
+          '1569529465841-dfecdab7503b',
+          '1551538827-9c037cb4f32a', 
+          '1582553352566-7b4cdcc2379c',
+          '1612528443702-f6741f70a049',
+          '1558642891-54be180ea339',
+          '1549796014-6aa0e2eaaa43',
+          '1574445459035-ad3c5fdb2a5e',
+          '1569529463704-d9fb8f4b6c8b',
+          '1582563353566-7b4cdcc2379c',
+          '1612528443702-f6741f70a049'
+        ][index % 10]}?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80`
+      }));
 
       console.log('Transformed products:', transformedProducts);
       setProducts(transformedProducts);
