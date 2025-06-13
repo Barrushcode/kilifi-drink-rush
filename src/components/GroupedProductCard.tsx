@@ -18,39 +18,58 @@ interface GroupedProductCardProps {
 const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(product.variants[0]);
   const navigate = useNavigate();
-  const { addItem, getTotalItems } = useCart();
+  const { addItem } = useCart();
   const { toast } = useToast();
 
+  console.log('🔍 Rendering product:', product.baseName, 'with variants:', product.variants);
+
   const handleAddToCart = () => {
-    const cartItem = {
-      id: `${product.baseName}-${selectedVariant.size}`,
-      name: product.baseName,
-      price: selectedVariant.price,
-      priceFormatted: selectedVariant.priceFormatted,
-      size: selectedVariant.size,
-      image: product.image,
-      category: product.category
-    };
+    try {
+      const cartItem = {
+        id: `${product.baseName}-${selectedVariant.size}`,
+        name: product.baseName,
+        price: selectedVariant.price,
+        priceFormatted: selectedVariant.priceFormatted,
+        size: selectedVariant.size,
+        image: product.image,
+        category: product.category
+      };
 
-    addItem(cartItem);
-    
-    toast({
-      title: "Added to Cart",
-      description: `${product.baseName} (${selectedVariant.size}) added to cart`,
-      duration: 2000,
-    });
+      console.log('➕ Adding to cart:', cartItem);
+      addItem(cartItem);
+      
+      toast({
+        title: "Added to Cart",
+        description: `${product.baseName} (${selectedVariant.size}) added to cart`,
+        duration: 2000,
+      });
 
-    console.log(`Added to cart: ${product.baseName} (${selectedVariant.size}) - ${selectedVariant.priceFormatted}`);
+      console.log(`✅ Successfully added to cart: ${product.baseName} (${selectedVariant.size})`);
+    } catch (error) {
+      console.error('❌ Error adding to cart:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add item to cart",
+        variant: "destructive",
+        duration: 2000,
+      });
+    }
   };
 
   const handleBuyNow = () => {
-    handleAddToCart();
-    // Navigate to checkout after adding to cart
-    navigate('/cart');
+    try {
+      console.log('🛒 Buy now clicked for:', product.baseName);
+      handleAddToCart();
+      // Navigate to checkout after adding to cart
+      navigate('/cart');
+    } catch (error) {
+      console.error('❌ Error with buy now:', error);
+    }
   };
 
   const handleVariantChange = (variantIndex: string) => {
     const variant = product.variants[parseInt(variantIndex)];
+    console.log('🔄 Variant changed to:', variant);
     setSelectedVariant(variant);
   };
 
@@ -136,18 +155,19 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
             )}
           </div>
           
-          <div className="flex gap-2">
+          {/* Buttons - Making sure they're always visible */}
+          <div className="flex gap-2 mt-2">
             <Button 
               onClick={handleAddToCart}
               variant="outline"
-              className="flex-1 bg-transparent border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white font-bold px-3 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone"
+              className="flex-1 bg-transparent border-2 border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white font-bold px-3 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px]"
             >
               <Plus className="h-3 w-3 mr-1" />
               Add
             </Button>
             <Button 
               onClick={handleBuyNow}
-              className="flex-1 text-white font-bold px-3 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 bg-pink-500 hover:bg-pink-600 h-10 font-iphone"
+              className="flex-1 text-white font-bold px-3 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 bg-pink-500 hover:bg-pink-600 h-10 font-iphone min-h-[40px]"
             >
               <ShoppingCart className="h-3 w-3 mr-1" />
               Buy

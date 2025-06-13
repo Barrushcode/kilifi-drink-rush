@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getCategoryFromName } from '@/utils/categoryUtils';
@@ -52,7 +53,6 @@ export const useProducts = () => {
         allProducts.push(...data);
         console.log(`📦 Fetched batch ${Math.floor(offset / batchSize) + 1}: ${data.length} products (total so far: ${allProducts.length})`);
         
-        // If we got less than batchSize, we've reached the end
         if (data.length < batchSize) {
           hasMore = false;
         } else {
@@ -71,7 +71,7 @@ export const useProducts = () => {
       setLoading(true);
       setError(null);
       
-      console.log('🚀 Fetching ALL products and grouping by size variants...');
+      console.log('🚀 Starting to fetch products...');
       
       // Fetch all products using pagination and scraped images in parallel
       const [allProductsData, imagesResponse] = await Promise.all([
@@ -86,8 +86,8 @@ export const useProducts = () => {
         throw imagesResponse.error;
       }
 
-      console.log(`🎉 Successfully fetched ALL ${allProductsData.length} products from your complete inventory`);
-      console.log(`🖼️ Successfully fetched ${imagesResponse.data?.length} images with quality filtering enabled`);
+      console.log(`✅ Successfully fetched ${allProductsData.length} products`);
+      console.log(`🖼️ Successfully fetched ${imagesResponse.data?.length} images`);
 
       const scrapedImages = imagesResponse.data || [];
 
@@ -96,10 +96,6 @@ export const useProducts = () => {
         const productPrice = Number(product.Price) || 0;
         const category = getCategoryFromName(product.Title || 'Unknown Product', productPrice);
         const { url: productImage, matchLevel } = findMatchingImage(product.Title || 'Unknown Product', scrapedImages);
-        
-        if (index < 10) { // Log first 10 for debugging
-          console.log(`📊 Product: "${product.Title}" | Price: ${productPrice} | Category: ${category} | Image Quality: ${matchLevel}`);
-        }
         
         return {
           id: index + 1,
@@ -111,10 +107,14 @@ export const useProducts = () => {
         };
       });
 
+      console.log('🔄 Grouping products by base name...');
+      
       // Group products by base name and size variants
       const groupedProducts = groupProductsByBaseName(transformedProducts);
 
-      console.log(`✨ Successfully grouped ${transformedProducts.length} individual products into ${groupedProducts.length} product families with size variants`);
+      console.log(`✨ Successfully grouped ${transformedProducts.length} individual products into ${groupedProducts.length} product families`);
+      console.log('🎯 Sample grouped products:', groupedProducts.slice(0, 3));
+      
       setProducts(groupedProducts);
     } catch (error) {
       console.error('💥 Error fetching products:', error);

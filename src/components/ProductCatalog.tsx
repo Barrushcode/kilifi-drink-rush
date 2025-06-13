@@ -15,7 +15,7 @@ const ProductCatalog: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('Wine');
   const [currentPage, setCurrentPage] = useState(1);
   const [showAuditReport, setShowAuditReport] = useState(false);
-  const itemsPerPage = 12; // Increased from 6 to 12 for better density
+  const itemsPerPage = 12;
   
   const { products, loading, error, refetch } = useProducts();
   const { categories, filteredProducts } = useProductFilters(products, searchTerm, selectedCategory);
@@ -26,6 +26,19 @@ const ProductCatalog: React.FC = () => {
   });
 
   const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
+
+  // Debug logging
+  useEffect(() => {
+    console.log('🔍 ProductCatalog state:', {
+      productsCount: products.length,
+      filteredCount: filteredProducts.length,
+      paginatedCount: paginatedProducts.length,
+      loading,
+      error,
+      selectedCategory,
+      searchTerm
+    });
+  }, [products, filteredProducts, paginatedProducts, loading, error, selectedCategory, searchTerm]);
 
   // Reset to first page when filters change
   useEffect(() => {
@@ -62,6 +75,7 @@ const ProductCatalog: React.FC = () => {
   }
 
   if (error) {
+    console.error('❌ ProductCatalog error:', error);
     return (
       <section id="products" className="py-12 lg:py-24 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative overflow-hidden">
         <div className="container mx-auto px-4 lg:px-6 relative z-10 max-w-screen-2xl">
@@ -78,6 +92,8 @@ const ProductCatalog: React.FC = () => {
       </section>
     );
   }
+
+  console.log('🎯 Rendering ProductCatalog with', paginatedProducts.length, 'products');
 
   return (
     <section id="products" className="py-12 lg:py-24 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative overflow-hidden">
@@ -118,11 +134,23 @@ const ProductCatalog: React.FC = () => {
           )}
         </div>
         
-        {/* Products Grid - Increased density and improved responsive layout */}
+        {/* Debug Information */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="mb-8 text-center">
+            <div className="bg-gray-800 p-4 rounded-lg inline-block text-white text-sm">
+              Products: {products.length} | Filtered: {filteredProducts.length} | Page: {paginatedProducts.length}
+            </div>
+          </div>
+        )}
+        
+        {/* Products Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 md:gap-4 lg:gap-6 max-w-full mx-auto">
-          {paginatedProducts.map(product => (
-            <GroupedProductCard key={product.id} product={product} />
-          ))}
+          {paginatedProducts.map(product => {
+            console.log('🔧 Rendering product card for:', product.baseName);
+            return (
+              <GroupedProductCard key={product.id} product={product} />
+            );
+          })}
         </div>
         
         {filteredProducts.length === 0 && !loading && (
@@ -130,6 +158,15 @@ const ProductCatalog: React.FC = () => {
             <p className="text-barrush-platinum/70 text-base lg:text-lg font-iphone">
               No products found matching your search criteria.
             </p>
+            <Button 
+              onClick={() => {
+                setSearchTerm('');
+                setSelectedCategory('All');
+              }}
+              className="mt-4 bg-rose-600 hover:bg-rose-500 font-iphone"
+            >
+              Clear Filters
+            </Button>
           </div>
         )}
 
@@ -207,8 +244,8 @@ const ProductCatalog: React.FC = () => {
         <div className="text-center mt-12 lg:mt-16">
           <div className="bg-glass-effect border border-barrush-steel/30 rounded-xl p-6 lg:p-8 max-w-2xl mx-auto backdrop-blur-md">
             <p className="text-barrush-platinum/90 text-base lg:text-lg font-iphone">
-              <strong className="text-barrush-copper">Relaxed Image Matching:</strong> Now using more images with quality-based selection 
-              and reduced brand restrictions for better product representation.
+              <strong className="text-barrush-copper">Enhanced Product Display:</strong> Now showing products with improved cart integration, 
+              better button visibility, and comprehensive error handling.
             </p>
             {filteredProducts.length > 0 && (
               <p className="text-barrush-platinum/70 text-sm mt-2 font-iphone">
