@@ -16,8 +16,8 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(product.variants[0]);
   const navigate = useNavigate();
 
-  const handleAddToCart = () => {
-    console.log(`Adding ${product.baseName} (${selectedVariant.size}) to cart - ${selectedVariant.priceFormatted}`);
+  const handleBuy = () => {
+    console.log(`Buying ${product.baseName} (${selectedVariant.size}) - ${selectedVariant.priceFormatted}`);
     // Navigate to checkout page
     navigate('/cart');
   };
@@ -109,10 +109,10 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
             )}
           </div>
           <Button 
-            onClick={handleAddToCart}
+            onClick={handleBuy}
             className="text-white font-bold px-3 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 bg-rose-600 hover:bg-rose-500 h-10 w-full font-iphone"
           >
-            Add to Cart
+            Buy
           </Button>
         </div>
       </CardContent>
