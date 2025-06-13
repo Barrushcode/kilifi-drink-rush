@@ -6,11 +6,15 @@ import { cn } from "@/lib/utils";
 import { ShoppingCart, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useCart } from '@/contexts/CartContext';
+import { Badge } from '@/components/ui/badge';
 import MobileMenu from './MobileMenu';
 
 const Navigation = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isMobile = useIsMobile();
+  const { getTotalItems } = useCart();
+  const totalItems = getTotalItems();
 
   return (
     <>
@@ -59,9 +63,14 @@ const Navigation = () => {
 
                   <NavigationMenuItem>
                     <NavigationMenuLink asChild>
-                      <Link to="/cart" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-barrush-platinum hover:text-rose-600 hover:bg-barrush-steel/20 flex items-center gap-2 font-iphone")}>
+                      <Link to="/cart" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-barrush-platinum hover:text-rose-600 hover:bg-barrush-steel/20 flex items-center gap-2 font-iphone relative")}>
                         <ShoppingCart className="h-4 w-4" />
                         Cart
+                        {totalItems > 0 && (
+                          <Badge className="bg-pink-500 text-white text-xs px-1.5 py-0.5 min-w-[20px] h-5 flex items-center justify-center rounded-full absolute -top-2 -right-2">
+                            {totalItems}
+                          </Badge>
+                        )}
                       </Link>
                     </NavigationMenuLink>
                   </NavigationMenuItem>
@@ -71,14 +80,30 @@ const Navigation = () => {
 
             {/* Mobile Menu Button */}
             {isMobile && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setMobileMenuOpen(true)}
-                className="text-barrush-platinum hover:bg-barrush-steel/20 h-touch w-touch"
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
+              <div className="flex items-center gap-3">
+                <Link to="/cart" className="relative">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-barrush-platinum hover:bg-barrush-steel/20 h-touch w-touch"
+                  >
+                    <ShoppingCart className="h-5 w-5" />
+                    {totalItems > 0 && (
+                      <Badge className="bg-pink-500 text-white text-xs px-1.5 py-0.5 min-w-[20px] h-5 flex items-center justify-center rounded-full absolute -top-2 -right-2">
+                        {totalItems}
+                      </Badge>
+                    )}
+                  </Button>
+                </Link>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setMobileMenuOpen(true)}
+                  className="text-barrush-platinum hover:bg-barrush-steel/20 h-touch w-touch"
+                >
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </div>
             )}
           </div>
         </div>

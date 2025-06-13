@@ -5,8 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
+import { ShoppingCart, Plus } from 'lucide-react';
 import OptimizedImage from './OptimizedImage';
 import { GroupedProduct, ProductVariant } from '@/utils/productGroupingUtils';
+import { useCart } from '@/contexts/CartContext';
+import { useToast } from '@/hooks/use-toast';
 
 interface GroupedProductCardProps {
   product: GroupedProduct;
@@ -15,10 +18,34 @@ interface GroupedProductCardProps {
 const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(product.variants[0]);
   const navigate = useNavigate();
+  const { addItem, getTotalItems } = useCart();
+  const { toast } = useToast();
 
-  const handleBuy = () => {
-    console.log(`Buying ${product.baseName} (${selectedVariant.size}) - ${selectedVariant.priceFormatted}`);
-    // Navigate to checkout page
+  const handleAddToCart = () => {
+    const cartItem = {
+      id: `${product.baseName}-${selectedVariant.size}`,
+      name: product.baseName,
+      price: selectedVariant.price,
+      priceFormatted: selectedVariant.priceFormatted,
+      size: selectedVariant.size,
+      image: product.image,
+      category: product.category
+    };
+
+    addItem(cartItem);
+    
+    toast({
+      title: "Added to Cart",
+      description: `${product.baseName} (${selectedVariant.size}) added to cart`,
+      duration: 2000,
+    });
+
+    console.log(`Added to cart: ${product.baseName} (${selectedVariant.size}) - ${selectedVariant.priceFormatted}`);
+  };
+
+  const handleBuyNow = () => {
+    handleAddToCart();
+    // Navigate to checkout after adding to cart
     navigate('/cart');
   };
 
@@ -28,8 +55,8 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
   };
 
   return (
-    <Card className="bg-white hover:scale-105 transition-all duration-300 group overflow-hidden h-full shadow-md hover:shadow-lg">
-      <div className="relative h-32 md:h-40 lg:h-48 bg-gray-50">
+    <Card className="bg-gray-900 border-gray-700 hover:scale-105 transition-all duration-300 group overflow-hidden h-full shadow-lg hover:shadow-xl hover:border-pink-500/50">
+      <div className="relative h-32 md:h-40 lg:h-48 bg-gray-800">
         <OptimizedImage
           src={product.image}
           alt={`${product.baseName} - ${product.category}`}
@@ -39,50 +66,50 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
       </div>
       
       <CardContent className="p-3 md:p-4 lg:p-6 flex flex-col h-full">
-        <h3 className="text-sm md:text-base lg:text-xl font-bold mb-2 font-iphone text-gray-900 line-clamp-2">
+        <h3 className="text-sm md:text-base lg:text-xl font-bold mb-2 font-iphone text-white line-clamp-2">
           {product.baseName}
         </h3>
         
         <div className="flex flex-wrap items-center gap-1 md:gap-2 mb-3">
-          <Badge className="bg-gray-100 text-gray-700 px-2 py-1 text-xs font-iphone border border-gray-200">
+          <Badge className="bg-gray-700 text-gray-200 px-2 py-1 text-xs font-iphone border border-gray-600">
             {product.category}
           </Badge>
           {product.variants.length > 1 && (
-            <Badge variant="outline" className="text-gray-600 border-gray-300 text-xs font-iphone">
+            <Badge variant="outline" className="text-gray-300 border-gray-600 text-xs font-iphone">
               {product.variants.length} sizes
             </Badge>
           )}
         </div>
 
         {product.description && (
-          <p className="text-gray-600 mb-3 text-xs md:text-sm line-clamp-2 font-iphone">
+          <p className="text-gray-300 mb-3 text-xs md:text-sm line-clamp-2 font-iphone">
             {product.description}
           </p>
         )}
 
-        {/* Size Selector - Compact for mobile */}
+        {/* Size Selector */}
         {product.variants.length > 1 ? (
           <div className="mb-3">
-            <label className="block text-xs font-medium text-gray-700 mb-1 font-iphone">
+            <label className="block text-xs font-medium text-gray-300 mb-1 font-iphone">
               Size & Price:
             </label>
             <Select 
               value={product.variants.indexOf(selectedVariant).toString()} 
               onValueChange={handleVariantChange}
             >
-              <SelectTrigger className="bg-white border-gray-300 text-gray-900 h-10 font-iphone text-xs">
+              <SelectTrigger className="bg-gray-800 border-gray-600 text-white h-10 font-iphone text-xs">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-white border-gray-300 z-50">
+              <SelectContent className="bg-gray-800 border-gray-600 z-50">
                 {product.variants.map((variant, index) => (
                   <SelectItem 
                     key={index} 
                     value={index.toString()}
-                    className="text-gray-900 hover:bg-gray-100 font-iphone"
+                    className="text-white hover:bg-gray-700 font-iphone"
                   >
                     <div className="flex justify-between items-center w-full">
                       <span className="text-xs">{variant.size}</span>
-                      <span className="ml-2 font-bold text-rose-600 text-xs">
+                      <span className="ml-2 font-bold text-pink-400 text-xs">
                         {variant.priceFormatted}
                       </span>
                     </div>
@@ -93,27 +120,39 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
           </div>
         ) : (
           <div className="mb-3">
-            <span className="text-xs text-gray-600 font-iphone">Size: {selectedVariant.size}</span>
+            <span className="text-xs text-gray-300 font-iphone">Size: {selectedVariant.size}</span>
           </div>
         )}
 
         <div className="flex flex-col gap-2 mt-auto">
           <div className="flex flex-col">
-            <span className="text-base md:text-lg lg:text-xl font-bold text-gray-900 font-iphone">
+            <span className="text-base md:text-lg lg:text-xl font-bold text-white font-iphone">
               {selectedVariant.priceFormatted}
             </span>
             {product.variants.length > 1 && selectedVariant !== product.variants[0] && (
-              <span className="text-xs text-gray-500 font-iphone">
+              <span className="text-xs text-gray-400 font-iphone">
                 from {product.lowestPriceFormatted}
               </span>
             )}
           </div>
-          <Button 
-            onClick={handleBuy}
-            className="text-white font-bold px-3 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 bg-pink-500 hover:bg-pink-600 h-10 w-full font-iphone"
-          >
-            Buy
-          </Button>
+          
+          <div className="flex gap-2">
+            <Button 
+              onClick={handleAddToCart}
+              variant="outline"
+              className="flex-1 bg-transparent border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white font-bold px-3 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone"
+            >
+              <Plus className="h-3 w-3 mr-1" />
+              Add
+            </Button>
+            <Button 
+              onClick={handleBuyNow}
+              className="flex-1 text-white font-bold px-3 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 bg-pink-500 hover:bg-pink-600 h-10 font-iphone"
+            >
+              <ShoppingCart className="h-3 w-3 mr-1" />
+              Buy
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

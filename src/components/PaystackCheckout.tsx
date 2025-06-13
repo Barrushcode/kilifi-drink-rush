@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CreditCard } from 'lucide-react';
+import { CartItem } from '@/contexts/CartContext';
 
 // Declare Paystack global type
 declare global {
@@ -33,11 +34,15 @@ interface PaystackConfig {
 interface PaystackCheckoutProps {
   amount: number;
   onValidationRequired?: () => boolean;
+  shippingDetails?: any;
+  cartItems?: CartItem[];
 }
 
 const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
   amount,
-  onValidationRequired
+  onValidationRequired,
+  shippingDetails,
+  cartItems = []
 }) => {
   const [email, setEmail] = useState('');
   const [processing, setProcessing] = useState(false);
@@ -53,7 +58,8 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
       return;
     }
 
-    if (!email) {
+    const emailToUse = email || shippingDetails?.email;
+    if (!emailToUse) {
       setError('Please enter your email address');
       return;
     }
@@ -68,7 +74,7 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
 
     const handler = window.PaystackPop.setup({
       key: 'pk_live_4f87a6d250476cc70ba40b40e9262c78fd37e06b',
-      email: email,
+      email: emailToUse,
       amount: amount * 100, // Convert to kobo (smallest currency unit)
       currency: 'KES',
       ref: '' + Math.floor(Math.random() * 1000000000 + 1),
@@ -77,6 +83,14 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
         setProcessing(false);
         setSucceeded(true);
         console.log('Payment complete! Reference: ' + response.reference);
+        
+        // Log order details for future email integration
+        console.log('Order Details:', {
+          reference: response.reference,
+          amount: amount,
+          items: cartItems,
+          shipping: shippingDetails
+        });
       },
       onClose: function () {
         setProcessing(false);
@@ -93,8 +107,22 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
         <CardContent className="p-8 text-center">
           <div className="text-6xl mb-4">🎉</div>
           <h3 className="text-2xl font-bold text-barrush-gold mb-4">Payment Successful!</h3>
-          <p className="text-white">
-            Your payment of KES {amount} has been processed successfully via Paystack.
+          <p className="text-white mb-4">
+            Your payment of KES {amount.toLocaleString()} has been processed successfully via Paystack.
+          </p>
+          <div className="bg-barrush-burgundy/20 p-4 rounded-lg mt-4">
+            <h4 className="text-white font-semibold mb-2">Order Summary:</h4>
+            <div className="text-left space-y-1 text-sm text-gray-300 max-h-32 overflow-y-auto">
+              {cartItems.map((item, index) => (
+                <div key={index} className="flex justify-between">
+                  <span>{item.name} ({item.size}) x{item.quantity}</span>
+                  <span>{item.priceFormatted}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <p className="text-sm text-gray-300 mt-4">
+            A confirmation email will be sent to your registered email address.
           </p>
         </CardContent>
       </Card>
@@ -108,18 +136,20 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-white">Email Address</Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              required
-              className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400"
-            />
-          </div>
+          {!shippingDetails?.email && (
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-white">Email Address</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                required
+                className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400"
+              />
+            </div>
+          )}
           
           {error && (
             <div className="text-red-400 text-sm bg-red-900/20 p-3 rounded">
@@ -129,7 +159,7 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
           
           <div className="flex justify-between items-center text-white mb-4">
             <span className="text-lg">Total Amount:</span>
-            <span className="text-xl font-bold text-barrush-gold">KES {amount}</span>
+            <span className="text-xl font-bold text-barrush-gold">KES {amount.toLocaleString()}</span>
           </div>
 
           {/* Payment Methods Section */}
@@ -157,10 +187,10 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
 
           <Button
             type="submit"
-            disabled={processing || !email}
+            disabled={processing || (!email && !shippingDetails?.email)}
             className="w-full bg-barrush-gold hover:bg-barrush-gold/90 text-barrush-charcoal font-semibold py-6 text-lg"
           >
-            {processing ? 'Processing Payment...' : `Pay KES ${amount} via Paystack`}
+            {processing ? 'Processing Payment...' : `Pay KES ${amount.toLocaleString()} via Paystack`}
           </Button>
           
           <p className="text-sm text-white/60 text-center">

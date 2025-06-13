@@ -5,9 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Trash2, Plus, Minus } from 'lucide-react';
+import { useCart } from '@/contexts/CartContext';
 import PaystackCheckout from './PaystackCheckout';
 
 const CheckoutSection: React.FC = () => {
+  const { items, updateQuantity, removeItem, getTotalAmount, getTotalItems } = useCart();
   const [shippingDetails, setShippingDetails] = useState({
     firstName: '',
     lastName: '',
@@ -21,7 +24,9 @@ const CheckoutSection: React.FC = () => {
   });
 
   const [errors, setErrors] = useState<{[key: string]: string}>({});
-  const totalAmount = 2500; // Example amount in KES
+  const deliveryFee = 300;
+  const subtotal = getTotalAmount();
+  const totalAmount = subtotal + deliveryFee;
 
   const handleInputChange = (field: string, value: string) => {
     setShippingDetails(prev => ({
@@ -29,7 +34,6 @@ const CheckoutSection: React.FC = () => {
       [field]: value
     }));
 
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({
         ...prev,
@@ -49,12 +53,10 @@ const CheckoutSection: React.FC = () => {
     if (!shippingDetails.area.trim()) newErrors.area = 'Area is required';
     if (!shippingDetails.city.trim()) newErrors.city = 'City is required';
 
-    // Email validation
     if (shippingDetails.email && !/\S+@\S+\.\S+/.test(shippingDetails.email)) {
       newErrors.email = 'Please enter a valid email address';
     }
 
-    // Phone validation (Kenya format)
     if (shippingDetails.phone && !/^(\+254|0)[17]\d{8}$/.test(shippingDetails.phone)) {
       newErrors.phone = 'Please enter a valid Kenyan phone number';
     }
@@ -63,9 +65,26 @@ const CheckoutSection: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  if (items.length === 0) {
+    return (
+      <div className="min-h-screen bg-barrush-midnight py-12 px-4 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-barrush-gold mb-4">Your Cart is Empty</h1>
+          <p className="text-white mb-6">Add some products to your cart to continue</p>
+          <Button 
+            onClick={() => window.location.href = '/products'}
+            className="bg-pink-500 hover:bg-pink-600 text-white"
+          >
+            Browse Products
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-barrush-midnight py-12 overflow-x-hidden">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl">
+      <div className="container mx-auto px-4 max-w-7xl">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-barrush-gold mb-4 text-zinc-50">
             Checkout
@@ -75,44 +94,93 @@ const CheckoutSection: React.FC = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 max-w-none">
           {/* Order Summary */}
-          <Card className="bg-barrush-charcoal/80 border-barrush-gold border w-full">
-            <CardHeader>
-              <CardTitle className="text-barrush-gold text-zinc-50">Order Summary</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex justify-between text-white">
-                <span>Subtotal:</span>
-                <span>KES 2,200</span>
-              </div>
-              <div className="flex justify-between text-white">
-                <span>Express Delivery (15 minutes):</span>
-                <span>KES 300</span>
-              </div>
-              <div className="border-t border-barrush-burgundy pt-4">
-                <div className="flex justify-between text-xl font-bold text-white">
-                  <span>Total:</span>
-                  <span className="text-barrush-gold">KES {totalAmount}</span>
+          <div className="w-full max-w-full">
+            <Card className="bg-barrush-charcoal/80 border-barrush-gold border w-full">
+              <CardHeader>
+                <CardTitle className="text-barrush-gold text-zinc-50">Order Summary</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Cart Items */}
+                <div className="space-y-3 max-h-96 overflow-y-auto">
+                  {items.map((item) => (
+                    <div key={item.id} className="flex items-center space-x-3 p-3 bg-barrush-burgundy/20 rounded-lg">
+                      <img 
+                        src={item.image} 
+                        alt={item.name}
+                        className="w-16 h-16 object-cover rounded"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-white font-semibold text-sm truncate">{item.name}</h4>
+                        <p className="text-gray-300 text-xs">{item.size}</p>
+                        <p className="text-barrush-gold font-bold text-sm">{item.priceFormatted}</p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          className="h-8 w-8 p-0 border-gray-600"
+                        >
+                          <Minus className="h-3 w-3" />
+                        </Button>
+                        <span className="text-white w-8 text-center">{item.quantity}</span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          className="h-8 w-8 p-0 border-gray-600"
+                        >
+                          <Plus className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => removeItem(item.id)}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              </div>
-              
-              <div className="mt-6 pt-6 border-t border-barrush-burgundy">
-                <h4 className="font-semibold text-barrush-gold mb-3 text-zinc-50">Payment Options</h4>
-                <p className="text-sm text-white mb-4">
-                  Choose your preferred payment method:
-                </p>
-                <div className="space-y-2 text-white">
-                  <p>• M-PESA Till Number: <strong className="text-barrush-gold">5950470</strong></p>
-                  <p>• Card Payment via Paystack</p>
-                  <p>• Mobile Money & Apple Pay (Paystack)</p>
+
+                <div className="border-t border-barrush-burgundy pt-4 space-y-2">
+                  <div className="flex justify-between text-white">
+                    <span>Subtotal ({getTotalItems()} items):</span>
+                    <span>KES {subtotal.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between text-white">
+                    <span>Express Delivery (15 minutes):</span>
+                    <span>KES {deliveryFee}</span>
+                  </div>
+                  <div className="border-t border-barrush-burgundy pt-2">
+                    <div className="flex justify-between text-xl font-bold text-white">
+                      <span>Total:</span>
+                      <span className="text-barrush-gold">KES {totalAmount.toLocaleString()}</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+                
+                <div className="mt-6 pt-6 border-t border-barrush-burgundy">
+                  <h4 className="font-semibold text-barrush-gold mb-3 text-zinc-50">Payment Options</h4>
+                  <p className="text-sm text-white mb-4">
+                    Choose your preferred payment method:
+                  </p>
+                  <div className="space-y-2 text-white">
+                    <p>• M-PESA Till Number: <strong className="text-barrush-gold">5950470</strong></p>
+                    <p>• Card Payment via Paystack</p>
+                    <p>• Mobile Money & Apple Pay (Paystack)</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
           {/* Right Column - Forms and Payment */}
-          <div className="space-y-6 w-full">
+          <div className="space-y-6 w-full max-w-full">
             {/* Shipping Information */}
             <Card className="bg-barrush-charcoal/80 border-barrush-gold border w-full">
               <CardHeader>
@@ -232,10 +300,12 @@ const CheckoutSection: React.FC = () => {
             </Card>
 
             {/* Payment Component with Validation */}
-            <div className="w-full">
+            <div className="w-full max-w-full">
               <PaystackCheckout 
                 amount={totalAmount} 
                 onValidationRequired={validateForm}
+                shippingDetails={shippingDetails}
+                cartItems={items}
               />
             </div>
 
@@ -251,7 +321,7 @@ const CheckoutSection: React.FC = () => {
                     <strong className="text-barrush-gold text-xl">Till Number: 5950470</strong>
                   </p>
                   <p className="text-center text-sm text-white/80 mt-2">
-                    Send KES {totalAmount} and contact us with your transaction ID
+                    Send KES {totalAmount.toLocaleString()} and contact us with your transaction ID
                   </p>
                 </div>
               </CardContent>
