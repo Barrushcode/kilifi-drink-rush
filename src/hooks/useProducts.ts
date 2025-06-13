@@ -26,19 +26,93 @@ export const useProducts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Helper function to determine category from product name
-  const getCategoryFromName = (name: string): string => {
+  // Enhanced category detection with mini-category support
+  const getCategoryFromName = (name: string, price: number): string => {
     if (!name) return 'Other';
     const lowerName = name.toLowerCase();
-    if (lowerName.includes('whiskey') || lowerName.includes('whisky')) return 'Whiskey';
-    if (lowerName.includes('vodka')) return 'Vodka';
-    if (lowerName.includes('gin')) return 'Gin';
-    if (lowerName.includes('cognac') || lowerName.includes('brandy')) return 'Cognac';
-    if (lowerName.includes('beer') || lowerName.includes('lager')) return 'Beer';
-    if (lowerName.includes('champagne') || lowerName.includes('prosecco')) return 'Champagne';
-    if (lowerName.includes('wine')) return 'Wine';
-    if (lowerName.includes('rum')) return 'Rum';
-    if (lowerName.includes('tequila')) return 'Tequila';
+    
+    // Check for pack/set indicators first
+    const isMultiPack = lowerName.includes('pack') || lowerName.includes('set') || 
+                       lowerName.includes('bundle') || lowerName.includes('case') ||
+                       /\d+\s*(x|×)\s*\d+/i.test(lowerName); // patterns like "6x330ml"
+    
+    // Beer categories
+    if (lowerName.includes('beer') || lowerName.includes('lager') || lowerName.includes('ale')) {
+      if (isMultiPack || lowerName.includes('6') || price > 2000) {
+        return '6-Packs & Beer Sets';
+      }
+      return 'Beer';
+    }
+    
+    // Wine categories
+    if (lowerName.includes('wine') || lowerName.includes('merlot') || lowerName.includes('cabernet') || 
+        lowerName.includes('chardonnay') || lowerName.includes('sauvignon')) {
+      if (isMultiPack || lowerName.includes('set') || price > 3000) {
+        return 'Wine Sets & Collections';
+      }
+      return 'Wine';
+    }
+    
+    // Whiskey/Whisky categories
+    if (lowerName.includes('whiskey') || lowerName.includes('whisky') || lowerName.includes('bourbon') || 
+        lowerName.includes('scotch')) {
+      if (isMultiPack || lowerName.includes('set') || price > 5000) {
+        return 'Whiskey Collections';
+      }
+      return 'Whiskey';
+    }
+    
+    // Vodka categories
+    if (lowerName.includes('vodka')) {
+      if (isMultiPack || price > 4000) {
+        return 'Vodka Premium Sets';
+      }
+      return 'Vodka';
+    }
+    
+    // Champagne/Sparkling
+    if (lowerName.includes('champagne') || lowerName.includes('prosecco') || lowerName.includes('sparkling')) {
+      if (isMultiPack || price > 4000) {
+        return 'Champagne & Sparkling Sets';
+      }
+      return 'Champagne';
+    }
+    
+    // Gin categories
+    if (lowerName.includes('gin')) {
+      if (isMultiPack || price > 3500) {
+        return 'Gin Premium Collections';
+      }
+      return 'Gin';
+    }
+    
+    // Cognac/Brandy
+    if (lowerName.includes('cognac') || lowerName.includes('brandy') || lowerName.includes('hennessy') || 
+        lowerName.includes('remy martin')) {
+      return 'Cognac & Premium Brandy';
+    }
+    
+    // Rum categories
+    if (lowerName.includes('rum')) {
+      if (isMultiPack || price > 3000) {
+        return 'Rum Collections';
+      }
+      return 'Rum';
+    }
+    
+    // Tequila categories
+    if (lowerName.includes('tequila')) {
+      if (isMultiPack || price > 3000) {
+        return 'Tequila Premium Sets';
+      }
+      return 'Tequila';
+    }
+    
+    // Default premium category for expensive items
+    if (price > 5000) {
+      return 'Premium Collection';
+    }
+    
     return 'Spirits';
   };
 
@@ -56,9 +130,9 @@ export const useProducts = () => {
     }
 
     // Try to find partial matches based on product type
-    const category = getCategoryFromName(productName);
+    const category = getCategoryFromName(productName, 0);
     const categoryMatch = scrapedImages.find(img => 
-      img['Product Name'] && getCategoryFromName(img['Product Name']) === category
+      img['Product Name'] && getCategoryFromName(img['Product Name'], 0) === category
     );
 
     if (categoryMatch) {
@@ -74,14 +148,16 @@ export const useProducts = () => {
       setLoading(true);
       setError(null);
       
-      console.log('Fetching products and images...');
+      console.log('Fetching premium products (over 1000 KES) and images...');
       
-      // Fetch products and scraped images in parallel
+      // Fetch products over 1000 KES and scraped images in parallel
       const [productsResponse, imagesResponse] = await Promise.all([
         supabase
           .from('allthealcoholicproducts')
           .select('Title, Description, Price')
-          .limit(50),
+          .gt('Price', 1000) // Filter for products over 1000 KES
+          .order('Price', { ascending: false }) // Order by price descending
+          .limit(100), // Increased limit for more premium products
         supabase
           .from('scraped product images')
           .select('id, "Product Name", "Image URL 1", "Image URL 2", "Image URL 3", "Image URL 4", "Image URL 5"')
@@ -97,31 +173,34 @@ export const useProducts = () => {
         throw imagesResponse.error;
       }
 
-      console.log('Successfully fetched products:', productsResponse.data);
+      console.log(`Successfully fetched ${productsResponse.data?.length} premium products:`, productsResponse.data);
       console.log('Successfully fetched images:', imagesResponse.data);
 
       const scrapedImages = imagesResponse.data || [];
 
       // Transform the products data and match with images
       const transformedProducts: Product[] = (productsResponse.data || []).map((product, index) => {
-        const category = getCategoryFromName(product.Title);
+        const productPrice = Number(product.Price) || 0;
+        const category = getCategoryFromName(product.Title || 'Unknown Product', productPrice);
         const productImage = findMatchingImage(product.Title || 'Unknown Product', scrapedImages);
+        
+        console.log(`Product: ${product.Title}, Price: ${productPrice}, Category: ${category}`);
         
         return {
           id: index + 1,
           name: product.Title || 'Unknown Product',
-          price: product.Price ? `KES ${Number(product.Price).toLocaleString()}` : 'Price on request',
-          description: product.Description || 'No description available',
+          price: `KES ${productPrice.toLocaleString()}`,
+          description: product.Description || 'Premium selection for the discerning connoisseur',
           category,
           image: productImage
         };
       });
 
-      console.log('Transformed products with matched images:', transformedProducts);
+      console.log('Transformed premium products with enhanced categories:', transformedProducts);
       setProducts(transformedProducts);
     } catch (error) {
-      console.error('Error fetching products:', error);
-      setError('Failed to load products. Please try again.');
+      console.error('Error fetching premium products:', error);
+      setError('Failed to load premium products. Please try again.');
     } finally {
       setLoading(false);
     }
