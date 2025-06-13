@@ -1,8 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getCategoryFromName } from '@/utils/categoryUtils';
 import { findMatchingImage } from '@/services/imageMatchingService';
+import { groupProductsByBaseName, GroupedProduct } from '@/utils/productGroupingUtils';
 
 interface Product {
   id: number;
@@ -29,7 +29,7 @@ interface ScrapedImage {
 }
 
 export const useProducts = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<GroupedProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -71,7 +71,7 @@ export const useProducts = () => {
       setLoading(true);
       setError(null);
       
-      console.log('🚀 Fetching ALL products from your complete inventory...');
+      console.log('🚀 Fetching ALL products and grouping by size variants...');
       
       // Fetch all products using pagination and scraped images in parallel
       const [allProductsData, imagesResponse] = await Promise.all([
@@ -111,8 +111,11 @@ export const useProducts = () => {
         };
       });
 
-      console.log(`✨ Successfully processed ALL ${transformedProducts.length} products with enhanced clean image matching`);
-      setProducts(transformedProducts);
+      // Group products by base name and size variants
+      const groupedProducts = groupProductsByBaseName(transformedProducts);
+
+      console.log(`✨ Successfully grouped ${transformedProducts.length} individual products into ${groupedProducts.length} product families with size variants`);
+      setProducts(groupedProducts);
     } catch (error) {
       console.error('💥 Error fetching products:', error);
       setError('Failed to load products. Please try again.');

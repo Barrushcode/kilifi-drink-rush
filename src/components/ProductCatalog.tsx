@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import ProductCard from './ProductCard';
+import GroupedProductCard from './GroupedProductCard';
 import ProductFilters from './ProductFilters';
 import ProductLoadingSkeleton from './ProductLoadingSkeleton';
 import { useProducts } from '@/hooks/useProducts';
@@ -40,7 +40,7 @@ const ProductCatalog: React.FC = () => {
             </h2>
             <div className="w-16 h-px bg-barrush-copper mx-auto mb-8"></div>
             <p className="text-xl text-barrush-platinum/90 max-w-3xl mx-auto mb-12 leading-relaxed">
-              Loading our curated selection...
+              Loading our curated selection with size variants...
             </p>
           </div>
           <ProductLoadingSkeleton />
@@ -76,7 +76,7 @@ const ProductCatalog: React.FC = () => {
           </h2>
           <div className="w-16 h-px bg-barrush-copper mx-auto mb-8"></div>
           <p className="text-xl text-barrush-platinum/90 max-w-3xl mx-auto mb-12 leading-relaxed">
-            Curated selection of the world's finest spirits and beverages
+            Curated selection with multiple size options for every product
           </p>
           
           <ProductFilters 
@@ -91,7 +91,7 @@ const ProductCatalog: React.FC = () => {
         {/* Products Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-7xl mx-auto">
           {paginatedProducts.map(product => (
-            <ProductCard key={product.id} product={product} />
+            <GroupedProductCard key={product.id} product={product} />
           ))}
         </div>
         
@@ -179,12 +179,12 @@ const ProductCatalog: React.FC = () => {
         <div className="text-center mt-16">
           <div className="bg-glass-effect border border-barrush-steel/30 rounded-xl p-8 max-w-2xl mx-auto backdrop-blur-md">
             <p className="text-barrush-platinum/90 text-lg">
-              <strong className="text-barrush-copper">Growing Collection:</strong> Our catalog expands weekly with 
-              quality selections sourced for the modern connoisseur.
+              <strong className="text-barrush-copper">Smart Grouping:</strong> Products are now grouped by brand and type, 
+              with multiple size options available for each product.
             </p>
             {filteredProducts.length > 0 && (
               <p className="text-barrush-platinum/70 text-sm mt-2">
-                Showing {startIndex + 1}-{Math.min(endIndex, filteredProducts.length)} of {filteredProducts.length} products
+                Showing {startIndex + 1}-{Math.min(endIndex, filteredProducts.length)} of {filteredProducts.length} product families
               </p>
             )}
           </div>
