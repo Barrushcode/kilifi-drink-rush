@@ -18,11 +18,13 @@ const ProductImageLoader: React.FC<ProductImageLoaderProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [imageSrc, setImageSrc] = useState(src);
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     setImageSrc(src);
     setLoading(true);
     setError(false);
+    setRetryCount(0);
   }, [src]);
 
   const handleImageLoad = () => {
@@ -31,11 +33,16 @@ const ProductImageLoader: React.FC<ProductImageLoaderProps> = ({
   };
 
   const handleImageError = () => {
+    console.log(`Image failed to load: ${imageSrc}, retry count: ${retryCount}`);
     setLoading(false);
     setError(true);
-    if (imageSrc !== fallbackSrc) {
+    
+    // Try fallback if original image fails and we haven't tried it yet
+    if (imageSrc !== fallbackSrc && retryCount < 1) {
       setImageSrc(fallbackSrc);
       setLoading(true);
+      setError(false);
+      setRetryCount(prev => prev + 1);
     }
   };
 
@@ -52,8 +59,14 @@ const ProductImageLoader: React.FC<ProductImageLoaderProps> = ({
         }`}
         onLoad={handleImageLoad}
         onError={handleImageError}
+        loading="lazy"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-barrush-midnight/60 to-transparent group-hover:from-barrush-midnight/40 transition-all duration-300"></div>
+      {error && !loading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-barrush-steel/20">
+          <span className="text-barrush-platinum/60 text-sm">Image unavailable</span>
+        </div>
+      )}
     </div>
   );
 };

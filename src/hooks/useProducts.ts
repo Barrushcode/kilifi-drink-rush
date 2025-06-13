@@ -1,6 +1,6 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { AIProductImageService } from '@/utils/AIProductImageService';
 
 interface Product {
   id: number;
@@ -9,6 +9,16 @@ interface Product {
   description: string;
   image: string;
   category: string;
+}
+
+interface ScrapedImage {
+  id: number;
+  'Product Name': string | null;
+  'Image URL 1': string;
+  'Image URL 2': string | null;
+  'Image URL 3': string | null;
+  'Image URL 4': string | null;
+  'Image URL 5': string | null;
 }
 
 export const useProducts = () => {
@@ -32,49 +42,82 @@ export const useProducts = () => {
     return 'Spirits';
   };
 
+  // Helper function to find best matching image for a product
+  const findMatchingImage = (productName: string, scrapedImages: ScrapedImage[]): string => {
+    const lowerProductName = productName.toLowerCase();
+    
+    // First, try to find exact or close matches
+    const exactMatch = scrapedImages.find(img => 
+      img['Product Name'] && img['Product Name'].toLowerCase().includes(lowerProductName)
+    );
+    
+    if (exactMatch) {
+      return exactMatch['Image URL 1'];
+    }
+
+    // Try to find partial matches based on product type
+    const category = getCategoryFromName(productName);
+    const categoryMatch = scrapedImages.find(img => 
+      img['Product Name'] && getCategoryFromName(img['Product Name']) === category
+    );
+
+    if (categoryMatch) {
+      return categoryMatch['Image URL 1'];
+    }
+
+    // Return first available image as fallback
+    return scrapedImages[0]?.['Image URL 1'] || "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80";
+  };
+
   const fetchProducts = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      console.log('Fetching products from allthealcoholicproducts table...');
+      console.log('Fetching products and images...');
       
-      const { data, error } = await supabase
-        .from('allthealcoholicproducts')
-        .select('Title, Description, Price')
-        .limit(50); // Limit to 50 products for better performance
+      // Fetch products and scraped images in parallel
+      const [productsResponse, imagesResponse] = await Promise.all([
+        supabase
+          .from('allthealcoholicproducts')
+          .select('Title, Description, Price')
+          .limit(50),
+        supabase
+          .from('scraped product images')
+          .select('id, "Product Name", "Image URL 1", "Image URL 2", "Image URL 3", "Image URL 4", "Image URL 5"')
+      ]);
 
-      if (error) {
-        console.error('Supabase error:', error);
-        throw error;
+      if (productsResponse.error) {
+        console.error('Products fetch error:', productsResponse.error);
+        throw productsResponse.error;
       }
 
-      console.log('Successfully fetched data:', data);
+      if (imagesResponse.error) {
+        console.error('Images fetch error:', imagesResponse.error);
+        throw imagesResponse.error;
+      }
 
-      // Transform the data and generate AI images
-      const transformedProducts: Product[] = await Promise.all(
-        (data || []).map(async (product, index) => {
-          const category = getCategoryFromName(product.Title);
-          
-          // Generate AI image for the product
-          const productImage = await AIProductImageService.generateProductImage(
-            product.Title || 'Unknown Product',
-            category,
-            product.Description || ''
-          );
-          
-          return {
-            id: index + 1,
-            name: product.Title || 'Unknown Product',
-            price: product.Price ? `KES ${Number(product.Price).toLocaleString()}` : 'Price on request',
-            description: product.Description || 'No description available',
-            category,
-            image: productImage
-          };
-        })
-      );
+      console.log('Successfully fetched products:', productsResponse.data);
+      console.log('Successfully fetched images:', imagesResponse.data);
 
-      console.log('Transformed products with AI-generated images:', transformedProducts);
+      const scrapedImages = imagesResponse.data || [];
+
+      // Transform the products data and match with images
+      const transformedProducts: Product[] = (productsResponse.data || []).map((product, index) => {
+        const category = getCategoryFromName(product.Title);
+        const productImage = findMatchingImage(product.Title || 'Unknown Product', scrapedImages);
+        
+        return {
+          id: index + 1,
+          name: product.Title || 'Unknown Product',
+          price: product.Price ? `KES ${Number(product.Price).toLocaleString()}` : 'Price on request',
+          description: product.Description || 'No description available',
+          category,
+          image: productImage
+        };
+      });
+
+      console.log('Transformed products with matched images:', transformedProducts);
       setProducts(transformedProducts);
     } catch (error) {
       console.error('Error fetching products:', error);

@@ -150,6 +150,51 @@ export type Database = {
         }
         Relationships: []
       }
+      "scraped product images": {
+        Row: {
+          id: number
+          "Image URL 1": string
+          "Image URL 10": string | null
+          "Image URL 2": string | null
+          "Image URL 3": string | null
+          "Image URL 4": string | null
+          "Image URL 5": string | null
+          "Image URL 6": string | null
+          "Image URL 7": string | null
+          "Image URL 8": string | null
+          "Image URL 9": string | null
+          "Product Name": string | null
+        }
+        Insert: {
+          id?: number
+          "Image URL 1": string
+          "Image URL 10"?: string | null
+          "Image URL 2"?: string | null
+          "Image URL 3"?: string | null
+          "Image URL 4"?: string | null
+          "Image URL 5"?: string | null
+          "Image URL 6"?: string | null
+          "Image URL 7"?: string | null
+          "Image URL 8"?: string | null
+          "Image URL 9"?: string | null
+          "Product Name"?: string | null
+        }
+        Update: {
+          id?: number
+          "Image URL 1"?: string
+          "Image URL 10"?: string | null
+          "Image URL 2"?: string | null
+          "Image URL 3"?: string | null
+          "Image URL 4"?: string | null
+          "Image URL 5"?: string | null
+          "Image URL 6"?: string | null
+          "Image URL 7"?: string | null
+          "Image URL 8"?: string | null
+          "Image URL 9"?: string | null
+          "Product Name"?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
