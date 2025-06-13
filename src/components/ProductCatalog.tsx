@@ -36,7 +36,7 @@ const ProductCatalog: React.FC = () => {
         <div className="container mx-auto px-6 relative z-10">
           <div className="text-center mb-20">
             <h2 className="text-5xl md:text-6xl font-bold mb-6 font-serif text-rose-600">
-              Premium Collection
+              Our Collection
             </h2>
             <div className="w-16 h-px bg-barrush-copper mx-auto mb-8"></div>
             <p className="text-xl text-barrush-platinum/90 max-w-3xl mx-auto mb-12 leading-relaxed">
@@ -55,7 +55,7 @@ const ProductCatalog: React.FC = () => {
         <div className="container mx-auto px-6 relative z-10">
           <div className="text-center">
             <h2 className="text-5xl md:text-6xl font-bold mb-6 font-serif text-rose-600">
-              Premium Collection
+              Our Collection
             </h2>
             <p className="text-xl text-red-400 mb-4">{error}</p>
             <Button onClick={refetch} className="bg-rose-600 hover:bg-rose-500">
@@ -72,11 +72,11 @@ const ProductCatalog: React.FC = () => {
       <div className="container mx-auto px-6 relative z-10">
         <div className="text-center mb-20">
           <h2 className="text-5xl md:text-6xl font-bold mb-6 font-serif text-rose-600">
-            Premium Collection
+            Our Collection
           </h2>
           <div className="w-16 h-px bg-barrush-copper mx-auto mb-8"></div>
           <p className="text-xl text-barrush-platinum/90 max-w-3xl mx-auto mb-12 leading-relaxed">
-            Curated selection of the world's finest spirits and premium beverages
+            Curated selection of the world's finest spirits and beverages
           </p>
           
           <ProductFilters 
@@ -180,7 +180,7 @@ const ProductCatalog: React.FC = () => {
           <div className="bg-glass-effect border border-barrush-steel/30 rounded-xl p-8 max-w-2xl mx-auto backdrop-blur-md">
             <p className="text-barrush-platinum/90 text-lg">
               <strong className="text-barrush-copper">Growing Collection:</strong> Our catalog expands weekly with 
-              premium selections sourced for the modern connoisseur.
+              quality selections sourced for the modern connoisseur.
             </p>
             {filteredProducts.length > 0 && (
               <p className="text-barrush-platinum/70 text-sm mt-2">

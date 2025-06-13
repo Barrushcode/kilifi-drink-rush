@@ -33,8 +33,8 @@ export const useProducts = () => {
     
     // Check for pack/set indicators first
     const isMultiPack = lowerName.includes('pack') || lowerName.includes('set') || 
-                       lowerName.includes('bundle') || lowerName.includes('case') ||
-                       /\d+\s*(x|×)\s*\d+/i.test(lowerName); // patterns like "6x330ml"
+                      lowerName.includes('bundle') || lowerName.includes('case') ||
+                      /\d+\s*(x|×)\s*\d+/i.test(lowerName); // patterns like "6x330ml"
     
     // Beer categories
     if (lowerName.includes('beer') || lowerName.includes('lager') || lowerName.includes('ale')) {
@@ -148,16 +148,15 @@ export const useProducts = () => {
       setLoading(true);
       setError(null);
       
-      console.log('Fetching premium products (over 1000 KES) and images...');
+      console.log('Fetching all products and images...');
       
-      // Fetch products over 1000 KES and scraped images in parallel
+      // Fetch all products and scraped images in parallel
       const [productsResponse, imagesResponse] = await Promise.all([
         supabase
           .from('allthealcoholicproducts')
           .select('Title, Description, Price')
-          .gt('Price', 1000) // Filter for products over 1000 KES
-          .order('Price', { ascending: false }) // Order by price descending
-          .limit(100), // Increased limit for more premium products
+          .order('Price', { ascending: false })
+          .limit(1000), // Show up to 1000 products
         supabase
           .from('scraped product images')
           .select('id, "Product Name", "Image URL 1", "Image URL 2", "Image URL 3", "Image URL 4", "Image URL 5"')
@@ -173,7 +172,7 @@ export const useProducts = () => {
         throw imagesResponse.error;
       }
 
-      console.log(`Successfully fetched ${productsResponse.data?.length} premium products:`, productsResponse.data);
+      console.log(`Successfully fetched ${productsResponse.data?.length} products:`, productsResponse.data);
       console.log('Successfully fetched images:', imagesResponse.data);
 
       const scrapedImages = imagesResponse.data || [];
@@ -190,17 +189,17 @@ export const useProducts = () => {
           id: index + 1,
           name: product.Title || 'Unknown Product',
           price: `KES ${productPrice.toLocaleString()}`,
-          description: product.Description || 'Premium selection for the discerning connoisseur',
+          description: product.Description || 'Quality selection for every taste',
           category,
           image: productImage
         };
       });
 
-      console.log('Transformed premium products with enhanced categories:', transformedProducts);
+      console.log('Transformed products with enhanced categories:', transformedProducts);
       setProducts(transformedProducts);
     } catch (error) {
-      console.error('Error fetching premium products:', error);
-      setError('Failed to load premium products. Please try again.');
+      console.error('Error fetching products:', error);
+      setError('Failed to load products. Please try again.');
     } finally {
       setLoading(false);
     }

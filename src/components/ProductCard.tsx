@@ -28,7 +28,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     <Card className="bg-glass-effect border-barrush-steel/30 border hover:border-barrush-copper/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden">
       <ProductImageLoader
         src={product.image}
-        alt={`${product.name} - Premium ${product.category}`}
+        alt={`${product.name} - ${product.category}`}
         className="h-64"
       />
       <CardContent className="p-8">
