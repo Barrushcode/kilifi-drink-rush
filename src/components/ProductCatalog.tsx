@@ -15,7 +15,7 @@ const ProductCatalog: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('Wine');
   const [currentPage, setCurrentPage] = useState(1);
   const [showAuditReport, setShowAuditReport] = useState(false);
-  const itemsPerPage = 6;
+  const itemsPerPage = 12; // Increased from 6 to 12 for better density
   
   const { products, loading, error, refetch } = useProducts();
   const { categories, filteredProducts } = useProductFilters(products, searchTerm, selectedCategory);
@@ -44,8 +44,8 @@ const ProductCatalog: React.FC = () => {
 
   if (loading) {
     return (
-      <section id="products" className="py-12 lg:py-24 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative">
-        <div className="container mx-auto px-4 lg:px-6 relative z-10">
+      <section id="products" className="py-12 lg:py-24 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative overflow-hidden">
+        <div className="container mx-auto px-4 lg:px-6 relative z-10 max-w-screen-2xl">
           <div className="text-center mb-12 lg:mb-20">
             <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 lg:mb-6 font-serif text-rose-600">
               Our Collection
@@ -63,8 +63,8 @@ const ProductCatalog: React.FC = () => {
 
   if (error) {
     return (
-      <section id="products" className="py-12 lg:py-24 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative">
-        <div className="container mx-auto px-4 lg:px-6 relative z-10">
+      <section id="products" className="py-12 lg:py-24 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative overflow-hidden">
+        <div className="container mx-auto px-4 lg:px-6 relative z-10 max-w-screen-2xl">
           <div className="text-center">
             <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 lg:mb-6 font-serif text-rose-600">
               Our Collection
@@ -80,8 +80,8 @@ const ProductCatalog: React.FC = () => {
   }
 
   return (
-    <section id="products" className="py-12 lg:py-24 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative">
-      <div className="container mx-auto px-4 lg:px-6 relative z-10">
+    <section id="products" className="py-12 lg:py-24 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative overflow-hidden">
+      <div className="container mx-auto px-4 lg:px-6 relative z-10 max-w-screen-2xl">
         <div className="text-center mb-12 lg:mb-20">
           <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 lg:mb-6 font-serif text-rose-600">
             Our Collection
@@ -118,8 +118,8 @@ const ProductCatalog: React.FC = () => {
           )}
         </div>
         
-        {/* Products Grid - Mobile First Responsive */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10 max-w-7xl mx-auto">
+        {/* Products Grid - Increased density and improved responsive layout */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 md:gap-4 lg:gap-6 max-w-full mx-auto">
           {paginatedProducts.map(product => (
             <GroupedProductCard key={product.id} product={product} />
           ))}

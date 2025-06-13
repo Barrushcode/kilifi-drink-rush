@@ -29,24 +29,22 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
         />
       </div>
       
-      {/* Category badges with horizontal scroll on mobile */}
-      <div className="flex gap-3 justify-start lg:justify-center overflow-x-auto pb-2 scrollbar-hide">
-        <div className="flex gap-3 min-w-max lg:min-w-0 lg:flex-wrap lg:justify-center">
-          {categories.map(category => (
-            <Badge 
-              key={category} 
-              variant={selectedCategory === category ? "default" : "outline"} 
-              onClick={() => setSelectedCategory(category)} 
-              className={`cursor-pointer transition-all duration-300 px-4 py-2 text-sm font-medium font-iphone whitespace-nowrap h-touch flex items-center ${
-                selectedCategory === category 
-                  ? 'bg-rose-600 text-white border-rose-600 hover:bg-rose-500 shadow-lg' 
-                  : 'bg-transparent text-white border-white/30 hover:bg-white/10 hover:border-white/60'
-              }`}
-            >
-              {category}
-            </Badge>
-          ))}
-        </div>
+      {/* Category badges - Fixed to wrap instead of horizontal scroll */}
+      <div className="flex flex-wrap gap-3 justify-center">
+        {categories.map(category => (
+          <Badge 
+            key={category} 
+            variant={selectedCategory === category ? "default" : "outline"} 
+            onClick={() => setSelectedCategory(category)} 
+            className={`cursor-pointer transition-all duration-300 px-4 py-2 text-sm font-medium font-iphone h-touch flex items-center ${
+              selectedCategory === category 
+                ? 'bg-rose-600 text-white border-rose-600 hover:bg-rose-500 shadow-lg' 
+                : 'bg-transparent text-white border-white/30 hover:bg-white/10 hover:border-white/60'
+            }`}
+          >
+            {category}
+          </Badge>
+        ))}
       </div>
     </div>
   );
