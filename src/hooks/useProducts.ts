@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getCategoryFromName } from '@/utils/categoryUtils';
@@ -21,6 +20,11 @@ interface ScrapedImage {
   'Image URL 3': string | null;
   'Image URL 4': string | null;
   'Image URL 5': string | null;
+  'Image URL 6': string | null;
+  'Image URL 7': string | null;
+  'Image URL 8': string | null;
+  'Image URL 9': string | null;
+  'Image URL 10': string | null;
 }
 
 export const useProducts = () => {
@@ -44,7 +48,7 @@ export const useProducts = () => {
           .limit(1000), // Show up to 1000 products
         supabase
           .from('scraped product images')
-          .select('id, "Product Name", "Image URL 1", "Image URL 2", "Image URL 3", "Image URL 4", "Image URL 5"')
+          .select('id, "Product Name", "Image URL 1", "Image URL 2", "Image URL 3", "Image URL 4", "Image URL 5", "Image URL 6", "Image URL 7", "Image URL 8", "Image URL 9", "Image URL 10"')
       ]);
 
       if (productsResponse.error) {
@@ -58,20 +62,17 @@ export const useProducts = () => {
       }
 
       console.log(`📦 Successfully fetched ${productsResponse.data?.length} products`);
-      console.log(`🖼️ Successfully fetched ${imagesResponse.data?.length} images`);
+      console.log(`🖼️ Successfully fetched ${imagesResponse.data?.length} images with quality filtering enabled`);
 
       const scrapedImages = imagesResponse.data || [];
 
-      // Log some example image names for debugging
-      console.log('📋 Sample image names:', scrapedImages.slice(0, 5).map(img => img['Product Name']).filter(Boolean));
-
-      // Transform the products data and match with images
+      // Transform the products data and match with high-quality images
       const transformedProducts: Product[] = (productsResponse.data || []).map((product, index) => {
         const productPrice = Number(product.Price) || 0;
         const category = getCategoryFromName(product.Title || 'Unknown Product', productPrice);
         const { url: productImage, matchLevel } = findMatchingImage(product.Title || 'Unknown Product', scrapedImages);
         
-        console.log(`📊 Product: "${product.Title}" | Price: ${productPrice} | Category: ${category} | Match: ${matchLevel}`);
+        console.log(`📊 Product: "${product.Title}" | Price: ${productPrice} | Category: ${category} | Image Quality: ${matchLevel}`);
         
         return {
           id: index + 1,
@@ -83,7 +84,7 @@ export const useProducts = () => {
         };
       });
 
-      console.log(`✨ Successfully processed ${transformedProducts.length} products with improved image matching`);
+      console.log(`✨ Successfully processed ${transformedProducts.length} products with enhanced clean image matching`);
       setProducts(transformedProducts);
     } catch (error) {
       console.error('💥 Error fetching products:', error);
