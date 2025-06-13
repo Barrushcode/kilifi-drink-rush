@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useNavigate } from 'react-router-dom';
 import OptimizedImage from './OptimizedImage';
 import { GroupedProduct, ProductVariant } from '@/utils/productGroupingUtils';
 
@@ -13,10 +14,12 @@ interface GroupedProductCardProps {
 
 const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(product.variants[0]);
+  const navigate = useNavigate();
 
   const handleAddToCart = () => {
     console.log(`Adding ${product.baseName} (${selectedVariant.size}) to cart - ${selectedVariant.priceFormatted}`);
-    // Cart functionality to be implemented
+    // Navigate to checkout page
+    navigate('/cart');
   };
 
   const handleVariantChange = (variantIndex: string) => {

@@ -1,17 +1,21 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
+
 const HeroSection: React.FC = () => {
-  const scrollToProducts = () => {
-    const element = document.getElementById('products');
-    element?.scrollIntoView({
-      behavior: 'smooth'
-    });
+  const navigate = useNavigate();
+
+  const handleOrderClick = () => {
+    navigate('/products');
   };
-  return <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+
+  return (
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image - Modern urban bar */}
       <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{
-      backgroundImage: `linear-gradient(rgba(15, 20, 25, 0.7), rgba(15, 20, 25, 0.5)), url('https://images.unsplash.com/photo-1566417713940-fe7c737a9ef2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')`
-    }} />
+        backgroundImage: `linear-gradient(rgba(15, 20, 25, 0.7), rgba(15, 20, 25, 0.5)), url('https://images.unsplash.com/photo-1566417713940-fe7c737a9ef2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')`
+      }} />
       
       {/* Modern overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-barrush-midnight/20 via-transparent to-barrush-midnight/60 text-8xl font-bold text-[#f426df]" />
@@ -30,7 +34,9 @@ const HeroSection: React.FC = () => {
             Premium spirits and curated cocktails delivered with urban sophistication across Kilifi County.
           </p>
           
-          <Button onClick={scrollToProducts} size="lg" className="font-bold px-16 py-6 text-xl transition-all duration-300 hover:scale-105 shadow-2xl bg-[(#800020] bg-[#800080] text-zinc-50">Let's Order</Button>
+          <Button onClick={handleOrderClick} size="lg" className="font-bold px-16 py-6 text-xl transition-all duration-300 hover:scale-105 shadow-2xl bg-[(#800020] bg-[#800080] text-zinc-50">
+            Let's Order
+          </Button>
         </div>
       </div>
       
@@ -38,6 +44,8 @@ const HeroSection: React.FC = () => {
       <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 animate-bounce">
         
       </div>
-    </section>;
+    </section>
+  );
 };
+
 export default HeroSection;
