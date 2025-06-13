@@ -12,7 +12,7 @@ import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, Pagi
 
 const ProductCatalog: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('Wine'); // Set Wine as default
+  const [selectedCategory, setSelectedCategory] = useState('Wine');
   const [currentPage, setCurrentPage] = useState(1);
   const [showAuditReport, setShowAuditReport] = useState(false);
   const itemsPerPage = 6;
@@ -44,14 +44,14 @@ const ProductCatalog: React.FC = () => {
 
   if (loading) {
     return (
-      <section id="products" className="py-24 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative">
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="text-center mb-20">
-            <h2 className="text-5xl md:text-6xl font-bold mb-6 font-serif text-rose-600">
+      <section id="products" className="py-12 lg:py-24 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative">
+        <div className="container mx-auto px-4 lg:px-6 relative z-10">
+          <div className="text-center mb-12 lg:mb-20">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 lg:mb-6 font-serif text-rose-600">
               Our Collection
             </h2>
-            <div className="w-16 h-px bg-barrush-copper mx-auto mb-8"></div>
-            <p className="text-xl text-barrush-platinum/90 max-w-3xl mx-auto mb-12 leading-relaxed">
+            <div className="w-12 lg:w-16 h-px bg-barrush-copper mx-auto mb-6 lg:mb-8"></div>
+            <p className="text-lg lg:text-xl text-barrush-platinum/90 max-w-3xl mx-auto mb-8 lg:mb-12 leading-relaxed font-iphone">
               Loading our curated selection with size variants...
             </p>
           </div>
@@ -63,14 +63,14 @@ const ProductCatalog: React.FC = () => {
 
   if (error) {
     return (
-      <section id="products" className="py-24 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative">
-        <div className="container mx-auto px-6 relative z-10">
+      <section id="products" className="py-12 lg:py-24 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative">
+        <div className="container mx-auto px-4 lg:px-6 relative z-10">
           <div className="text-center">
-            <h2 className="text-5xl md:text-6xl font-bold mb-6 font-serif text-rose-600">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 lg:mb-6 font-serif text-rose-600">
               Our Collection
             </h2>
-            <p className="text-xl text-red-400 mb-4">{error}</p>
-            <Button onClick={refetch} className="bg-rose-600 hover:bg-rose-500">
+            <p className="text-lg lg:text-xl text-red-400 mb-4 font-iphone">{error}</p>
+            <Button onClick={refetch} className="bg-rose-600 hover:bg-rose-500 h-touch px-6 font-iphone">
               Try Again
             </Button>
           </div>
@@ -80,14 +80,14 @@ const ProductCatalog: React.FC = () => {
   }
 
   return (
-    <section id="products" className="py-24 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative">
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="text-center mb-20">
-          <h2 className="text-5xl md:text-6xl font-bold mb-6 font-serif text-rose-600">
+    <section id="products" className="py-12 lg:py-24 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative">
+      <div className="container mx-auto px-4 lg:px-6 relative z-10">
+        <div className="text-center mb-12 lg:mb-20">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 lg:mb-6 font-serif text-rose-600">
             Our Collection
           </h2>
-          <div className="w-16 h-px bg-barrush-copper mx-auto mb-8"></div>
-          <p className="text-xl text-barrush-platinum/90 max-w-3xl mx-auto mb-12 leading-relaxed">
+          <div className="w-12 lg:w-16 h-px bg-barrush-copper mx-auto mb-6 lg:mb-8"></div>
+          <p className="text-lg lg:text-xl text-barrush-platinum/90 max-w-3xl mx-auto mb-8 lg:mb-12 leading-relaxed font-iphone">
             Premium wines and spirits with multiple size options
           </p>
           
@@ -101,33 +101,33 @@ const ProductCatalog: React.FC = () => {
         </div>
 
         {/* Image Audit Report Section */}
-        <div className="mb-12">
-          <div className="flex justify-center mb-6">
+        <div className="mb-8 lg:mb-12">
+          <div className="flex justify-center mb-4 lg:mb-6">
             <Button 
               onClick={() => setShowAuditReport(!showAuditReport)}
               variant="outline"
-              className="border-barrush-copper/50 text-barrush-copper hover:bg-barrush-copper/10"
+              className="border-barrush-copper/50 text-barrush-copper hover:bg-barrush-copper/10 h-touch px-4 lg:px-6 font-iphone"
             >
               {showAuditReport ? 'Hide' : 'Show'} Image Quality Report
             </Button>
           </div>
           {showAuditReport && (
-            <div className="max-w-4xl mx-auto mb-12">
+            <div className="max-w-4xl mx-auto mb-8 lg:mb-12">
               <ImageAuditReport />
             </div>
           )}
         </div>
         
-        {/* Products Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-7xl mx-auto">
+        {/* Products Grid - Mobile First Responsive */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10 max-w-7xl mx-auto">
           {paginatedProducts.map(product => (
             <GroupedProductCard key={product.id} product={product} />
           ))}
         </div>
         
         {filteredProducts.length === 0 && !loading && (
-          <div className="text-center mt-16">
-            <p className="text-barrush-platinum/70 text-lg">
+          <div className="text-center mt-12 lg:mt-16">
+            <p className="text-barrush-platinum/70 text-base lg:text-lg font-iphone">
               No products found matching your search criteria.
             </p>
           </div>
@@ -135,7 +135,7 @@ const ProductCatalog: React.FC = () => {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex justify-center mt-16">
+          <div className="flex justify-center mt-12 lg:mt-16">
             <Pagination>
               <PaginationContent>
                 <PaginationItem>
@@ -145,7 +145,7 @@ const ProductCatalog: React.FC = () => {
                       e.preventDefault();
                       if (hasPreviousPage) setCurrentPage(prev => prev - 1);
                     }}
-                    className={`${!hasPreviousPage ? 'opacity-50 cursor-not-allowed' : 'text-barrush-platinum hover:text-rose-600'} bg-glass-effect border-barrush-steel/40`}
+                    className={`${!hasPreviousPage ? 'opacity-50 cursor-not-allowed' : 'text-barrush-platinum hover:text-rose-600'} bg-glass-effect border-barrush-steel/40 font-iphone h-touch`}
                   />
                 </PaginationItem>
                 
@@ -153,7 +153,6 @@ const ProductCatalog: React.FC = () => {
                   const page = index + 1;
                   const isCurrentPage = page === currentPage;
                   
-                  // Show first page, last page, current page, and pages around current page
                   if (
                     page === 1 || 
                     page === totalPages || 
@@ -171,7 +170,7 @@ const ProductCatalog: React.FC = () => {
                           className={`${isCurrentPage 
                             ? 'bg-rose-600 text-white border-rose-600' 
                             : 'bg-glass-effect border-barrush-steel/40 text-barrush-platinum hover:text-rose-600'
-                          }`}
+                          } font-iphone h-touch min-w-touch`}
                         >
                           {page}
                         </PaginationLink>
@@ -179,7 +178,6 @@ const ProductCatalog: React.FC = () => {
                     );
                   }
                   
-                  // Show ellipsis for gaps
                   if (page === currentPage - 2 || page === currentPage + 2) {
                     return (
                       <PaginationItem key={page}>
@@ -198,7 +196,7 @@ const ProductCatalog: React.FC = () => {
                       e.preventDefault();
                       if (hasNextPage) setCurrentPage(prev => prev + 1);
                     }}
-                    className={`${!hasNextPage ? 'opacity-50 cursor-not-allowed' : 'text-barrush-platinum hover:text-rose-600'} bg-glass-effect border-barrush-steel/40`}
+                    className={`${!hasNextPage ? 'opacity-50 cursor-not-allowed' : 'text-barrush-platinum hover:text-rose-600'} bg-glass-effect border-barrush-steel/40 font-iphone h-touch`}
                   />
                 </PaginationItem>
               </PaginationContent>
@@ -206,14 +204,14 @@ const ProductCatalog: React.FC = () => {
           </div>
         )}
         
-        <div className="text-center mt-16">
-          <div className="bg-glass-effect border border-barrush-steel/30 rounded-xl p-8 max-w-2xl mx-auto backdrop-blur-md">
-            <p className="text-barrush-platinum/90 text-lg">
+        <div className="text-center mt-12 lg:mt-16">
+          <div className="bg-glass-effect border border-barrush-steel/30 rounded-xl p-6 lg:p-8 max-w-2xl mx-auto backdrop-blur-md">
+            <p className="text-barrush-platinum/90 text-base lg:text-lg font-iphone">
               <strong className="text-barrush-copper">Relaxed Image Matching:</strong> Now using more images with quality-based selection 
               and reduced brand restrictions for better product representation.
             </p>
             {filteredProducts.length > 0 && (
-              <p className="text-barrush-platinum/70 text-sm mt-2">
+              <p className="text-barrush-platinum/70 text-sm mt-2 font-iphone">
                 Showing {startIndex + 1}-{Math.min(endIndex, filteredProducts.length)} of {filteredProducts.length} product families
               </p>
             )}
