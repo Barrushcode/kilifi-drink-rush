@@ -27,17 +27,22 @@ const ProductCatalog: React.FC = () => {
 
   const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
 
-  // Debug logging
+  // Enhanced debug logging
   useEffect(() => {
-    console.log('🔍 ProductCatalog state:', {
+    console.log('🔍 ProductCatalog DEBUG:', {
       productsCount: products.length,
       filteredCount: filteredProducts.length,
       paginatedCount: paginatedProducts.length,
       loading,
       error,
       selectedCategory,
-      searchTerm
+      searchTerm,
+      sampleProduct: products[0]
     });
+
+    if (paginatedProducts.length > 0) {
+      console.log('🎯 First 3 products to render:', paginatedProducts.slice(0, 3));
+    }
   }, [products, filteredProducts, paginatedProducts, loading, error, selectedCategory, searchTerm]);
 
   // Reset to first page when filters change
@@ -96,14 +101,29 @@ const ProductCatalog: React.FC = () => {
   console.log('🎯 Rendering ProductCatalog with', paginatedProducts.length, 'products');
 
   return (
-    <section id="products" className="py-12 lg:py-24 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative overflow-hidden">
+    <section 
+      id="products" 
+      className="py-12 lg:py-24 relative overflow-hidden"
+      style={{
+        background: 'linear-gradient(to bottom, #0f1419 0%, #1a1a1a 100%)'
+      }}
+    >
       <div className="container mx-auto px-4 lg:px-6 relative z-10 max-w-screen-2xl">
         <div className="text-center mb-12 lg:mb-20">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 lg:mb-6 font-serif text-rose-600">
+          <h2 
+            className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 lg:mb-6 font-serif"
+            style={{ color: '#e11d48' }}
+          >
             Our Collection
           </h2>
-          <div className="w-12 lg:w-16 h-px bg-barrush-copper mx-auto mb-6 lg:mb-8"></div>
-          <p className="text-lg lg:text-xl text-barrush-platinum/90 max-w-3xl mx-auto mb-8 lg:mb-12 leading-relaxed font-iphone">
+          <div 
+            className="w-12 lg:w-16 h-px mx-auto mb-6 lg:mb-8"
+            style={{ backgroundColor: '#c9a96e' }}
+          />
+          <p 
+            className="text-lg lg:text-xl max-w-3xl mx-auto mb-8 lg:mb-12 leading-relaxed font-iphone"
+            style={{ color: 'rgba(229, 231, 235, 0.9)' }}
+          >
             Premium wines and spirits with multiple size options
           </p>
           
@@ -122,7 +142,12 @@ const ProductCatalog: React.FC = () => {
             <Button 
               onClick={() => setShowAuditReport(!showAuditReport)}
               variant="outline"
-              className="border-barrush-copper/50 text-barrush-copper hover:bg-barrush-copper/10 h-touch px-4 lg:px-6 font-iphone"
+              className="h-touch px-4 lg:px-6 font-iphone"
+              style={{
+                borderColor: 'rgba(201, 169, 110, 0.5)',
+                color: '#c9a96e',
+                backgroundColor: 'transparent'
+              }}
             >
               {showAuditReport ? 'Hide' : 'Show'} Image Quality Report
             </Button>
@@ -134,19 +159,26 @@ const ProductCatalog: React.FC = () => {
           )}
         </div>
         
-        {/* Debug Information */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="mb-8 text-center">
-            <div className="bg-gray-800 p-4 rounded-lg inline-block text-white text-sm">
-              Products: {products.length} | Filtered: {filteredProducts.length} | Page: {paginatedProducts.length}
-            </div>
+        {/* Debug Information - Always visible for troubleshooting */}
+        <div className="mb-8 text-center">
+          <div 
+            className="p-4 rounded-lg inline-block text-sm"
+            style={{ 
+              backgroundColor: '#111827',
+              color: '#ffffff',
+              border: '1px solid #374151'
+            }}
+          >
+            <strong>DEBUG:</strong> Products: {products.length} | Filtered: {filteredProducts.length} | Page: {paginatedProducts.length}
+            <br />
+            Category: {selectedCategory} | Search: "{searchTerm}"
           </div>
-        )}
+        </div>
         
         {/* Products Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 md:gap-4 lg:gap-6 max-w-full mx-auto">
           {paginatedProducts.map(product => {
-            console.log('🔧 Rendering product card for:', product.baseName);
+            console.log('🔧 Rendering product card for:', product.baseName, 'with price:', product.lowestPriceFormatted);
             return (
               <GroupedProductCard key={product.id} product={product} />
             );
@@ -155,7 +187,10 @@ const ProductCatalog: React.FC = () => {
         
         {filteredProducts.length === 0 && !loading && (
           <div className="text-center mt-12 lg:mt-16">
-            <p className="text-barrush-platinum/70 text-base lg:text-lg font-iphone">
+            <p 
+              className="text-base lg:text-lg font-iphone"
+              style={{ color: 'rgba(229, 231, 235, 0.7)' }}
+            >
               No products found matching your search criteria.
             </p>
             <Button 
@@ -163,7 +198,11 @@ const ProductCatalog: React.FC = () => {
                 setSearchTerm('');
                 setSelectedCategory('All');
               }}
-              className="mt-4 bg-rose-600 hover:bg-rose-500 font-iphone"
+              className="mt-4 font-iphone"
+              style={{
+                backgroundColor: '#e11d48',
+                color: '#ffffff'
+              }}
             >
               Clear Filters
             </Button>
@@ -242,13 +281,26 @@ const ProductCatalog: React.FC = () => {
         )}
         
         <div className="text-center mt-12 lg:mt-16">
-          <div className="bg-glass-effect border border-barrush-steel/30 rounded-xl p-6 lg:p-8 max-w-2xl mx-auto backdrop-blur-md">
-            <p className="text-barrush-platinum/90 text-base lg:text-lg font-iphone">
-              <strong className="text-barrush-copper">Enhanced Product Display:</strong> Now showing products with improved cart integration, 
+          <div 
+            className="border rounded-xl p-6 lg:p-8 max-w-2xl mx-auto"
+            style={{
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
+              borderColor: 'rgba(55, 65, 81, 0.3)',
+              backdropFilter: 'blur(4px)'
+            }}
+          >
+            <p 
+              className="text-base lg:text-lg font-iphone"
+              style={{ color: 'rgba(229, 231, 235, 0.9)' }}
+            >
+              <strong style={{ color: '#c9a96e' }}>Enhanced Product Display:</strong> Now showing products with improved cart integration, 
               better button visibility, and comprehensive error handling.
             </p>
             {filteredProducts.length > 0 && (
-              <p className="text-barrush-platinum/70 text-sm mt-2 font-iphone">
+              <p 
+                className="text-sm mt-2 font-iphone"
+                style={{ color: 'rgba(229, 231, 235, 0.7)' }}
+              >
                 Showing {startIndex + 1}-{Math.min(endIndex, filteredProducts.length)} of {filteredProducts.length} product families
               </p>
             )}

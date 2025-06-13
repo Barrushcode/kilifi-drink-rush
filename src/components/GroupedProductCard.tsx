@@ -60,7 +60,6 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
     try {
       console.log('🛒 Buy now clicked for:', product.baseName);
       handleAddToCart();
-      // Navigate to checkout after adding to cart
       navigate('/cart');
     } catch (error) {
       console.error('❌ Error with buy now:', error);
@@ -74,8 +73,15 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
   };
 
   return (
-    <Card className="bg-gray-900 border-gray-700 hover:scale-105 transition-all duration-300 group overflow-hidden h-full shadow-lg hover:shadow-xl hover:border-pink-500/50">
-      <div className="relative h-32 md:h-40 lg:h-48 bg-gray-800">
+    <Card 
+      className="overflow-hidden h-full shadow-lg hover:shadow-xl transition-all duration-300 group hover:scale-105"
+      style={{ 
+        backgroundColor: '#1f2937',
+        borderColor: '#374151',
+        color: '#ffffff'
+      }}
+    >
+      <div className="relative h-32 md:h-40 lg:h-48" style={{ backgroundColor: '#111827' }}>
         <OptimizedImage
           src={product.image}
           alt={`${product.baseName} - ${product.category}`}
@@ -85,23 +91,43 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
       </div>
       
       <CardContent className="p-3 md:p-4 lg:p-6 flex flex-col h-full">
-        <h3 className="text-sm md:text-base lg:text-xl font-bold mb-2 font-iphone text-white line-clamp-2">
+        <h3 
+          className="text-sm md:text-base lg:text-xl font-bold mb-2 font-iphone line-clamp-2"
+          style={{ color: '#ffffff !important' }}
+        >
           {product.baseName}
         </h3>
         
         <div className="flex flex-wrap items-center gap-1 md:gap-2 mb-3">
-          <Badge className="bg-gray-700 text-gray-200 px-2 py-1 text-xs font-iphone border border-gray-600">
+          <Badge 
+            className="px-2 py-1 text-xs font-iphone border"
+            style={{ 
+              backgroundColor: '#374151',
+              color: '#e5e7eb',
+              borderColor: '#4b5563'
+            }}
+          >
             {product.category}
           </Badge>
           {product.variants.length > 1 && (
-            <Badge variant="outline" className="text-gray-300 border-gray-600 text-xs font-iphone">
+            <Badge 
+              variant="outline" 
+              className="text-xs font-iphone"
+              style={{ 
+                color: '#d1d5db',
+                borderColor: '#4b5563'
+              }}
+            >
               {product.variants.length} sizes
             </Badge>
           )}
         </div>
 
         {product.description && (
-          <p className="text-gray-300 mb-3 text-xs md:text-sm line-clamp-2 font-iphone">
+          <p 
+            className="mb-3 text-xs md:text-sm line-clamp-2 font-iphone"
+            style={{ color: '#d1d5db' }}
+          >
             {product.description}
           </p>
         )}
@@ -109,26 +135,48 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         {/* Size Selector */}
         {product.variants.length > 1 ? (
           <div className="mb-3">
-            <label className="block text-xs font-medium text-gray-300 mb-1 font-iphone">
+            <label 
+              className="block text-xs font-medium mb-1 font-iphone"
+              style={{ color: '#d1d5db' }}
+            >
               Size & Price:
             </label>
             <Select 
               value={product.variants.indexOf(selectedVariant).toString()} 
               onValueChange={handleVariantChange}
             >
-              <SelectTrigger className="bg-gray-800 border-gray-600 text-white h-10 font-iphone text-xs">
+              <SelectTrigger 
+                className="h-10 font-iphone text-xs"
+                style={{ 
+                  backgroundColor: '#111827',
+                  borderColor: '#4b5563',
+                  color: '#ffffff'
+                }}
+              >
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-gray-800 border-gray-600 z-50">
+              <SelectContent 
+                className="z-50"
+                style={{ 
+                  backgroundColor: '#111827',
+                  borderColor: '#4b5563'
+                }}
+              >
                 {product.variants.map((variant, index) => (
                   <SelectItem 
                     key={index} 
                     value={index.toString()}
-                    className="text-white hover:bg-gray-700 font-iphone"
+                    className="font-iphone"
+                    style={{ 
+                      color: '#ffffff'
+                    }}
                   >
                     <div className="flex justify-between items-center w-full">
                       <span className="text-xs">{variant.size}</span>
-                      <span className="ml-2 font-bold text-pink-400 text-xs">
+                      <span 
+                        className="ml-2 font-bold text-xs"
+                        style={{ color: '#ec4899' }}
+                      >
                         {variant.priceFormatted}
                       </span>
                     </div>
@@ -139,35 +187,69 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
           </div>
         ) : (
           <div className="mb-3">
-            <span className="text-xs text-gray-300 font-iphone">Size: {selectedVariant.size}</span>
+            <span 
+              className="text-xs font-iphone"
+              style={{ color: '#d1d5db' }}
+            >
+              Size: {selectedVariant.size}
+            </span>
           </div>
         )}
 
         <div className="flex flex-col gap-2 mt-auto">
           <div className="flex flex-col">
-            <span className="text-base md:text-lg lg:text-xl font-bold text-white font-iphone">
+            <span 
+              className="text-base md:text-lg lg:text-xl font-bold font-iphone"
+              style={{ color: '#ffffff !important' }}
+            >
               {selectedVariant.priceFormatted}
             </span>
             {product.variants.length > 1 && selectedVariant !== product.variants[0] && (
-              <span className="text-xs text-gray-400 font-iphone">
+              <span 
+                className="text-xs font-iphone"
+                style={{ color: '#9ca3af' }}
+              >
                 from {product.lowestPriceFormatted}
               </span>
             )}
           </div>
           
-          {/* Buttons - Making sure they're always visible */}
+          {/* Buttons with explicit styling */}
           <div className="flex gap-2 mt-2">
             <Button 
               onClick={handleAddToCart}
-              variant="outline"
-              className="flex-1 bg-transparent border-2 border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white font-bold px-3 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px]"
+              className="flex-1 font-bold px-3 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px]"
+              style={{
+                backgroundColor: 'transparent',
+                border: '2px solid #ec4899',
+                color: '#ec4899',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#ec4899';
+                e.currentTarget.style.color = '#ffffff';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.color = '#ec4899';
+              }}
             >
               <Plus className="h-3 w-3 mr-1" />
               Add
             </Button>
             <Button 
               onClick={handleBuyNow}
-              className="flex-1 text-white font-bold px-3 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 bg-pink-500 hover:bg-pink-600 h-10 font-iphone min-h-[40px]"
+              className="flex-1 font-bold px-3 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px]"
+              style={{
+                backgroundColor: '#ec4899',
+                color: '#ffffff',
+                border: 'none'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#db2777';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#ec4899';
+              }}
             >
               <ShoppingCart className="h-3 w-3 mr-1" />
               Buy
