@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import GroupedProductCard from './GroupedProductCard';
 import ProductFilters from './ProductFilters';
@@ -11,7 +10,7 @@ import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, Pagi
 
 const ProductCatalog: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState('Wine'); // Set Wine as default
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
   
@@ -26,9 +25,19 @@ const ProductCatalog: React.FC = () => {
   const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
 
   // Reset to first page when filters change
-  React.useEffect(() => {
+  useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, selectedCategory]);
+
+  // Set Wine as default if it exists in categories, otherwise fall back to All
+  useEffect(() => {
+    if (categories.length > 0 && selectedCategory === 'Wine') {
+      const hasWine = categories.some(cat => cat.toLowerCase().includes('wine'));
+      if (!hasWine) {
+        setSelectedCategory('All');
+      }
+    }
+  }, [categories, selectedCategory]);
 
   if (loading) {
     return (
@@ -76,7 +85,7 @@ const ProductCatalog: React.FC = () => {
           </h2>
           <div className="w-16 h-px bg-barrush-copper mx-auto mb-8"></div>
           <p className="text-xl text-barrush-platinum/90 max-w-3xl mx-auto mb-12 leading-relaxed">
-            Curated selection with multiple size options for every product
+            Premium wines and spirits with multiple size options
           </p>
           
           <ProductFilters 
@@ -179,8 +188,8 @@ const ProductCatalog: React.FC = () => {
         <div className="text-center mt-16">
           <div className="bg-glass-effect border border-barrush-steel/30 rounded-xl p-8 max-w-2xl mx-auto backdrop-blur-md">
             <p className="text-barrush-platinum/90 text-lg">
-              <strong className="text-barrush-copper">Smart Grouping:</strong> Products are now grouped by brand and type, 
-              with multiple size options available for each product.
+              <strong className="text-barrush-copper">Enhanced Matching:</strong> Products now use the best available images 
+              with strict brand matching to ensure accuracy.
             </p>
             {filteredProducts.length > 0 && (
               <p className="text-barrush-platinum/70 text-sm mt-2">
