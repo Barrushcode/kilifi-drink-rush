@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getCategoryFromName } from '@/utils/categoryUtils';
@@ -44,8 +45,7 @@ export const useProducts = () => {
         supabase
           .from('allthealcoholicproducts')
           .select('Title, Description, Price')
-          .order('Price', { ascending: false })
-          .limit(1000), // Show up to 1000 products
+          .order('Price', { ascending: false }), // Removed .limit(1000) to fetch all products
         supabase
           .from('scraped product images')
           .select('id, "Product Name", "Image URL 1", "Image URL 2", "Image URL 3", "Image URL 4", "Image URL 5", "Image URL 6", "Image URL 7", "Image URL 8", "Image URL 9", "Image URL 10"')
@@ -61,7 +61,7 @@ export const useProducts = () => {
         throw imagesResponse.error;
       }
 
-      console.log(`📦 Successfully fetched ${productsResponse.data?.length} products`);
+      console.log(`📦 Successfully fetched ${productsResponse.data?.length} products from your complete inventory`);
       console.log(`🖼️ Successfully fetched ${imagesResponse.data?.length} images with quality filtering enabled`);
 
       const scrapedImages = imagesResponse.data || [];
