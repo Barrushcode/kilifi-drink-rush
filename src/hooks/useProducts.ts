@@ -33,46 +33,73 @@ export const useProducts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const fetchAllProducts = async () => {
+    const allProducts = [];
+    let hasMore = true;
+    let offset = 0;
+    const batchSize = 1000;
+
+    while (hasMore) {
+      const { data, error } = await supabase
+        .from('allthealcoholicproducts')
+        .select('Title, Description, Price')
+        .order('Price', { ascending: false })
+        .range(offset, offset + batchSize - 1);
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        allProducts.push(...data);
+        console.log(`📦 Fetched batch ${Math.floor(offset / batchSize) + 1}: ${data.length} products (total so far: ${allProducts.length})`);
+        
+        // If we got less than batchSize, we've reached the end
+        if (data.length < batchSize) {
+          hasMore = false;
+        } else {
+          offset += batchSize;
+        }
+      } else {
+        hasMore = false;
+      }
+    }
+
+    return allProducts;
+  };
+
   const fetchProducts = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      console.log('🚀 Fetching all products and images...');
+      console.log('🚀 Fetching ALL products from your complete inventory...');
       
-      // Fetch all products and scraped images in parallel
-      const [productsResponse, imagesResponse] = await Promise.all([
-        supabase
-          .from('allthealcoholicproducts')
-          .select('Title, Description, Price')
-          .order('Price', { ascending: false }), // Removed .limit(1000) to fetch all products
+      // Fetch all products using pagination and scraped images in parallel
+      const [allProductsData, imagesResponse] = await Promise.all([
+        fetchAllProducts(),
         supabase
           .from('scraped product images')
           .select('id, "Product Name", "Image URL 1", "Image URL 2", "Image URL 3", "Image URL 4", "Image URL 5", "Image URL 6", "Image URL 7", "Image URL 8", "Image URL 9", "Image URL 10"')
       ]);
-
-      if (productsResponse.error) {
-        console.error('❌ Products fetch error:', productsResponse.error);
-        throw productsResponse.error;
-      }
 
       if (imagesResponse.error) {
         console.error('❌ Images fetch error:', imagesResponse.error);
         throw imagesResponse.error;
       }
 
-      console.log(`📦 Successfully fetched ${productsResponse.data?.length} products from your complete inventory`);
+      console.log(`🎉 Successfully fetched ALL ${allProductsData.length} products from your complete inventory`);
       console.log(`🖼️ Successfully fetched ${imagesResponse.data?.length} images with quality filtering enabled`);
 
       const scrapedImages = imagesResponse.data || [];
 
       // Transform the products data and match with high-quality images
-      const transformedProducts: Product[] = (productsResponse.data || []).map((product, index) => {
+      const transformedProducts: Product[] = allProductsData.map((product, index) => {
         const productPrice = Number(product.Price) || 0;
         const category = getCategoryFromName(product.Title || 'Unknown Product', productPrice);
         const { url: productImage, matchLevel } = findMatchingImage(product.Title || 'Unknown Product', scrapedImages);
         
-        console.log(`📊 Product: "${product.Title}" | Price: ${productPrice} | Category: ${category} | Image Quality: ${matchLevel}`);
+        if (index < 10) { // Log first 10 for debugging
+          console.log(`📊 Product: "${product.Title}" | Price: ${productPrice} | Category: ${category} | Image Quality: ${matchLevel}`);
+        }
         
         return {
           id: index + 1,
@@ -84,7 +111,7 @@ export const useProducts = () => {
         };
       });
 
-      console.log(`✨ Successfully processed ${transformedProducts.length} products with enhanced clean image matching`);
+      console.log(`✨ Successfully processed ALL ${transformedProducts.length} products with enhanced clean image matching`);
       setProducts(transformedProducts);
     } catch (error) {
       console.error('💥 Error fetching products:', error);
