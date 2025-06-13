@@ -1,8 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import GroupedProductCard from './GroupedProductCard';
 import ProductFilters from './ProductFilters';
 import ProductLoadingSkeleton from './ProductLoadingSkeleton';
+import ImageAuditReport from './ImageAuditReport';
 import { useProducts } from '@/hooks/useProducts';
 import { useProductFilters } from '@/hooks/useProductFilters';
 import { usePagination } from '@/hooks/usePagination';
@@ -12,6 +14,7 @@ const ProductCatalog: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Wine'); // Set Wine as default
   const [currentPage, setCurrentPage] = useState(1);
+  const [showAuditReport, setShowAuditReport] = useState(false);
   const itemsPerPage = 6;
   
   const { products, loading, error, refetch } = useProducts();
@@ -95,6 +98,24 @@ const ProductCatalog: React.FC = () => {
             setSelectedCategory={setSelectedCategory}
             categories={categories}
           />
+        </div>
+
+        {/* Image Audit Report Section */}
+        <div className="mb-12">
+          <div className="flex justify-center mb-6">
+            <Button 
+              onClick={() => setShowAuditReport(!showAuditReport)}
+              variant="outline"
+              className="border-barrush-copper/50 text-barrush-copper hover:bg-barrush-copper/10"
+            >
+              {showAuditReport ? 'Hide' : 'Show'} Image Quality Report
+            </Button>
+          </div>
+          {showAuditReport && (
+            <div className="max-w-4xl mx-auto mb-12">
+              <ImageAuditReport />
+            </div>
+          )}
         </div>
         
         {/* Products Grid */}
@@ -188,8 +209,8 @@ const ProductCatalog: React.FC = () => {
         <div className="text-center mt-16">
           <div className="bg-glass-effect border border-barrush-steel/30 rounded-xl p-8 max-w-2xl mx-auto backdrop-blur-md">
             <p className="text-barrush-platinum/90 text-lg">
-              <strong className="text-barrush-copper">Enhanced Matching:</strong> Products now use the best available images 
-              with strict brand matching to ensure accuracy.
+              <strong className="text-barrush-copper">Relaxed Image Matching:</strong> Now using more images with quality-based selection 
+              and reduced brand restrictions for better product representation.
             </p>
             {filteredProducts.length > 0 && (
               <p className="text-barrush-platinum/70 text-sm mt-2">

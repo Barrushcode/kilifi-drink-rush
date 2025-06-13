@@ -24,7 +24,7 @@ interface ImageQualityScore {
   urlNumber: string;
 }
 
-// Known alcohol brands for exact matching
+// Known alcohol brands for preference matching (not exclusion)
 const ALCOHOL_BRANDS = [
   'macallan', 'johnnie walker', 'hennessy', 'remy martin', 'martell',
   'absolut', 'grey goose', 'belvedere', 'ciroc', 'smirnoff',
@@ -70,46 +70,46 @@ const extractAlcoholBrand = (productName: string): string | null => {
   return extractBrand(productName);
 };
 
-// Check if two brands conflict (completely different brands)
-const brandsConflict = (brand1: string, brand2: string): boolean => {
-  if (!brand1 || !brand2) return false;
+// Check for major category conflicts (wine vs spirits vs beer)
+const hasCategoryConflict = (productName: string, imageName: string): boolean => {
+  const productCategory = getCategoryFromName(productName, 0);
+  const imageCategory = getCategoryFromName(imageName, 0);
   
-  const norm1 = normalizeString(brand1);
-  const norm2 = normalizeString(brand2);
+  // Only block major category mismatches
+  const majorCategories = ['Wine', 'Whisky', 'Vodka', 'Gin', 'Rum', 'Tequila', 'Brandy', 'Beer'];
   
-  // Different known brands are conflicts
-  const brand1Match = ALCOHOL_BRANDS.find(b => norm1.includes(b));
-  const brand2Match = ALCOHOL_BRANDS.find(b => norm2.includes(b));
+  const productMajorCat = majorCategories.find(cat => productCategory.includes(cat));
+  const imageMajorCat = majorCategories.find(cat => imageCategory.includes(cat));
   
-  if (brand1Match && brand2Match && brand1Match !== brand2Match) {
-    console.log(`🚫 Brand conflict detected: ${brand1Match} vs ${brand2Match}`);
+  if (productMajorCat && imageMajorCat && productMajorCat !== imageMajorCat) {
+    console.log(`⚠️ Category conflict: ${productMajorCat} vs ${imageMajorCat}`);
     return true;
   }
   
   return false;
 };
 
-// Enhanced image quality assessment
+// Enhanced image quality assessment with higher base scores
 const assessImageQuality = (url: string, urlNumber: string): ImageQualityScore => {
   if (!url) return { url, score: 0, source: 'low', urlNumber };
 
   const lowerUrl = url.toLowerCase();
-  let score = 20; // Higher base score
+  let score = 30; // Higher base score for more permissive matching
   let source: 'high' | 'medium' | 'low' = 'medium';
 
   // High-quality domains get significant boost
   if (HIGH_QUALITY_DOMAINS.some(domain => lowerUrl.includes(domain))) {
-    score += 60;
+    score += 50;
     source = 'high';
   }
   // Medium-quality domains
   else if (MEDIUM_QUALITY_DOMAINS.some(domain => lowerUrl.includes(domain))) {
-    score += 30;
+    score += 25;
     source = 'medium';
   }
-  // Heavily penalize low-quality sources
+  // Less penalty for low-quality sources (still usable if needed)
   else if (LOW_QUALITY_SOURCES.some(domain => lowerUrl.includes(domain))) {
-    score -= 50;
+    score -= 20; // Reduced penalty
     source = 'low';
   }
 
@@ -121,12 +121,12 @@ const assessImageQuality = (url: string, urlNumber: string): ImageQualityScore =
   if (lowerUrl.includes('1200') || lowerUrl.includes('1000') || lowerUrl.includes('large')) score += 20;
   if (lowerUrl.includes('original') || lowerUrl.includes('full')) score += 15;
   
-  // Penalize thumbnails and small images heavily
-  if (lowerUrl.includes('thumb') || lowerUrl.includes('small') || lowerUrl.includes('150')) score -= 30;
-  if (lowerUrl.includes('200') || lowerUrl.includes('300')) score -= 20;
+  // Reduced penalties for smaller images (still usable)
+  if (lowerUrl.includes('thumb') || lowerUrl.includes('small') || lowerUrl.includes('150')) score -= 15;
+  if (lowerUrl.includes('200') || lowerUrl.includes('300')) score -= 10;
   
-  // Social media penalties
-  if (lowerUrl.includes('maxresdefault') || lowerUrl.includes('hqdefault')) score -= 40;
+  // Social media penalties (but not as harsh)
+  if (lowerUrl.includes('maxresdefault') || lowerUrl.includes('hqdefault')) score -= 25;
 
   return { url, score: Math.max(0, score), source, urlNumber };
 };
@@ -157,11 +157,11 @@ const selectBestImageUrl = (scrapedImage: ScrapedImage): { url: string; quality:
   // Score all available URLs
   const scoredUrls = allUrls.map(item => assessImageQuality(item.url, item.number));
 
-  // Filter out low-quality sources entirely and very low scores
-  const cleanUrls = scoredUrls.filter(item => item.source !== 'low' && item.score > 25);
+  // More permissive filtering - only exclude extremely low scores
+  const cleanUrls = scoredUrls.filter(item => item.score > 10);
 
   if (cleanUrls.length === 0) {
-    console.log(`⚠️ No quality product photos found, using curated fallback`);
+    console.log(`⚠️ No usable product photos found, using curated fallback`);
     return {
       url: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
       quality: "curated-fallback",
@@ -169,7 +169,7 @@ const selectBestImageUrl = (scrapedImage: ScrapedImage): { url: string; quality:
     };
   }
 
-  // Select the highest scoring clean URL
+  // Select the highest scoring URL
   const bestUrl = cleanUrls.reduce((best, current) => 
     current.score > best.score ? current : best
   );
@@ -183,7 +183,19 @@ const selectBestImageUrl = (scrapedImage: ScrapedImage): { url: string; quality:
   };
 };
 
-// Enhanced image matching function with stricter brand matching
+// Calculate brand preference bonus (not exclusion)
+const getBrandPreferenceBonus = (productName: string, imageName: string): number => {
+  const productBrand = extractAlcoholBrand(productName);
+  const imageBrand = extractAlcoholBrand(imageName);
+  
+  if (productBrand && imageBrand && normalizeString(productBrand) === normalizeString(imageBrand)) {
+    return 0.1; // 10% bonus for same brand
+  }
+  
+  return 0;
+};
+
+// Enhanced image matching function with relaxed brand restrictions
 export const findMatchingImage = (productName: string, scrapedImages: ScrapedImage[]): { url: string; matchLevel: string } => {
   if (!scrapedImages.length) {
     return {
@@ -193,8 +205,6 @@ export const findMatchingImage = (productName: string, scrapedImages: ScrapedIma
   }
 
   console.log(`🔍 Finding image for: "${productName}"`);
-  const productBrand = extractAlcoholBrand(productName);
-  console.log(`🏷️ Product brand detected: "${productBrand}"`);
   
   // Level 1: Exact match with quality filtering
   for (const img of scrapedImages) {
@@ -209,37 +219,47 @@ export const findMatchingImage = (productName: string, scrapedImages: ScrapedIma
     }
   }
 
-  // Level 2: Very high similarity match with brand validation
-  let bestMatch: { image: ScrapedImage; similarity: number } | null = null;
+  // Level 2: High similarity match with brand preference (not exclusion)
+  let bestMatches: { image: ScrapedImage; score: number }[] = [];
+  
   for (const img of scrapedImages) {
     if (img['Product Name']) {
-      const imageBrand = extractAlcoholBrand(img['Product Name']);
-      
-      // Skip if brands conflict
-      if (productBrand && imageBrand && brandsConflict(productBrand, imageBrand)) {
+      // Skip only major category conflicts
+      if (hasCategoryConflict(productName, img['Product Name'])) {
         continue;
       }
       
       const similarity = calculateSimilarity(productName, img['Product Name']);
-      if (similarity > 0.92 && (!bestMatch || similarity > bestMatch.similarity)) {
-        bestMatch = { image: img, similarity };
+      const brandBonus = getBrandPreferenceBonus(productName, img['Product Name']);
+      const totalScore = similarity + brandBonus;
+      
+      if (totalScore > 0.7) { // Lowered threshold for more matches
+        bestMatches.push({ image: img, score: totalScore });
       }
     }
   }
   
-  if (bestMatch) {
-    const { url, quality, urlNumber } = selectBestImageUrl(bestMatch.image);
+  // Sort by score and try the best matches
+  bestMatches.sort((a, b) => b.score - a.score);
+  
+  for (const match of bestMatches) {
+    const { url, quality, urlNumber } = selectBestImageUrl(match.image);
     if (quality !== "curated-fallback") {
-      console.log(`✅ Level 2 - High similarity (${bestMatch.similarity.toFixed(3)}): "${bestMatch.image['Product Name']}" (URL ${urlNumber})`);
+      console.log(`✅ Level 2 - High similarity (${match.score.toFixed(3)}): "${match.image['Product Name']}" (URL ${urlNumber})`);
       return { url, matchLevel: `high-similarity-${quality}` };
     }
   }
 
-  // Level 3: Exact brand + volume match
+  // Level 3: Brand + volume match (still useful)
   const productVolume = extractVolume(productName);
+  const productBrand = extractAlcoholBrand(productName);
   
   for (const img of scrapedImages) {
     if (img['Product Name']) {
+      if (hasCategoryConflict(productName, img['Product Name'])) {
+        continue;
+      }
+      
       const imageBrand = extractAlcoholBrand(img['Product Name']);
       const imageVolume = extractVolume(img['Product Name']);
       
@@ -256,9 +276,13 @@ export const findMatchingImage = (productName: string, scrapedImages: ScrapedIma
     }
   }
 
-  // Level 4: Brand-only match (stricter)
+  // Level 4: Brand-only match (preference, not requirement)
   for (const img of scrapedImages) {
     if (img['Product Name']) {
+      if (hasCategoryConflict(productName, img['Product Name'])) {
+        continue;
+      }
+      
       const imageBrand = extractAlcoholBrand(img['Product Name']);
       
       if (productBrand && imageBrand && 
@@ -267,6 +291,24 @@ export const findMatchingImage = (productName: string, scrapedImages: ScrapedIma
         if (quality !== "curated-fallback") {
           console.log(`✅ Level 4 - Brand match: "${img['Product Name']}" (URL ${urlNumber})`);
           return { url, matchLevel: `brand-only-${quality}` };
+        }
+      }
+    }
+  }
+
+  // Level 5: Partial similarity match (new permissive level)
+  for (const img of scrapedImages) {
+    if (img['Product Name']) {
+      if (hasCategoryConflict(productName, img['Product Name'])) {
+        continue;
+      }
+      
+      const similarity = calculateSimilarity(productName, img['Product Name']);
+      if (similarity > 0.4) { // Much more permissive
+        const { url, quality, urlNumber } = selectBestImageUrl(img);
+        if (quality !== "curated-fallback") {
+          console.log(`✅ Level 5 - Partial similarity (${similarity.toFixed(3)}): "${img['Product Name']}" (URL ${urlNumber})`);
+          return { url, matchLevel: `partial-similarity-${quality}` };
         }
       }
     }
