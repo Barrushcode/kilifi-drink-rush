@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -63,8 +64,8 @@ const CheckoutSection: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-barrush-midnight py-12">
-      <div className="container mx-auto px-6 max-w-6xl">
+    <div className="min-h-screen bg-barrush-midnight py-12 overflow-x-hidden">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-barrush-gold mb-4 text-zinc-50">
             Checkout
@@ -74,9 +75,9 @@ const CheckoutSection: React.FC = () => {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">
           {/* Order Summary */}
-          <Card className="bg-barrush-charcoal/80 border-barrush-gold border">
+          <Card className="bg-barrush-charcoal/80 border-barrush-gold border w-full">
             <CardHeader>
               <CardTitle className="text-barrush-gold text-zinc-50">Order Summary</CardTitle>
             </CardHeader>
@@ -111,14 +112,14 @@ const CheckoutSection: React.FC = () => {
           </Card>
 
           {/* Right Column - Forms and Payment */}
-          <div className="space-y-6">
+          <div className="space-y-6 w-full">
             {/* Shipping Information */}
-            <Card className="bg-barrush-charcoal/80 border-barrush-gold border">
+            <Card className="bg-barrush-charcoal/80 border-barrush-gold border w-full">
               <CardHeader>
                 <CardTitle className="text-barrush-gold text-zinc-50">Shipping Information</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="firstName" className="text-white">First Name *</Label>
                     <Input
@@ -126,7 +127,7 @@ const CheckoutSection: React.FC = () => {
                       value={shippingDetails.firstName}
                       onChange={(e) => handleInputChange('firstName', e.target.value)}
                       placeholder="Enter first name"
-                      className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400"
+                      className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400 w-full"
                     />
                     {errors.firstName && <p className="text-red-400 text-sm">{errors.firstName}</p>}
                   </div>
@@ -137,7 +138,7 @@ const CheckoutSection: React.FC = () => {
                       value={shippingDetails.lastName}
                       onChange={(e) => handleInputChange('lastName', e.target.value)}
                       placeholder="Enter last name"
-                      className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400"
+                      className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400 w-full"
                     />
                     {errors.lastName && <p className="text-red-400 text-sm">{errors.lastName}</p>}
                   </div>
@@ -151,7 +152,7 @@ const CheckoutSection: React.FC = () => {
                     value={shippingDetails.phone}
                     onChange={(e) => handleInputChange('phone', e.target.value)}
                     placeholder="0712345678 or +254712345678"
-                    className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400"
+                    className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400 w-full"
                   />
                   {errors.phone && <p className="text-red-400 text-sm">{errors.phone}</p>}
                 </div>
@@ -164,7 +165,7 @@ const CheckoutSection: React.FC = () => {
                     value={shippingDetails.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
                     placeholder="your@email.com"
-                    className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400"
+                    className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400 w-full"
                   />
                   {errors.email && <p className="text-red-400 text-sm">{errors.email}</p>}
                 </div>
@@ -176,12 +177,12 @@ const CheckoutSection: React.FC = () => {
                     value={shippingDetails.street}
                     onChange={(e) => handleInputChange('street', e.target.value)}
                     placeholder="Street name and number"
-                    className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400"
+                    className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400 w-full"
                   />
                   {errors.street && <p className="text-red-400 text-sm">{errors.street}</p>}
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="building" className="text-white">Building/Apartment</Label>
                     <Input
@@ -189,7 +190,7 @@ const CheckoutSection: React.FC = () => {
                       value={shippingDetails.building}
                       onChange={(e) => handleInputChange('building', e.target.value)}
                       placeholder="Building name/number"
-                      className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400"
+                      className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400 w-full"
                     />
                   </div>
                   <div className="space-y-2">
@@ -199,7 +200,7 @@ const CheckoutSection: React.FC = () => {
                       value={shippingDetails.area}
                       onChange={(e) => handleInputChange('area', e.target.value)}
                       placeholder="Area or estate name"
-                      className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400"
+                      className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400 w-full"
                     />
                     {errors.area && <p className="text-red-400 text-sm">{errors.area}</p>}
                   </div>
@@ -212,7 +213,7 @@ const CheckoutSection: React.FC = () => {
                     value={shippingDetails.city}
                     onChange={(e) => handleInputChange('city', e.target.value)}
                     placeholder="Nairobi, Mombasa, etc."
-                    className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400"
+                    className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400 w-full"
                   />
                   {errors.city && <p className="text-red-400 text-sm">{errors.city}</p>}
                 </div>
@@ -224,20 +225,22 @@ const CheckoutSection: React.FC = () => {
                     value={shippingDetails.instructions}
                     onChange={(e) => handleInputChange('instructions', e.target.value)}
                     placeholder="Gate code, directions, or special requests (optional)"
-                    className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400 min-h-[80px]"
+                    className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400 min-h-[80px] w-full"
                   />
                 </div>
               </CardContent>
             </Card>
 
             {/* Payment Component with Validation */}
-            <PaystackCheckout 
-              amount={totalAmount} 
-              onValidationRequired={validateForm}
-            />
+            <div className="w-full">
+              <PaystackCheckout 
+                amount={totalAmount} 
+                onValidationRequired={validateForm}
+              />
+            </div>
 
             {/* Alternative Payment Info */}
-            <Card className="bg-barrush-burgundy/20 border-barrush-burgundy border">
+            <Card className="bg-barrush-burgundy/20 border-barrush-burgundy border w-full">
               <CardContent className="p-6">
                 <h4 className="font-semibold text-barrush-gold mb-3 text-zinc-50">Alternative Payment</h4>
                 <p className="text-white mb-4">

@@ -110,7 +110,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
           </div>
           <Button 
             onClick={handleBuy}
-            className="text-white font-bold px-3 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 bg-rose-600 hover:bg-rose-500 h-10 w-full font-iphone"
+            className="text-white font-bold px-3 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 bg-pink-500 hover:bg-pink-600 h-10 w-full font-iphone"
           >
             Buy
           </Button>
