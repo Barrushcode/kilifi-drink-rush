@@ -28,16 +28,14 @@ export const useProductFilters = (products: GroupedProduct[], searchTerm: string
         product.variants.some(variant =>
           variant.originalProduct.name.toLowerCase().includes(searchTerm.toLowerCase())
         );
-      const matchesCategory =
-        selectedCategory === 'All'
-          ? true
-          : FIXED_CATEGORIES.includes(product.category);
-      // Only allow selection for matching single/allowed categories
-      const categoryMatchesSelected =
-        selectedCategory === 'All'
-          ? matchesCategory
-          : product.category === selectedCategory;
-      return matchesSearch && categoryMatchesSelected;
+      if (selectedCategory === 'All') {
+        return matchesSearch;
+      }
+      // Match any category that includes the selectedCategory as substring (case-insensitive)
+      const productCategoryLC = product.category.toLowerCase();
+      const selectedCategoryLC = selectedCategory.toLowerCase();
+      const matchesCategory = productCategoryLC.includes(selectedCategoryLC);
+      return matchesSearch && matchesCategory;
     });
   }, [products, searchTerm, selectedCategory]);
 
