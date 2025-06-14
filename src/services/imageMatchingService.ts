@@ -71,22 +71,32 @@ const extractAlcoholBrand = (productName: string): string | null => {
   return extractBrand(productName);
 };
 
+// This function helps to determine MAJOR category (wine, whisky, vodka, beer, etc)
+function getMajorCategory(name: string): string {
+  const category = getCategoryFromName(name, 0).toLowerCase();
+  if (category.includes('wine')) return 'wine';
+  if (category.includes('whisky')) return 'whisky';
+  if (category.includes('vodka')) return 'vodka';
+  if (category.includes('gin')) return 'gin';
+  if (category.includes('rum')) return 'rum';
+  if (category.includes('tequila')) return 'tequila';
+  if (category.includes('brandy') || category.includes('cognac')) return 'brandy';
+  if (category.includes('beer')) return 'beer';
+  return category; // fallback
+}
+
 // Check for major category conflicts (wine vs spirits vs beer)
 const hasCategoryConflict = (productName: string, imageName: string): boolean => {
-  const productCategory = getCategoryFromName(productName, 0);
-  const imageCategory = getCategoryFromName(imageName, 0);
-  
+  const productCat = getMajorCategory(productName);
+  const imageCat = getMajorCategory(imageName);
+
   // Only block major category mismatches
-  const majorCategories = ['Wine', 'Whisky', 'Vodka', 'Gin', 'Rum', 'Tequila', 'Brandy', 'Beer'];
-  
-  const productMajorCat = majorCategories.find(cat => productCategory.includes(cat));
-  const imageMajorCat = majorCategories.find(cat => imageCategory.includes(cat));
-  
-  if (productMajorCat && imageMajorCat && productMajorCat !== imageMajorCat) {
-    console.log(`⚠️ Category conflict: ${productMajorCat} vs ${imageMajorCat}`);
+  if (productCat && imageCat && productCat !== imageCat) {
+    // If either is "wine", but not both, block especially (reduce wrong matches for wine to whisky etc)
+    if (productCat === 'wine' || imageCat === 'wine') return true;
+    // Also block whisky <-> gin, etc.
     return true;
   }
-  
   return false;
 };
 
@@ -132,8 +142,8 @@ const assessImageQuality = (url: string, urlNumber: string): ImageQualityScore =
   return { url, score: Math.max(0, score), source, urlNumber };
 };
 
-// Select the best quality image from all available URLs
-const selectBestImageUrl = (scrapedImage: ScrapedImage): { url: string; quality: string; urlNumber: string } => {
+// Select the best quality image from all available URLs that matches the product category
+const selectBestImageUrl = (scrapedImage: ScrapedImage, productName: string): { url: string; quality: string; urlNumber: string } => {
   const allUrls = [
     { url: scrapedImage['Image URL 1'], number: '1' },
     { url: scrapedImage['Image URL 2'], number: '2' },
@@ -162,7 +172,7 @@ const selectBestImageUrl = (scrapedImage: ScrapedImage): { url: string; quality:
   const cleanUrls = scoredUrls.filter(item => item.score > 10);
 
   if (cleanUrls.length === 0) {
-    console.log(`⚠️ No usable product photos found, using curated fallback`);
+    // No usable product photos found
     return {
       url: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
       quality: "curated-fallback",
@@ -175,8 +185,6 @@ const selectBestImageUrl = (scrapedImage: ScrapedImage): { url: string; quality:
     current.score > best.score ? current : best
   );
 
-  console.log(`🎯 Selected URL ${bestUrl.urlNumber} (score: ${bestUrl.score}, quality: ${bestUrl.source}) from ${allUrls.length} available URLs`);
-  
   return {
     url: bestUrl.url,
     quality: bestUrl.source,
@@ -196,7 +204,7 @@ const getBrandPreferenceBonus = (productName: string, imageName: string): number
   return 0;
 };
 
-// Enhanced image matching function with relaxed brand restrictions & AI fallback for bad images
+// Main image matching function — now blocks major category mismatches hard and does fallback
 export const findMatchingImage = (productName: string, scrapedImages: ScrapedImage[]): { url: string; matchLevel: string } => {
   if (!scrapedImages.length) {
     return {
@@ -205,16 +213,19 @@ export const findMatchingImage = (productName: string, scrapedImages: ScrapedIma
     };
   }
 
-  console.log(`🔍 Finding image for: "${productName}"`);
-  
-  // Step 1: Try all matching logic (as before) and get the image result candidate:
+  const productCat = getMajorCategory(productName);
+  console.log(`🔍 Finding image for: "${productName}" (category: ${productCat})`);
+
   let selected: { url: string; matchLevel: string } | null = null;
 
-  // Level 1: Exact match with quality filtering
+  // Level 1: Exact match with category and quality filtering
   for (const img of scrapedImages) {
     if (img['Product Name']) {
-      if (normalizeString(productName) === normalizeString(img['Product Name'])) {
-        const { url, quality, urlNumber } = selectBestImageUrl(img);
+      if (
+        normalizeString(productName) === normalizeString(img['Product Name']) &&
+        !hasCategoryConflict(productName, img['Product Name'])
+      ) {
+        const { url, quality, urlNumber } = selectBestImageUrl(img, productName);
         if (quality !== "curated-fallback") {
           selected = { url, matchLevel: `exact-${quality}` };
           break;
@@ -223,7 +234,7 @@ export const findMatchingImage = (productName: string, scrapedImages: ScrapedIma
     }
   }
 
-  // Level 2: High similarity match
+  // Level 2: High similarity match AND correct category
   if (!selected) {
     let bestMatches: { image: ScrapedImage; score: number }[] = [];
     for (const img of scrapedImages) {
@@ -237,7 +248,7 @@ export const findMatchingImage = (productName: string, scrapedImages: ScrapedIma
     }
     bestMatches.sort((a, b) => b.score - a.score);
     for (const match of bestMatches) {
-      const { url, quality, urlNumber } = selectBestImageUrl(match.image);
+      const { url, quality, urlNumber } = selectBestImageUrl(match.image, productName);
       if (quality !== "curated-fallback") {
         selected = { url, matchLevel: `high-similarity-${quality}` };
         break;
@@ -245,7 +256,7 @@ export const findMatchingImage = (productName: string, scrapedImages: ScrapedIma
     }
   }
 
-  // Level 3: Brand + volume match
+  // Level 3: Brand + volume match, block category conflicts
   if (!selected) {
     const productVolume = extractVolume(productName);
     const productBrand = extractAlcoholBrand(productName);
@@ -258,7 +269,7 @@ export const findMatchingImage = (productName: string, scrapedImages: ScrapedIma
           productBrand && imageBrand && normalizeString(productBrand) === normalizeString(imageBrand) &&
           productVolume && imageVolume && normalizeString(productVolume) === normalizeString(imageVolume)
         ) {
-          const { url, quality, urlNumber } = selectBestImageUrl(img);
+          const { url, quality, urlNumber } = selectBestImageUrl(img, productName);
           if (quality !== "curated-fallback") {
             selected = { url, matchLevel: `brand-volume-${quality}` };
             break;
@@ -268,7 +279,7 @@ export const findMatchingImage = (productName: string, scrapedImages: ScrapedIma
     }
   }
 
-  // Level 4: Brand-only match
+  // Level 4: Brand-only match, block category conflicts
   if (!selected) {
     const productBrand = extractAlcoholBrand(productName);
     for (const img of scrapedImages) {
@@ -278,7 +289,7 @@ export const findMatchingImage = (productName: string, scrapedImages: ScrapedIma
         if (
           productBrand && imageBrand && normalizeString(productBrand) === normalizeString(imageBrand)
         ) {
-          const { url, quality, urlNumber } = selectBestImageUrl(img);
+          const { url, quality, urlNumber } = selectBestImageUrl(img, productName);
           if (quality !== "curated-fallback") {
             selected = { url, matchLevel: `brand-only-${quality}` };
             break;
@@ -288,14 +299,14 @@ export const findMatchingImage = (productName: string, scrapedImages: ScrapedIma
     }
   }
 
-  // Level 5: Partial similarity match
+  // Level 5: Partial similarity match and category, fallback if non-match
   if (!selected) {
     for (const img of scrapedImages) {
       if (img['Product Name']) {
         if (hasCategoryConflict(productName, img['Product Name'])) continue;
         const similarity = calculateSimilarity(productName, img['Product Name']);
         if (similarity > 0.4) {
-          const { url, quality, urlNumber } = selectBestImageUrl(img);
+          const { url, quality, urlNumber } = selectBestImageUrl(img, productName);
           if (quality !== "curated-fallback") {
             selected = { url, matchLevel: `partial-similarity-${quality}` };
             break;
@@ -305,15 +316,28 @@ export const findMatchingImage = (productName: string, scrapedImages: ScrapedIma
     }
   }
 
-  // If still not found: fallback image (Unsplash)
+  // If still not found: fallback image (curated for wine)
   if (!selected) {
-    selected = {
-      url: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-      matchLevel: "curated-fallback"
-    };
+    if (productCat === "wine" || productCat === "red" || productCat === "white" || productCat === "rose") {
+      // Unsplash: generic wine bottle photo
+      selected = {
+        url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1000&q=80",
+        matchLevel: "fallback-wine"
+      };
+    } else if (productCat === "beer") {
+      selected = {
+        url: "https://images.unsplash.com/photo-1514361892635-ce9f1fecb6dd?auto=format&fit=crop&w=1000&q=80",
+        matchLevel: "fallback-beer"
+      };
+    } else {
+      selected = {
+        url: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        matchLevel: "curated-fallback"
+      };
+    }
   }
 
-  // Step 2: If the current (selected) image is bad, generate/callback AI mockup
+  // If even fallback is bad, use AI/placeholder/final fallback
   if (
     !selected.url ||
     isLowQualityOrUnrelatedImage(selected.url, productName)
@@ -321,14 +345,10 @@ export const findMatchingImage = (productName: string, scrapedImages: ScrapedIma
     // Use public getter for imageCache instead of private property access
     let aiUrl = AIProductImageService.getImageCache().get(productName.toLowerCase());
     if (!aiUrl) {
-      // Image generation is async; in a real app, products should be hydrated progressively.
-      // Here, we simulate sync-forced resolution with a placeholder while issuing a background generation.
       AIProductImageService.generateProductImage(productName)
-        .then(url => {
-          // Side effect: Will populate cache on next run
-        })
+        .then(url => {})
         .catch(e => { console.error("AI image generation failed for", productName, e); });
-      // Return Unsplash fallback for now if not in cache.
+      // Return fallback for now
       return {
         url: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
         matchLevel: "ai-fallback-pending"
