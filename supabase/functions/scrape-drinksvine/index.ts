@@ -1,4 +1,3 @@
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.0';
@@ -22,23 +21,97 @@ function normalizeProductName(name: string): string {
     .trim();
 }
 
+function getProductCategory(name: string): string {
+  const lowerName = normalizeProductName(name);
+  
+  if (lowerName.includes('wine') || lowerName.includes('merlot') || lowerName.includes('cabernet') || 
+      lowerName.includes('chardonnay') || lowerName.includes('sauvignon') || lowerName.includes('pinot') ||
+      lowerName.includes('shiraz') || lowerName.includes('moscato') || lowerName.includes('rose')) {
+    return 'wine';
+  }
+  
+  if (lowerName.includes('whisky') || lowerName.includes('whiskey') || lowerName.includes('bourbon') || 
+      lowerName.includes('scotch') || lowerName.includes('jack daniel') || lowerName.includes('chivas') ||
+      lowerName.includes('ballantine') || lowerName.includes('jameson')) {
+    return 'whisky';
+  }
+  
+  if (lowerName.includes('vodka')) return 'vodka';
+  if (lowerName.includes('gin')) return 'gin';
+  if (lowerName.includes('rum')) return 'rum';
+  if (lowerName.includes('tequila')) return 'tequila';
+  if (lowerName.includes('brandy') || lowerName.includes('cognac')) return 'brandy';
+  if (lowerName.includes('beer') || lowerName.includes('lager')) return 'beer';
+  if (lowerName.includes('champagne') || lowerName.includes('prosecco') || lowerName.includes('sparkling')) return 'sparkling';
+  
+  return 'spirits';
+}
+
+function extractBrands(name: string): string[] {
+  const commonBrands = [
+    'jack daniel', 'chivas', 'ballantine', 'jameson', 'johnnie walker',
+    'hennessy', 'remy martin', 'martell', 'grey goose', 'absolut',
+    'smirnoff', 'bacardi', 'captain morgan', 'jose cuervo', 'patron',
+    'don julio', 'bombay', 'tanqueray', 'beefeater', 'gordon',
+    'moet', 'veuve clicquot', 'dom perignon', 'cristal', 'krug'
+  ];
+  
+  const foundBrands = [];
+  for (const brand of commonBrands) {
+    if (name.includes(brand)) {
+      foundBrands.push(brand);
+    }
+  }
+  
+  return foundBrands;
+}
+
 function calculateSimilarity(str1: string, str2: string): number {
   const norm1 = normalizeProductName(str1);
   const norm2 = normalizeProductName(str2);
   
   if (norm1 === norm2) return 1.0;
   
-  const words1 = norm1.split(' ');
-  const words2 = norm2.split(' ');
+  // Check category compatibility first
+  const cat1 = getProductCategory(str1);
+  const cat2 = getProductCategory(str2);
+  
+  // Penalize cross-category matches heavily
+  if (cat1 !== cat2) {
+    // Only allow some flexibility for sparkling wines and champagne
+    if (!((cat1 === 'wine' && cat2 === 'sparkling') || (cat1 === 'sparkling' && cat2 === 'wine'))) {
+      return 0.0; // No match for different categories
+    }
+  }
+  
+  // Brand matching bonus
+  const brands1 = extractBrands(norm1);
+  const brands2 = extractBrands(norm2);
+  let brandBonus = 0;
+  
+  for (const brand1 of brands1) {
+    for (const brand2 of brands2) {
+      if (brand1.length > 2 && brand2.length > 2) {
+        if (brand1 === brand2) brandBonus += 0.3;
+        else if (brand1.includes(brand2) || brand2.includes(brand1)) brandBonus += 0.2;
+      }
+    }
+  }
+  
+  // Word-based similarity
+  const words1 = norm1.split(' ').filter(w => w.length > 2);
+  const words2 = norm2.split(' ').filter(w => w.length > 2);
   
   let matchCount = 0;
   for (const word1 of words1) {
-    if (word1.length > 2 && words2.some(word2 => word2.includes(word1) || word1.includes(word2))) {
+    if (words2.some(word2 => word2.includes(word1) || word1.includes(word2))) {
       matchCount++;
     }
   }
   
-  return matchCount / Math.max(words1.length, words2.length);
+  const wordSimilarity = matchCount / Math.max(words1.length, words2.length);
+  
+  return Math.min(1.0, wordSimilarity + brandBonus);
 }
 
 async function scrapeDrinksVine(): Promise<ScrapedProduct[]> {
@@ -222,7 +295,7 @@ serve(async (req) => {
 
     console.log(`Found ${existingProducts.length} existing products in database`);
 
-    // Match scraped products to existing products
+    // Match scraped products to existing products with improved algorithm
     const matches: Array<{ existingProduct: string; scrapedProduct: ScrapedProduct; similarity: number }> = [];
     
     for (const existingProduct of existingProducts) {
@@ -233,7 +306,8 @@ serve(async (req) => {
       for (const scrapedProduct of scrapedProducts) {
         const similarity = calculateSimilarity(existingProduct.Title, scrapedProduct.name);
         
-        if (similarity > 0.5 && (!bestMatch || similarity > bestMatch.similarity)) {
+        // Increased threshold to 0.75 for better matches
+        if (similarity > 0.75 && (!bestMatch || similarity > bestMatch.similarity)) {
           bestMatch = { product: scrapedProduct, similarity };
         }
       }
@@ -247,7 +321,7 @@ serve(async (req) => {
       }
     }
 
-    console.log(`Found ${matches.length} potential matches`);
+    console.log(`Found ${matches.length} high-quality matches (threshold: 75%)`);
 
     // Update products with matched images
     let updatedCount = 0;
@@ -275,7 +349,8 @@ serve(async (req) => {
         matchDetails: matches.map(m => ({
           existing: m.existingProduct,
           scraped: m.scrapedProduct.name,
-          similarity: Math.round(m.similarity * 100) + '%'
+          similarity: Math.round(m.similarity * 100) + '%',
+          category: getProductCategory(m.existingProduct)
         }))
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
