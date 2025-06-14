@@ -3,12 +3,11 @@ import React from 'react';
 import AnnouncementBar from '@/components/AnnouncementBar';
 import ProductCatalog from '@/components/ProductCatalog';
 
-// Move AnnouncementBar flush to the very top, and remove min-h-screen if not needed.
+// Tightly stack bar and catalog, remove all vertical space, bg only on mobile-friendly colors.
 const Products = () => {
   return (
-    <div className="bg-barrush-midnight">
+    <div className="bg-barrush-midnight min-h-screen">
       <AnnouncementBar />
-      {/* Removed min-h-screen, no extra vertical space */}
       <ProductCatalog />
     </div>
   );

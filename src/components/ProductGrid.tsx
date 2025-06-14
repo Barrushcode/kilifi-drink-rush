@@ -31,8 +31,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({
   return (
     <>
       {isBeersCategory && (
-        <div className="w-full mb-3 flex justify-center">
-          <span className="bg-yellow-100 text-amber-800 px-3 py-1 text-sm rounded font-semibold shadow font-iphone border border-yellow-300 flex items-center gap-2">
+        <div className="w-full mb-2 flex justify-center">
+          <span className="bg-yellow-100 text-amber-800 px-3 py-1 text-xs rounded font-semibold shadow font-iphone border border-yellow-300 flex items-center gap-2">
             All Beers are sold as Six-Packs 🍻
           </span>
         </div>
@@ -40,7 +40,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
 
       <div className="
         grid 
-        grid-cols-2 
+        grid-cols-1
         sm:grid-cols-2 
         md:grid-cols-3 
         lg:grid-cols-4 
@@ -50,7 +50,9 @@ const ProductGrid: React.FC<ProductGridProps> = ({
         lg:gap-5 
         max-w-full 
         mx-auto
-        "
+        pb-4
+      "
+        style={{ width: '100%' }}
       >
         {paginatedProducts.map(product => {
           console.log('🔧 Rendering product card for:', product.baseName, 'with price:', product.lowestPriceFormatted);

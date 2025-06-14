@@ -63,8 +63,8 @@ const ProductCatalog: React.FC = () => {
   if (loading) {
     return (
       <section id="products" className="pt-0 pb-0 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative overflow-hidden">
-        <div className="container mx-auto px-0 lg:px-2 relative z-10 max-w-screen-2xl">
-          <div className="text-center mb-3">
+        <div className="container mx-auto px-0 lg:px-2 relative z-10 max-w-screen-2xl mt-0 mb-0">
+          <div className="text-center mb-2 mt-2">
             <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-0 font-serif text-rose-600">
               Our Collection
             </h2>
@@ -108,7 +108,7 @@ const ProductCatalog: React.FC = () => {
         background: 'linear-gradient(to bottom, #0f1419 0%, #1a1a1a 100%)'
       }}
     >
-      <div className="container mx-auto px-1 sm:px-2 md:px-2 lg:px-2 relative z-10 max-w-screen-2xl">
+      <div className="container mx-auto px-0 sm:px-1 md:px-1 lg:px-2 relative z-10 max-w-screen-2xl">
         <ProductCatalogHeader
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}

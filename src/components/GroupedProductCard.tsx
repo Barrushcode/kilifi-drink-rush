@@ -127,7 +127,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         product={product}
       />
       <Card 
-        className="overflow-hidden h-full min-h-[350px] shadow-lg hover:shadow-xl transition-all duration-300 group hover:scale-105 bg-barrush-slate border-barrush-steel/30 cursor-pointer flex flex-col"
+        className="overflow-hidden h-full min-h-[370px] shadow-lg transition-all duration-300 group hover:scale-105 bg-barrush-slate border-barrush-steel/30 flex flex-col"
         onClick={handleCardClick}
         tabIndex={0}
         onKeyDown={e => {
@@ -219,7 +219,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
               )}
             </div>
             {/* Action Buttons */}
-            <div className="flex gap-2 mt-1 z-10 w-full">
+            <div className="flex gap-2 mt-1 z-10 w-full flex-col sm:flex-row">
               <Button 
                 onClick={(e) => { e.stopPropagation(); handleAddToCart(); }}
                 className="flex-1 font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-transparent border-2 border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white w-full"
