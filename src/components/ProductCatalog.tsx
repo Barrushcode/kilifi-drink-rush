@@ -8,6 +8,7 @@ import ProductLoadingSkeleton from './ProductLoadingSkeleton';
 import { useProducts } from '@/hooks/useProducts';
 import { useProductFilters } from '@/hooks/useProductFilters';
 import { usePagination } from '@/hooks/usePagination';
+import ProductCardDesignShowcase from './ProductCardDesignShowcase';
 
 const ProductCatalog: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
