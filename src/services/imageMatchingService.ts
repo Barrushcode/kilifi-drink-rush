@@ -1,28 +1,18 @@
+
 import { normalizeString, extractVolume, calculateSimilarity } from '@/utils/stringUtils';
 import { getMajorCategory, hasCategoryConflict } from '@/utils/categoryMatchingUtils';
 import { extractAlcoholBrand, getBrandPreferenceBonus } from '@/utils/brandAndVolumeUtils';
-import { selectBestImageUrl } from '@/utils/imageQualityUtils';
-import { IntelligentImageSelectionService } from './intelligentImageSelectionService';
 import { AIProductImageService } from '@/utils/AIProductImageService';
 import { isLowQualityOrUnrelatedImage } from '@/utils/badImageUtils';
 
-interface ScrapedImage {
+interface RefinedImage {
   id: number;
   'Product Name': string | null;
-  'Image URL 1': string;
-  'Image URL 2': string | null;
-  'Image URL 3': string | null;
-  'Image URL 4': string | null;
-  'Image URL 5': string | null;
-  'Image URL 6': string | null;
-  'Image URL 7': string | null;
-  'Image URL 8': string | null;
-  'Image URL 9': string | null;
-  'Image URL 10': string | null;
+  'Final Image URL': string;
 }
 
-export const findMatchingImage = async (productName: string, scrapedImages: ScrapedImage[]): Promise<{ url: string; matchLevel: string }> => {
-  if (!scrapedImages.length) {
+export const findMatchingImage = async (productName: string, refinedImages: RefinedImage[]): Promise<{ url: string; matchLevel: string }> => {
+  if (!refinedImages.length) {
     return {
       url: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
       matchLevel: "curated-fallback"
@@ -34,49 +24,23 @@ export const findMatchingImage = async (productName: string, scrapedImages: Scra
 
   let selected: { url: string; matchLevel: string } | null = null;
 
-  // Level 1: Exact match with AI-enhanced image selection
-  for (const img of scrapedImages) {
+  // Level 1: Exact match
+  for (const img of refinedImages) {
     if (img['Product Name']) {
       if (
         normalizeString(productName) === normalizeString(img['Product Name']) &&
         !hasCategoryConflict(productName, img['Product Name'])
       ) {
-        // Check if multiple URLs available for AI analysis
-        const urlCount = [
-          img['Image URL 1'], img['Image URL 2'], img['Image URL 3'], img['Image URL 4'], img['Image URL 5'],
-          img['Image URL 6'], img['Image URL 7'], img['Image URL 8'], img['Image URL 9'], img['Image URL 10']
-        ].filter(url => url && url.trim() !== '').length;
-
-        if (urlCount > 1) {
-          console.log(`🤖 Using AI to select best image from ${urlCount} options for exact match: ${productName}`);
-          try {
-            const aiResult = await IntelligentImageSelectionService.selectBestImageWithAI(img, productName);
-            if (aiResult.quality !== "curated-fallback") {
-              selected = { 
-                url: aiResult.url, 
-                matchLevel: `exact-ai-selected-${aiResult.urlNumber}${aiResult.reasoning ? `-${aiResult.reasoning.substring(0, 20)}` : ''}` 
-              };
-              break;
-            }
-          } catch (error) {
-            console.error('AI selection failed, falling back to traditional method:', error);
-          }
-        }
-        
-        // Fallback to traditional method
-        const { url, quality, urlNumber } = selectBestImageUrl(img, productName);
-        if (quality !== "curated-fallback") {
-          selected = { url, matchLevel: `exact-${quality}` };
-          break;
-        }
+        selected = { url: img['Final Image URL'], matchLevel: 'exact-refined' };
+        break;
       }
     }
   }
 
-  // Level 2: High similarity match with AI enhancement
+  // Level 2: High similarity match
   if (!selected) {
-    let bestMatches: { image: ScrapedImage; score: number }[] = [];
-    for (const img of scrapedImages) {
+    let bestMatches: { image: RefinedImage; score: number }[] = [];
+    for (const img of refinedImages) {
       if (img['Product Name']) {
         if (hasCategoryConflict(productName, img['Product Name'])) continue;
         const similarity = calculateSimilarity(productName, img['Product Name']);
@@ -87,43 +51,16 @@ export const findMatchingImage = async (productName: string, scrapedImages: Scra
     }
     
     bestMatches.sort((a, b) => b.score - a.score);
-    for (const match of bestMatches) {
-      const urlCount = [
-        match.image['Image URL 1'], match.image['Image URL 2'], match.image['Image URL 3'], 
-        match.image['Image URL 4'], match.image['Image URL 5'], match.image['Image URL 6'], 
-        match.image['Image URL 7'], match.image['Image URL 8'], match.image['Image URL 9'], 
-        match.image['Image URL 10']
-      ].filter(url => url && url.trim() !== '').length;
-
-      if (urlCount > 1) {
-        try {
-          const aiResult = await IntelligentImageSelectionService.selectBestImageWithAI(match.image, productName);
-          if (aiResult.quality !== "curated-fallback") {
-            selected = { 
-              url: aiResult.url, 
-              matchLevel: `high-similarity-ai-${aiResult.urlNumber}` 
-            };
-            break;
-          }
-        } catch (error) {
-          console.error('AI selection failed for high similarity match:', error);
-        }
-      }
-      
-      // Fallback to traditional method
-      const { url, quality, urlNumber } = selectBestImageUrl(match.image, productName);
-      if (quality !== "curated-fallback") {
-        selected = { url, matchLevel: `high-similarity-${quality}` };
-        break;
-      }
+    if (bestMatches.length > 0) {
+      selected = { url: bestMatches[0].image['Final Image URL'], matchLevel: 'high-similarity-refined' };
     }
   }
 
-  // Level 3: Brand + volume match, block category conflicts
+  // Level 3: Brand + volume match
   if (!selected) {
     const productVolume = extractVolume(productName);
     const productBrand = extractAlcoholBrand(productName);
-    for (const img of scrapedImages) {
+    for (const img of refinedImages) {
       if (img['Product Name']) {
         if (hasCategoryConflict(productName, img['Product Name'])) continue;
         const imageBrand = extractAlcoholBrand(img['Product Name']);
@@ -132,48 +69,39 @@ export const findMatchingImage = async (productName: string, scrapedImages: Scra
           productBrand && imageBrand && normalizeString(productBrand) === normalizeString(imageBrand) &&
           productVolume && imageVolume && normalizeString(productVolume) === normalizeString(imageVolume)
         ) {
-          const { url, quality, urlNumber } = selectBestImageUrl(img, productName);
-          if (quality !== "curated-fallback") {
-            selected = { url, matchLevel: `brand-volume-${quality}` };
-            break;
-          }
+          selected = { url: img['Final Image URL'], matchLevel: 'brand-volume-refined' };
+          break;
         }
       }
     }
   }
 
-  // Level 4: Brand-only match, block category conflicts
+  // Level 4: Brand-only match
   if (!selected) {
     const productBrand = extractAlcoholBrand(productName);
-    for (const img of scrapedImages) {
+    for (const img of refinedImages) {
       if (img['Product Name']) {
         if (hasCategoryConflict(productName, img['Product Name'])) continue;
         const imageBrand = extractAlcoholBrand(img['Product Name']);
         if (
           productBrand && imageBrand && normalizeString(productBrand) === normalizeString(imageBrand)
         ) {
-          const { url, quality, urlNumber } = selectBestImageUrl(img, productName);
-          if (quality !== "curated-fallback") {
-            selected = { url, matchLevel: `brand-only-${quality}` };
-            break;
-          }
+          selected = { url: img['Final Image URL'], matchLevel: 'brand-only-refined' };
+          break;
         }
       }
     }
   }
 
-  // Level 5: Partial similarity match and category, fallback if non-match
+  // Level 5: Partial similarity match
   if (!selected) {
-    for (const img of scrapedImages) {
+    for (const img of refinedImages) {
       if (img['Product Name']) {
         if (hasCategoryConflict(productName, img['Product Name'])) continue;
         const similarity = calculateSimilarity(productName, img['Product Name']);
         if (similarity > 0.4) {
-          const { url, quality, urlNumber } = selectBestImageUrl(img, productName);
-          if (quality !== "curated-fallback") {
-            selected = { url, matchLevel: `partial-similarity-${quality}` };
-            break;
-          }
+          selected = { url: img['Final Image URL'], matchLevel: 'partial-similarity-refined' };
+          break;
         }
       }
     }

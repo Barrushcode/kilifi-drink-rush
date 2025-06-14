@@ -14,19 +14,10 @@ interface Product {
   category: string;
 }
 
-interface ScrapedImage {
+interface RefinedImage {
   id: number;
   'Product Name': string | null;
-  'Image URL 1': string;
-  'Image URL 2': string | null;
-  'Image URL 3': string | null;
-  'Image URL 4': string | null;
-  'Image URL 5': string | null;
-  'Image URL 6': string | null;
-  'Image URL 7': string | null;
-  'Image URL 8': string | null;
-  'Image URL 9': string | null;
-  'Image URL 10': string | null;
+  'Final Image URL': string;
 }
 
 export const useProducts = () => {
@@ -75,21 +66,21 @@ export const useProducts = () => {
       const [allProductsData, imagesResponse] = await Promise.all([
         fetchAllProducts(),
         supabase
-          .from('scraped product images')
-          .select('id, "Product Name", "Image URL 1", "Image URL 2", "Image URL 3", "Image URL 4", "Image URL 5", "Image URL 6", "Image URL 7", "Image URL 8", "Image URL 9", "Image URL 10"')
+          .from('refinedproductimages')
+          .select('id, "Product Name", "Final Image URL"')
       ]);
 
       if (imagesResponse.error) {
-        console.error('❌ Images fetch error:', imagesResponse.error);
+        console.error('❌ Refined images fetch error:', imagesResponse.error);
         throw imagesResponse.error;
       }
 
-      const scrapedImages = imagesResponse.data || [];
+      const refinedImages = imagesResponse.data || [];
 
       const transformedProducts: Product[] = [];
       
-      // Process products in batches to avoid overwhelming the AI service
-      const batchSize = 50;
+      // Process products in batches
+      const batchSize = 100;
       for (let i = 0; i < allProductsData.length; i += batchSize) {
         const batch = allProductsData.slice(i, i + batchSize);
         console.log(`📦 Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(allProductsData.length / batchSize)}`);
@@ -115,8 +106,8 @@ export const useProducts = () => {
             category = 'Beer';
           }
 
-          // Use the enhanced async image matching
-          const { url: productImage } = await findMatchingImage(product.Title || 'Unknown Product', scrapedImages);
+          // Use the refined images for matching
+          const { url: productImage } = await findMatchingImage(product.Title || 'Unknown Product', refinedImages);
 
           return {
             id: globalIndex + 1,
@@ -135,7 +126,7 @@ export const useProducts = () => {
       const groupedProducts = groupProductsByBaseName(transformedProducts);
       const groupedProductsOrdered = groupProductsByBaseName(transformedProducts, true);
 
-      console.log(`✨ Successfully processed ${transformedProducts.length} products with AI-enhanced image selection`);
+      console.log(`✨ Successfully processed ${transformedProducts.length} products using refined images`);
       console.log('🎯 Sample grouped products:', groupedProducts.slice(0, 3));
 
       setProducts(groupedProducts);

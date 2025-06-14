@@ -150,6 +150,24 @@ export type Database = {
         }
         Relationships: []
       }
+      refinedproductimages: {
+        Row: {
+          "Final Image URL": string
+          id: number
+          "Product Name": string | null
+        }
+        Insert: {
+          "Final Image URL": string
+          id?: number
+          "Product Name"?: string | null
+        }
+        Update: {
+          "Final Image URL"?: string
+          id?: number
+          "Product Name"?: string | null
+        }
+        Relationships: []
+      }
       "scraped product images": {
         Row: {
           id: number
@@ -191,30 +209,6 @@ export type Database = {
           "Image URL 7"?: string | null
           "Image URL 8"?: string | null
           "Image URL 9"?: string | null
-          "Product Name"?: string | null
-        }
-        Relationships: []
-      }
-      "scraped product images_duplicate": {
-        Row: {
-          "Final image URL": string
-          id: number
-          "Image URL 4": string | null
-          "Image URL 7": string | null
-          "Product Name": string | null
-        }
-        Insert: {
-          "Final image URL": string
-          id?: number
-          "Image URL 4"?: string | null
-          "Image URL 7"?: string | null
-          "Product Name"?: string | null
-        }
-        Update: {
-          "Final image URL"?: string
-          id?: number
-          "Image URL 4"?: string | null
-          "Image URL 7"?: string | null
           "Product Name"?: string | null
         }
         Relationships: []
