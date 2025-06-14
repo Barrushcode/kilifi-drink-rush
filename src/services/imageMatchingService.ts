@@ -1,3 +1,4 @@
+
 import { normalizeString, extractBrand, extractVolume, calculateSimilarity } from '@/utils/stringUtils';
 import { getCategoryFromName } from '@/utils/categoryUtils';
 
@@ -196,32 +197,6 @@ const getBrandPreferenceBonus = (productName: string, imageName: string): number
 
 // Enhanced image matching function with relaxed brand restrictions
 export const findMatchingImage = (productName: string, scrapedImages: ScrapedImage[]): { url: string; matchLevel: string } => {
-  // === CUSTOM PINNED IMAGE LOGIC ===
-
-  // Use your uploaded images for these luxury Johnnie Walker products
-  const normalized = normalizeString(productName);
-
-  if (normalized === "johnnie walker odyssey" || normalized === "john walker & sons odyssey") {
-    return {
-      url: "/lovable-uploads/a8e2526a-0991-4970-b4b2-9b9b2d234eba.png",
-      matchLevel: "custom-pinned"
-    };
-  }
-
-  if (normalized === "johnnie walker king george" || normalized === "john walker & sons king george v" || normalized === "john walker & sons king george") {
-    return {
-      url: "/lovable-uploads/03798b6f-c91f-4643-b98f-543734089ddb.png",
-      matchLevel: "custom-pinned"
-    };
-  }
-
-  if (normalized.includes("private collection")) {
-    return {
-      url: "/lovable-uploads/b45136a6-065c-41c0-b7d2-c9a93f1f3c4e.png",
-      matchLevel: "custom-pinned"
-    };
-  }
-
   if (!scrapedImages.length) {
     return {
       url: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
