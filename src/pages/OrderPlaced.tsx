@@ -3,15 +3,15 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const bgStyle = `
-@keyframes calm-gradient-move {
-  0% { background-position: 0% 70%; }
-  50% { background-position: 100% 30%; }
-  100% { background-position: 0% 70%; }
+@keyframes moody-gradient-move {
+  0% { background-position: 0% 100%; }
+  50% { background-position: 100% 0%; }
+  100% { background-position: 0% 100%; }
 }
-.calm-gradient-bg {
-  background: linear-gradient(120deg, #e3ffe9 0%, #fceaff 50%, #faf3df 100%);
-  background-size: 150% 200%;
-  animation: calm-gradient-move 22s ease-in-out infinite;
+.moody-gradient-bg {
+  background: linear-gradient(120deg, #d946ef 0%, #6b21a8 50%, #38bdf8 100%);
+  background-size: 170% 170%;
+  animation: moody-gradient-move 16s ease-in-out infinite;
 }
 @keyframes draw-check {
   0% { stroke-dashoffset: 24; }
@@ -19,20 +19,20 @@ const bgStyle = `
   100% { stroke-dashoffset: 0; }
 }
 .calm-checkmark {
-  stroke: #a855f7;
+  stroke: #d946ef;
   stroke-width: 3.6;
   stroke-linecap: round;
   stroke-dasharray: 24;
   stroke-dashoffset: 24;
-  animation: draw-check 1s 0.25s cubic-bezier(0.5,1.6,0.5,1) forwards;
+  animation: draw-check 1.1s 0.28s cubic-bezier(0.5,1.6,0.5,1) forwards;
 }
 `;
 
-const confettiSoft = [
-  { emoji: "✨", style: { left: "16%", top: "11%", opacity: 0.16, fontSize: "2rem", rotate: "-9deg" } },
-  { emoji: "🎉", style: { left: "78%", top: "14%", opacity: 0.16, fontSize: "2.1rem", rotate: "9deg" } },
-  { emoji: "🥂", style: { left: "26%", top: "80%", opacity: 0.14, fontSize: "1.7rem", rotate: "-5deg" } },
-  { emoji: "🎊", style: { left: "61%", top: "88%", opacity: 0.13, fontSize: "1.8rem", rotate: "7deg" } }
+const confettiBrand = [
+  { emoji: "💖", style: { left: "18%", top: "8%", opacity: 0.11, fontSize: "2.5rem", rotate: "-8deg" } },
+  { emoji: "💙", style: { left: "75%", top: "13%", opacity: 0.13, fontSize: "2.7rem", rotate: "12deg" } },
+  { emoji: "✨", style: { left: "23%", top: "82%", opacity: 0.09, fontSize: "2.3rem", rotate: "-4deg" } },
+  { emoji: "💖", style: { left: "60%", top: "85%", opacity: 0.10, fontSize: "2.2rem", rotate: "5deg" } }
 ];
 
 const OrderPlaced: React.FC = () => {
@@ -40,27 +40,27 @@ const OrderPlaced: React.FC = () => {
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center z-50 calm-gradient-bg"
+      className="fixed inset-0 flex items-center justify-center z-50 moody-gradient-bg"
       style={{ minHeight: "100vh" }}
     >
       <style>{bgStyle}</style>
-      {/* Gentle confetti (background, not distracting) */}
+      {/* Subtle brand confetti */}
       <div className="pointer-events-none select-none absolute inset-0" aria-hidden>
-        {confettiSoft.map((c, i) => (
+        {confettiBrand.map((c, i) => (
           <span
             key={i}
-            style={{ ...c.style, position: "absolute", filter: "blur(0.5px)" }}
+            style={{ ...c.style, position: "absolute", filter: "blur(1px)" }}
             aria-hidden
           >
             {c.emoji}
           </span>
         ))}
       </div>
-      {/* Soft, centered confirmation card */}
-      <div className="relative bg-white bg-opacity-90 rounded-2xl py-10 px-7 shadow-xl flex flex-col items-center animate-scale-in max-w-sm w-full mx-4 border border-barrush-platinum">
+      {/* Deep card with soft shadow */}
+      <div className="relative bg-white bg-opacity-85 backdrop-blur-xs rounded-2xl py-10 px-7 shadow-2xl flex flex-col items-center animate-scale-in max-w-sm w-full mx-4 border border-barrush-platinum">
         {/* Animated checkmark */}
         <svg viewBox="0 0 32 32" width={62} height={62} className="mb-4" aria-label="Order complete, checkmark" role="img">
-          <circle cx="16" cy="16" r="15" fill="#edf6ff" />
+          <circle cx="16" cy="16" r="15" fill="#f7e8fd" />
           <path
             className="calm-checkmark"
             d="M10.6 17.2l4 4.6 7.2-8.5"
@@ -90,3 +90,4 @@ const OrderPlaced: React.FC = () => {
 };
 
 export default OrderPlaced;
+
