@@ -198,16 +198,26 @@ const getBrandPreferenceBonus = (productName: string, imageName: string): number
 export const findMatchingImage = (productName: string, scrapedImages: ScrapedImage[]): { url: string; matchLevel: string } => {
   // === CUSTOM PINNED IMAGE LOGIC ===
 
-  if (normalizeString(productName) === "johnnie walker odyssey") {
+  // Use your uploaded images for these luxury Johnnie Walker products
+  const normalized = normalizeString(productName);
+
+  if (normalized === "johnnie walker odyssey" || normalized === "john walker & sons odyssey") {
     return {
-      url: "/lovable-uploads/efbb490f-4f0a-41d9-b505-6466ffde8375.png",
+      url: "/lovable-uploads/4bba2ec3-688d-43cc-9a08-6f75bc4a023c.png",
       matchLevel: "custom-pinned"
     };
   }
 
-  if (normalizeString(productName) === "johnnie walker king george") {
+  if (normalized === "johnnie walker king george" || normalized === "john walker & sons king george v" || normalized === "john walker & sons king george") {
     return {
-      url: "/lovable-uploads/3d24e41f-ae05-4d16-84a1-06c0f7213ba3.png",
+      url: "/lovable-uploads/03798b6f-c91f-4643-b98f-543734089ddb.png",
+      matchLevel: "custom-pinned"
+    };
+  }
+
+  if (normalized.includes("private collection")) {
+    return {
+      url: "/lovable-uploads/e0908648-dc14-4384-adec-f22901d56cf3.png",
       matchLevel: "custom-pinned"
     };
   }
