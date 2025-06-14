@@ -108,18 +108,15 @@ export class AIImageGenerationService {
     console.log('🧹 AI Image Generation cache cleared');
   }
 
-  static async clearBrowserImageCache(): Promise<void> {
-    try {
-      // Force browser to reload images by clearing cache
-      if ('caches' in window) {
-        const cacheNames = await caches.keys();
-        await Promise.all(
-          cacheNames.map(cacheName => caches.delete(cacheName))
-        );
-        console.log('🧹 Browser image cache cleared successfully');
-      }
-    } catch (error) {
-      console.error('Failed to clear browser cache:', error);
+  static clearBrowserImageCache(): void {
+    // Force browser to reload images by clearing cache
+    if ('caches' in window) {
+      caches.names().then(names => {
+        names.forEach(name => {
+          caches.delete(name);
+        });
+      });
     }
+    console.log('🧹 Browser image cache clearing initiated');
   }
 }

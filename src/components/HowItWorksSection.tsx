@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 const HowItWorksSection: React.FC = () => {
@@ -19,25 +18,25 @@ const HowItWorksSection: React.FC = () => {
     title: "Fast Delivery",
     description: "Sit back and relax while we deliver your drinks quickly and safely"
   }];
-  return <section className="py-20 bg-gradient-to-b from-barrush-midnight to-neon-purple-dark/50">
+  return <section className="py-20 bg-gradient-to-b from-barrush-charcoal to-barrush-burgundy/20">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-neon-blue mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-barrush-gold mb-6 text-zinc-50">
             How It Works
           </h2>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+          <p className="text-xl text-barrush-cream max-w-2xl mx-auto text-zinc-50">
             Getting your favorite drinks delivered is simple and fast
           </p>
         </div>
         
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
-          {steps.map((step, index) => <Card key={index} className="bg-barrush-slate/50 border-neon-blue border hover:border-neon-blue/80 transition-all duration-300 hover:scale-105">
+          {steps.map((step, index) => <Card key={index} className="bg-barrush-charcoal/80 border-barrush-gold border hover:border-barrush-gold/80 transition-all duration-300 hover:scale-105">
               <CardContent className="p-6 text-center">
                 <div className="text-4xl mb-4">{step.number}</div>
-                <h3 className="text-xl font-bold text-neon-blue mb-4">
+                <h3 className="text-xl font-bold text-barrush-gold mb-4 text-zinc-50">
                   {step.title}
                 </h3>
-                <p className="text-gray-300/80">
+                <p className="text-barrush-cream/80 text-zinc-50">
                   {step.description}
                 </p>
               </CardContent>

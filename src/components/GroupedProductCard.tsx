@@ -1,27 +1,123 @@
-
 import React, { useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { GroupedProduct } from '@/utils/productGroupingUtils';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useNavigate } from 'react-router-dom';
+import { ShoppingCart, CreditCard } from 'lucide-react';
+import { GroupedProduct, ProductVariant } from '@/utils/productGroupingUtils';
+import { useCart } from '@/contexts/CartContext';
+import { useToast } from '@/hooks/use-toast';
 import ProductQuickViewModal from './ProductQuickViewModal';
-import { useGroupedProductCard } from './grouped-product-card/useGroupedProductCard';
-import GroupedProductCardImage from './grouped-product-card/GroupedProductCardImage';
-import GroupedProductVariantSelector from './grouped-product-card/GroupedProductVariantSelector';
-import GroupedProductCardActions from './grouped-product-card/GroupedProductCardActions';
+import { normalizeString } from '@/utils/stringUtils';
+
+// Utility to determine if the product image is appropriate
+function isImageAppropriate(url?: string) {
+  if (!url) return false;
+  const lowerUrl = url.toLowerCase();
+  // Exclude low quality/social domains
+  const badDomains = [
+    'youtube.com', 'youtu.be', 'pinterest.com', 'facebook.com', 'instagram.com',
+    'twitter.com', 'tiktok.com', 'reddit.com', 'blogspot.com', 'wordpress.com',
+    'wikimedia.org', 'wikipedia.org', 'tumblr.com', 'placeholder', 'no-image',
+    'svg', 'icon', 'logo'
+  ];
+  if (badDomains.some(domain => lowerUrl.includes(domain))) return false;
+  // Exclude clearly broken, tiny images
+  if (
+    lowerUrl.endsWith('.svg') ||
+    /150|default|thumb|generic/i.test(lowerUrl) ||
+    lowerUrl.includes('placeholder')
+  ) return false;
+  // Accept only links with .jpg/.jpeg/.png/webp and of reasonable length
+  if (!/\.(jpg|jpeg|png|webp)$/i.test(lowerUrl)) return false;
+  // Accept high-quality known sources, otherwise fallback if no other indicators
+  return true;
+}
 
 interface GroupedProductCardProps {
   product: GroupedProduct;
 }
 
+function capitalizeWords(str: string) {
+  return str.replace(/\w\S*/g, (w) => w.replace(/^\w/, (c) => c.toUpperCase()));
+}
+
+const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80";
+
 const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(product.variants[0]);
   const [modalOpen, setModalOpen] = useState(false);
-  const {
-    selectedVariant,
-    handleVariantChange,
-    handleAddToCart,
-    handleBuyNow,
-    displayName,
-    displayImage,
-  } = useGroupedProductCard(product);
+  const navigate = useNavigate();
+  const { addItem } = useCart();
+  const { toast } = useToast();
+
+  const handleAddToCart = () => {
+    try {
+      const cartItem = {
+        id: `${product.baseName}-${selectedVariant.size}`,
+        name: product.baseName,
+        price: selectedVariant.price,
+        priceFormatted: selectedVariant.priceFormatted,
+        size: selectedVariant.size,
+        image: product.image, // Retaining image for cart/modal data
+        category: product.category
+      };
+      addItem(cartItem);
+      toast({
+        title: "Added to Cart",
+        description: `${product.baseName} (${selectedVariant.size}) added to cart`,
+        duration: 2000,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add item to cart",
+        variant: "destructive",
+        duration: 2000,
+      });
+    }
+  };
+
+  const handleBuyNow = () => {
+    try {
+      const cartItem = {
+        id: `${product.baseName}-${selectedVariant.size}`,
+        name: product.baseName,
+        price: selectedVariant.price,
+        priceFormatted: selectedVariant.priceFormatted,
+        size: selectedVariant.size,
+        image: product.image, // Retaining image for cart/modal data
+        category: product.category
+      };
+      addItem(cartItem);
+      navigate('/cart');
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to start checkout",
+        variant: "destructive",
+        duration: 2000,
+      });
+    }
+  };
+
+  const handleVariantChange = (variantIndex: string) => {
+    const variant = product.variants[parseInt(variantIndex)];
+    setSelectedVariant(variant);
+  };
+
+  // Make main card clickable except button row
+  const handleCardClick = (e: React.MouseEvent) => {
+    const tag = (e.target as HTMLElement).tagName.toLowerCase();
+    if (tag === 'button' || tag === 'svg' || (e.target as HTMLElement).closest('button')) return;
+    setModalOpen(true);
+  };
+
+  // Normalize and capitalize product name for display
+  const displayName = capitalizeWords(normalizeString(product.baseName));
+  // Display only if image is appropriate, else fallback
+  const displayImage = isImageAppropriate(product.image) ? product.image : FALLBACK_IMAGE;
 
   return (
     <>
@@ -30,50 +126,122 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         onOpenChange={setModalOpen}
         product={product}
       />
-      <div
-        className="
-          bg-glass-effect rounded-2xl border border-neon-blue/20 hover:border-neon-pink/50
-          backdrop-blur-md overflow-hidden transition-all duration-500 hover:scale-105
-          font-iphone relative cursor-pointer group flex flex-col h-full
-        "
-        onClick={() => setModalOpen(true)}
+      <Card 
+        className="overflow-hidden h-full min-h-[370px] shadow-lg transition-all duration-300 group hover:scale-105 bg-barrush-slate border-barrush-steel/30 flex flex-col"
+        onClick={handleCardClick}
         tabIndex={0}
-        role="button"
+        onKeyDown={e => {
+          if (e.key === 'Enter') setModalOpen(true);
+        }}
         aria-label={`Open details for ${displayName}`}
-        onKeyDown={e => { if (e.key === 'Enter') setModalOpen(true); }}
+        role="button"
       >
-        <GroupedProductCardImage src={displayImage} alt={displayName} />
-        
-        <div className="p-6 flex flex-col flex-grow">
-          <div className="flex items-center gap-2 mb-3">
-            <Badge className="bg-neon-blue/10 text-neon-blue border border-neon-blue/20 font-semibold px-3 py-1">
+        <CardContent className="p-2 md:p-4 lg:p-5 flex flex-col h-full">
+          {/* Image */}
+          <div className="w-full h-24 md:h-32 lg:h-40 rounded-lg overflow-hidden mb-2 relative">
+            <img
+              src={displayImage}
+              alt={displayName}
+              className="w-full h-full object-cover transition-opacity duration-300"
+              loading="lazy"
+              style={{ background: '#222', display: 'block' }}
+              onError={e => {
+                if (e.currentTarget.src !== FALLBACK_IMAGE) e.currentTarget.src = FALLBACK_IMAGE;
+              }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-barrush-midnight/60 to-transparent group-hover:from-barrush-midnight/40 transition-all duration-300" />
+          </div>
+          <h3 className="text-xs md:text-base lg:text-xl font-bold mb-1 font-iphone line-clamp-2 text-barrush-platinum">
+            {displayName}
+          </h3>
+          <div className="flex flex-wrap items-center gap-1 md:gap-2 mb-2">
+            <Badge className="px-2 py-1 text-xs font-iphone bg-barrush-steel/60 text-barrush-platinum border-barrush-steel/80">
               {product.category}
             </Badge>
-            {!!product.variants.length && product.variants.length > 1 && (
-              <Badge variant="outline" className="text-xs font-iphone text-neon-blue/70 border-neon-blue/50">
+            {product.variants.length > 1 && (
+              <Badge variant="outline" className="text-xs font-iphone text-barrush-platinum/70 border-barrush-steel/80">
                 {product.variants.length} sizes
               </Badge>
             )}
           </div>
-          <h3 className="text-xl font-bold font-serif text-neon-pink-light mb-2 line-clamp-2">{displayName}</h3>
           {product.description && (
-            <p className="text-gray-300/80 mb-4 text-sm line-clamp-3">{product.description}</p>
+            <p className="mb-2 text-xs md:text-sm line-clamp-2 font-iphone text-barrush-platinum/80">
+              {product.description}
+            </p>
           )}
-
-          <div className="mt-auto">
-            <GroupedProductVariantSelector 
-              product={product}
-              selectedVariant={selectedVariant}
-              onVariantChange={handleVariantChange}
-            />
-            
-            <GroupedProductCardActions 
-              onAddToCart={handleAddToCart}
-              onBuyNow={handleBuyNow}
-            />
+          {/* Size Selector */}
+          {product.variants.length > 1 ? (
+            <div className="mb-2">
+              <label className="block text-xs font-medium mb-1 font-iphone text-barrush-platinum/80">
+                Size & Price:
+              </label>
+              <Select 
+                value={product.variants.indexOf(selectedVariant).toString()} 
+                onValueChange={handleVariantChange}
+              >
+                <SelectTrigger className="h-10 font-iphone text-xs bg-barrush-midnight border-barrush-steel text-barrush-platinum">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="z-50 bg-barrush-midnight border-barrush-steel">
+                  {product.variants.map((variant, index) => (
+                    <SelectItem 
+                      key={index} 
+                      value={index.toString()}
+                      className="font-iphone text-barrush-platinum hover:!bg-barrush-steel/50 focus:!bg-barrush-steel/50"
+                    >
+                      <div className="flex justify-between items-center w-full">
+                        <span className="text-xs">{variant.size}</span>
+                        <span className="ml-2 font-bold text-xs text-pink-400">
+                          {variant.priceFormatted}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          ) : (
+            <div className="mb-2">
+              <span className="text-xs font-iphone text-barrush-platinum/80">
+                Size: {selectedVariant.size}
+              </span>
+            </div>
+          )}
+          <div className="flex flex-col gap-2 mt-auto">
+            <div className="flex flex-col">
+              <span className="text-base md:text-lg lg:text-xl font-bold font-iphone text-barrush-platinum">
+                {selectedVariant.priceFormatted}
+              </span>
+              {product.variants.length > 1 && selectedVariant !== product.variants[0] && (
+                <span className="text-xs font-iphone text-barrush-platinum/70">
+                  from {product.lowestPriceFormatted}
+                </span>
+              )}
+            </div>
+            {/* Action Buttons */}
+            <div className="flex gap-2 mt-1 z-10 w-full flex-col sm:flex-row">
+              <Button 
+                onClick={(e) => { e.stopPropagation(); handleAddToCart(); }}
+                className="flex-1 font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-transparent border-2 border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white w-full"
+              >
+                <ShoppingCart className="h-3 w-3 mr-1" />
+                Add to Cart
+              </Button>
+              <Button 
+                onClick={(e) => { e.stopPropagation(); handleBuyNow(); }}
+                className="flex-1 font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-rose-600 hover:bg-rose-500 text-white border-none shadow-lg w-full"
+                style={{
+                  backgroundColor: '#e11d48',
+                  color: '#fff',
+                }}
+              >
+                <CreditCard className="h-3 w-3 mr-1" />
+                Buy Now
+              </Button>
+            </div>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </>
   );
 };

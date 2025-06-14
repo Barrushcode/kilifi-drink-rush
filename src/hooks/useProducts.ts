@@ -2,8 +2,8 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getCategoryFromName } from '@/utils/categoryUtils';
+import { findMatchingImage } from '@/services/imageMatchingService';
 import { groupProductsByBaseName, GroupedProduct } from '@/utils/productGroupingUtils';
-import { AIImageGenerationService } from '@/services/aiImageGenerationService';
 
 interface Product {
   id: number;
@@ -14,14 +14,17 @@ interface Product {
   category: string;
 }
 
+interface RefinedImage {
+  id: number;
+  'Product Name': string | null;
+  'Final Image URL': string;
+}
+
 export const useProducts = () => {
   const [products, setProducts] = useState<GroupedProduct[]>([]);
   const [productsByOriginalOrder, setProductsByOriginalOrder] = useState<GroupedProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const FALLBACK_IMAGE =
-    "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80";
 
   const fetchAllProducts = async () => {
     const allProducts = [];
@@ -32,7 +35,7 @@ export const useProducts = () => {
     while (hasMore) {
       const { data, error } = await supabase
         .from('allthealcoholicproducts')
-        .select('Title, Description, Price, "Product image URL"')
+        .select('Title, Description, Price')
         .order('Title', { ascending: true })
         .range(offset, offset + batchSize - 1);
 
@@ -59,48 +62,72 @@ export const useProducts = () => {
     try {
       setLoading(true);
       setError(null);
-      console.log('🚀 Starting to fetch products (with images)...');
+      console.log('🚀 Starting to fetch products...');
+      const [allProductsData, imagesResponse] = await Promise.all([
+        fetchAllProducts(),
+        supabase
+          .from('refinedproductimages')
+          .select('id, "Product Name", "Final Image URL"')
+      ]);
 
-      const allProductsData = await fetchAllProducts();
+      if (imagesResponse.error) {
+        console.error('❌ Refined images fetch error:', imagesResponse.error);
+        throw imagesResponse.error;
+      }
+
+      const refinedImages = imagesResponse.data || [];
 
       const transformedProducts: Product[] = [];
-      const batchSize = 100; // For future proof, but no AI calls
-
+      
+      // Process products in batches
+      const batchSize = 100;
       for (let i = 0; i < allProductsData.length; i += batchSize) {
         const batch = allProductsData.slice(i, i + batchSize);
-
-        const batchResults = batch.map((product, batchIndex) => {
+        console.log(`📦 Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(allProductsData.length / batchSize)}`);
+        
+        const batchPromises = batch.map(async (product, batchIndex) => {
           const globalIndex = i + batchIndex;
+          
           if (typeof product.Price !== 'number' || isNaN(product.Price)) {
             console.warn('[🛑 MISSING OR INVALID PRICE]', product.Title, 'Raw:', product.Price);
             return null;
           }
 
           const productPrice = product.Price;
-          // Use existing utils for category
+
+          if (productPrice < 100 || productPrice > 500000) {
+            console.warn('[⚠️ OUT-OF-BOUNDS PRICE]', product.Title, 'Price:', productPrice);
+          }
+
+          const description = product.Description || '';
           let category = getCategoryFromName(product.Title || 'Unknown Product', productPrice);
-          if ((product.Description || '').toLowerCase().includes('beer')) {
+
+          if (description.toLowerCase().includes('beer')) {
             category = 'Beer';
           }
 
-          // Use product image URL if available, otherwise fallback
-          const productImage = product['Product image URL'] || FALLBACK_IMAGE;
+          // Use the refined images for matching
+          const { url: productImage } = await findMatchingImage(product.Title || 'Unknown Product', refinedImages);
 
           return {
             id: globalIndex + 1,
             name: product.Title || 'Unknown Product',
             price: `KES ${productPrice.toLocaleString()}`,
-            description: product.Description || '',
+            description,
             category,
             image: productImage
           };
         });
 
+        const batchResults = await Promise.all(batchPromises);
         transformedProducts.push(...batchResults.filter(Boolean));
       }
 
       const groupedProducts = groupProductsByBaseName(transformedProducts);
       const groupedProductsOrdered = groupProductsByBaseName(transformedProducts, true);
+
+      console.log(`✨ Successfully processed ${transformedProducts.length} products using refined images`);
+      console.log('🎯 Sample grouped products:', groupedProducts.slice(0, 3));
 
       setProducts(groupedProducts);
       setProductsByOriginalOrder(groupedProductsOrdered);

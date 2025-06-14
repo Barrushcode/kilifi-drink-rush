@@ -25,31 +25,31 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   };
 
   return (
-    <Card className="bg-glass-effect border-neon-blue/20 border hover:border-neon-pink/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden">
+    <Card className="bg-glass-effect border-barrush-steel/30 border hover:border-barrush-copper/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden">
       <ProductImageLoader
         src={product.image}
         alt={`${product.name} - ${product.category}`}
         className="h-64"
       />
       <CardContent className="p-8">
-        <h3 className="text-2xl font-bold mb-3 font-serif text-neon-pink-light">
+        <h3 className="text-2xl font-bold mb-3 font-serif text-red-200">
           {product.name}
         </h3>
-        <Badge className="bg-gray-700/60 text-gray-200 mb-4 px-3 py-1">
+        <Badge className="bg-barrush-steel/60 text-barrush-platinum mb-4 px-3 py-1">
           {product.category}
         </Badge>
         {product.description && (
-          <p className="text-gray-200/80 mb-4 text-sm line-clamp-2">
+          <p className="text-barrush-platinum/80 mb-4 text-sm line-clamp-2">
             {product.description}
           </p>
         )}
         <div className="flex justify-between items-center">
-          <span className="text-3xl font-bold text-gray-200">
+          <span className="text-3xl font-bold text-barrush-platinum">
             {product.price}
           </span>
           <Button 
             onClick={handleAddToCart}
-            className="text-barrush-midnight font-bold px-6 py-3 transition-all duration-300 hover:scale-105 bg-neon-pink hover:bg-neon-pink/90"
+            className="text-barrush-midnight font-bold px-6 py-3 transition-all duration-300 hover:scale-105 bg-rose-600 hover:bg-rose-500"
           >
             Add to Cart
           </Button>

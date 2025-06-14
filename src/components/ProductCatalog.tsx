@@ -1,6 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import ProductCatalogHeader from './ProductCatalogHeader';
+import ProductsDebugInfo from './ProductsDebugInfo';
 import ProductGrid from './ProductGrid';
 import ProductsPagination from './ProductsPagination';
 import ProductLoadingSkeleton from './ProductLoadingSkeleton';
@@ -10,7 +12,7 @@ import { usePagination } from '@/hooks/usePagination';
 
 const ProductCatalog: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState('Wine');
   const [currentPage, setCurrentPage] = useState(1);
   const [showAuditReport, setShowAuditReport] = useState(false);
   const itemsPerPage = 12;
@@ -28,6 +30,11 @@ const ProductCatalog: React.FC = () => {
   const displayFilteredProducts = selectedCategory === "All"
     ? allFilters.filteredProducts
     : categoryFilters.filteredProducts;
+
+  // Pick correct products list (for debug only)
+  const displayProducts = selectedCategory === "All"
+    ? productsByOriginalOrder
+    : products;
 
   const { totalPages, hasNextPage, hasPreviousPage, startIndex, endIndex } = usePagination({
     totalItems: displayFilteredProducts.length,
@@ -125,6 +132,14 @@ const ProductCatalog: React.FC = () => {
           showAuditReport={showAuditReport}
           setShowAuditReport={setShowAuditReport}
         />
+
+        <ProductsDebugInfo
+          products={displayProducts}
+          filteredProducts={displayFilteredProducts}
+          paginatedProducts={paginatedProducts}
+          selectedCategory={selectedCategory}
+          searchTerm={searchTerm}
+        />
         
         <ProductGrid
           paginatedProducts={paginatedProducts}
@@ -151,3 +166,4 @@ const ProductCatalog: React.FC = () => {
 };
 
 export default ProductCatalog;
+
