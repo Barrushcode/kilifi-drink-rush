@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import ProductCatalogHeader from './ProductCatalogHeader';
@@ -15,34 +16,38 @@ const ProductCatalog: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showAuditReport, setShowAuditReport] = useState(false);
   const itemsPerPage = 12;
-  
-  const { products, productsByOriginalOrder, loading, error, refetch } = useProducts();
-  const { categories, filteredProducts } = useProductFilters(products, searchTerm, selectedCategory);
-  const { totalPages, hasNextPage, hasPreviousPage, startIndex, endIndex } = usePagination({
-    totalItems: filteredProducts.length,
-    itemsPerPage,
-    currentPage
-  });
 
-  // Always preserve original order for "All", even after filters/search!
+  const { products = [], productsByOriginalOrder = [], loading, error, refetch } = useProducts();
+
+  // Call hooks unconditionally and safely with empty array fallback.
+  const allFilters = useProductFilters(productsByOriginalOrder || [], searchTerm, "All");
+  const categoryFilters = useProductFilters(products || [], searchTerm, selectedCategory);
+
+  // Categories always from filter of products array (should be stable)
+  const categories = categoryFilters.categories;
+
+  // Pick correct data for filtered products
+  const displayFilteredProducts = selectedCategory === "All"
+    ? allFilters.filteredProducts
+    : categoryFilters.filteredProducts;
+
+  // Pick correct products list (for debug only)
   const displayProducts = selectedCategory === "All"
     ? productsByOriginalOrder
     : products;
 
-  // When in "All", reapply filters/search on productsByOriginalOrder in original Supabase order.
-  // For other categories, keep the already filteredProducts output
-  const displayFilteredProducts = selectedCategory === "All"
-    ? useProductFilters(productsByOriginalOrder, searchTerm, "All").filteredProducts
-    : filteredProducts;
+  const { totalPages, hasNextPage, hasPreviousPage, startIndex, endIndex } = usePagination({
+    totalItems: displayFilteredProducts.length,
+    itemsPerPage,
+    currentPage
+  });
 
-  // Preserve Supabase order post-filtering/pagination for "All".
   const paginatedProducts = displayFilteredProducts.slice(startIndex, endIndex);
 
-  // Enhanced debug logging
   useEffect(() => {
     console.log('🔍 ProductCatalog DEBUG:', {
       productsCount: products.length,
-      filteredCount: filteredProducts.length,
+      filteredCount: displayFilteredProducts.length,
       paginatedCount: paginatedProducts.length,
       loading,
       error,
@@ -54,14 +59,12 @@ const ProductCatalog: React.FC = () => {
     if (paginatedProducts.length > 0) {
       console.log('🎯 First 3 products to render:', paginatedProducts.slice(0, 3));
     }
-  }, [products, filteredProducts, paginatedProducts, loading, error, selectedCategory, searchTerm]);
+  }, [products, displayFilteredProducts, paginatedProducts, loading, error, selectedCategory, searchTerm]);
 
-  // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, selectedCategory]);
 
-  // Set Wine as default if it exists in categories, otherwise fall back to All
   useEffect(() => {
     if (categories.length > 0 && selectedCategory === 'Wine') {
       const hasWine = categories.some(cat => cat.toLowerCase().includes('wine'));
@@ -71,7 +74,6 @@ const ProductCatalog: React.FC = () => {
     }
   }, [categories, selectedCategory]);
 
-  // Show the loading skeleton tightly with no extra margin above!
   if (loading) {
     return (
       <section id="products" className="pt-0 pb-0 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative overflow-hidden">
@@ -164,3 +166,4 @@ const ProductCatalog: React.FC = () => {
 };
 
 export default ProductCatalog;
+
