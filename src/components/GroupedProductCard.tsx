@@ -5,16 +5,28 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
-import { ShoppingCart, CreditCard } from 'lucide-react';
-import OptimizedImage from './OptimizedImage';
+import { ShoppingCart, CreditCard, Wine, Beer } from 'lucide-react';
 import { GroupedProduct, ProductVariant } from '@/utils/productGroupingUtils';
 import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import ProductQuickViewModal from './ProductQuickViewModal';
+import { normalizeString } from '@/utils/stringUtils';
 
 interface GroupedProductCardProps {
   product: GroupedProduct;
 }
+
+function capitalizeWords(str: string) {
+  return str.replace(/\w\S*/g, (w) => w.replace(/^\w/, (c) => c.toUpperCase()));
+}
+
+const getLogoIconForCategory = (category: string) => {
+  const lowerCat = category.toLowerCase();
+  if (lowerCat.includes('wine') || lowerCat.includes('champagne')) return <Wine size={62} color="#e11d48" className="m-auto" />;
+  if (lowerCat.includes('beer')) return <Beer size={62} color="#eab308" className="m-auto" />;
+  // Spirits fallback: use wine icon (could use another fallback if new icon allowed)
+  return <Wine size={62} color="#db2777" className="m-auto" />;
+};
 
 const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(product.variants[0]);
@@ -86,6 +98,9 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
     setModalOpen(true);
   };
 
+  // Normalize and capitalize product name for display
+  const displayName = capitalizeWords(normalizeString(product.baseName));
+
   return (
     <>
       <ProductQuickViewModal
@@ -100,20 +115,16 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         onKeyDown={e => {
           if (e.key === 'Enter') setModalOpen(true);
         }}
-        aria-label={`Open details for ${product.baseName}`}
+        aria-label={`Open details for ${displayName}`}
         role="button"
       >
-        <div className="relative h-32 md:h-40 lg:h-48 bg-gray-900">
-          <OptimizedImage
-            src={product.image}
-            alt={`${product.baseName} - ${product.category}`}
-            className="w-full h-full"
-            priority={false}
-          />
+        <div className="relative flex items-center justify-center h-32 md:h-40 lg:h-48 bg-gray-900">
+          {/* Display logo based on category */}
+          {getLogoIconForCategory(product.category)}
         </div>
         <CardContent className="p-3 md:p-4 lg:p-6 flex flex-col h-full">
           <h3 className="text-sm md:text-base lg:text-xl font-bold mb-2 font-iphone line-clamp-2 text-white">
-            {product.baseName}
+            {displayName}
           </h3>
           <div className="flex flex-wrap items-center gap-1 md:gap-2 mb-3">
             <Badge className="px-2 py-1 text-xs font-iphone bg-gray-600 text-gray-200 border-gray-500">
@@ -208,3 +219,4 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
 };
 
 export default GroupedProductCard;
+
