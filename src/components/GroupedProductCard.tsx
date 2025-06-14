@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,9 +21,13 @@ function capitalizeWords(str: string) {
 
 const getLogoIconForCategory = (category: string) => {
   const lowerCat = category.toLowerCase();
-  if (lowerCat.includes('wine') || lowerCat.includes('champagne')) return <Wine size={62} color="#e11d48" className="m-auto" />;
-  if (lowerCat.includes('beer')) return <Beer size={62} color="#eab308" className="m-auto" />;
-  // Spirits fallback: use wine icon (could use another fallback if new icon allowed)
+  if (lowerCat.includes('wine') || lowerCat.includes('champagne')) {
+    return <Wine size={62} color="#e11d48" className="m-auto" />;
+  }
+  if (lowerCat.includes('beer')) {
+    return <Beer size={62} color="#eab308" className="m-auto" />;
+  }
+  // Everything else (spirits, vodka, etc.): use wine icon with different color
   return <Wine size={62} color="#db2777" className="m-auto" />;
 };
 
@@ -219,4 +222,3 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
 };
 
 export default GroupedProductCard;
-
