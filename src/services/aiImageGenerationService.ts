@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 
 interface AIImageRequest {
@@ -87,7 +88,7 @@ export class AIImageGenerationService {
     return `Professional product photography of an alcohol bottle labeled "${cleanName}", elegant glass bottle, clean white background, studio lighting, high-quality commercial product shot, no people, no text overlay`;
   }
 
-  public static getFallbackImage(category: string): string {
+  private static getFallbackImage(category: string): string {
     const categoryLower = category.toLowerCase();
     
     if (categoryLower.includes('wine') || categoryLower.includes('red') || categoryLower.includes('white')) {

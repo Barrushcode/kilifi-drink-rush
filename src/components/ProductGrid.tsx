@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import ProductCardSelector from './ProductCardSelector';
 import GroupedProductCard from './GroupedProductCard';
 import { GroupedProduct } from '@/utils/productGroupingUtils';
 
@@ -22,33 +21,12 @@ const ProductGrid: React.FC<ProductGridProps> = ({
   setSearchTerm,
   setSelectedCategory
 }) => {
-  // Show selector if we have products to demo
-  const showSelector = paginatedProducts.length > 0;
-  const sampleProduct = paginatedProducts[0];
-
   // Determine if beers category is selected (case-insensitive, future-proof).
   const isBeersCategory =
     typeof filteredProducts !== "undefined" &&
     filteredProducts.length > 0 &&
     filteredProducts[0].category &&
     filteredProducts[0].category.toLowerCase().includes("beer");
-
-  if (showSelector) {
-    return (
-      <div className="space-y-8">
-        <ProductCardSelector sampleProduct={sampleProduct} />
-        
-        <div className="text-center">
-          <p className="text-gray-600 mb-4">
-            After choosing your preferred style, I'll apply it to all products in the catalog.
-          </p>
-          <p className="text-sm text-gray-500">
-            The current product grid will be updated once you make your selection.
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <>
