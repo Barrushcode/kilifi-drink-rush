@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 interface AIImageResult {
@@ -9,7 +8,12 @@ interface AIImageResult {
 export class AIProductImageService {
   // Cache for storing generated images to avoid repeated API calls
   private static imageCache = new Map<string, string>();
-  
+
+  /** Public getter to safely expose image cache map for read-only */
+  public static getImageCache(): Map<string, string> {
+    return this.imageCache;
+  }
+
   // Fallback images for when AI generation fails
   private static readonly FALLBACK_IMAGES = [
     'https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',

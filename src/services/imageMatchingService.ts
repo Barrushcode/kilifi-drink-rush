@@ -318,9 +318,8 @@ export const findMatchingImage = (productName: string, scrapedImages: ScrapedIma
     !selected.url ||
     isLowQualityOrUnrelatedImage(selected.url, productName)
   ) {
-    // Synchronously fallback to AI mockup (async generation not possible here, so block while generating/caching)
-    // This will cache the result via AIProductImageService so repeated requests are fast.
-    let aiUrl = AIProductImageService.imageCache?.get(productName.toLowerCase());
+    // Use public getter for imageCache instead of private property access
+    let aiUrl = AIProductImageService.getImageCache().get(productName.toLowerCase());
     if (!aiUrl) {
       // Image generation is async; in a real app, products should be hydrated progressively.
       // Here, we simulate sync-forced resolution with a placeholder while issuing a background generation.
