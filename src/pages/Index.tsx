@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import AgeVerification from '@/components/AgeVerification';
@@ -29,14 +28,14 @@ const Index = () => {
             <h2 className="text-5xl md:text-6xl font-bold mb-6 font-serif text-rose-600">
               Explore Our Collection
             </h2>
-            <div className="w-16 h-px bg-barrush-copper mx-auto mb-8"></div>
+            <div className="w-16 h-px bg-barrush-gold mx-auto mb-8"></div>
             <p className="text-xl text-barrush-platinum/90 max-w-3xl mx-auto leading-relaxed">
               Discover premium spirits and master classic cocktails
             </p>
           </div>
           
           <div className="grid md:grid-cols-2 gap-10 max-w-4xl mx-auto">
-            <Card className="bg-glass-effect border-barrush-steel/30 border hover:border-barrush-copper/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden">
+            <Card className="bg-glass-effect border-barrush-steel/30 border hover:border-barrush-gold/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden">
               <div 
                 className="h-64 bg-cover bg-center relative overflow-hidden" 
                 style={{
@@ -46,19 +45,19 @@ const Index = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-barrush-midnight/60 to-transparent group-hover:from-barrush-midnight/40 transition-all duration-300"></div>
               </div>
               <CardContent className="p-8 text-center">
-                <h3 className="text-2xl font-bold mb-4 font-serif text-red-200">
+                <h3 className="text-2xl font-bold mb-4 font-serif text-barrush-gold">
                   Premium Products
                 </h3>
                 <p className="text-barrush-platinum/80 mb-6 leading-relaxed">
                   Browse our curated selection of the world's finest spirits and premium beverages
                 </p>
-                <Button asChild className="text-barrush-midnight font-bold px-6 py-3 transition-all duration-300 hover:scale-105 bg-rose-600 hover:bg-rose-500">
+                <Button asChild className="text-barrush-platinum font-bold px-6 py-3 transition-all duration-300 hover:scale-105 bg-barrush-burgundy hover:bg-barrush-burgundy/90">
                   <Link to="/products">View Products</Link>
                 </Button>
               </CardContent>
             </Card>
 
-            <Card className="bg-glass-effect border-barrush-steel/30 border hover:border-barrush-copper/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden">
+            <Card className="bg-glass-effect border-barrush-steel/30 border hover:border-barrush-gold/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden">
               <div 
                 className="h-64 bg-cover bg-center relative overflow-hidden" 
                 style={{
@@ -68,13 +67,13 @@ const Index = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-barrush-midnight/60 to-transparent group-hover:from-barrush-midnight/40 transition-all duration-300"></div>
               </div>
               <CardContent className="p-8 text-center">
-                <h3 className="text-2xl font-bold mb-4 font-serif text-green-200">
+                <h3 className="text-2xl font-bold mb-4 font-serif text-barrush-gold">
                   Cocktail Recipes
                 </h3>
                 <p className="text-barrush-platinum/80 mb-6 leading-relaxed">
                   Master the timeless classics with our professional mixology guides
                 </p>
-                <Button asChild variant="outline" className="border-barrush-copper font-bold px-6 py-3 transition-all duration-300 bg-cyan-500 hover:bg-cyan-400 text-sky-950">
+                <Button asChild variant="outline" className="border-barrush-gold font-bold px-6 py-3 transition-all duration-300 text-barrush-gold hover:bg-barrush-gold hover:text-barrush-midnight">
                   <Link to="/recipes">View Recipes</Link>
                 </Button>
               </CardContent>
