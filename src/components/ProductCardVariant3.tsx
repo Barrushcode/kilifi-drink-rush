@@ -71,12 +71,19 @@ const ProductCardVariant3: React.FC<ProductCardVariant3Props> = ({ product }) =>
 
   return (
     <Card 
-      className="group h-full bg-white border border-gray-100 hover:border-rose-200 transition-all duration-300 overflow-hidden rounded-2xl shadow-sm hover:shadow-lg"
+      className={`
+        group h-full 
+        font-iphone
+        bg-white border border-gray-100 
+        hover:border-rose-200 transition-all duration-300 
+        overflow-hidden rounded-2xl shadow-sm hover:shadow-lg
+        dark:bg-gray-900 dark:border-gray-800 dark:hover:border-rose-800
+      `}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="relative overflow-hidden">
-        <div className="aspect-square bg-gray-50">
+        <div className="aspect-square bg-gray-50 dark:bg-gray-800">
           <img
             src={product.image}
             alt={cleanName}
@@ -85,17 +92,22 @@ const ProductCardVariant3: React.FC<ProductCardVariant3Props> = ({ product }) =>
           />
         </div>
         
-        <div className={`absolute inset-0 bg-black/40 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+        {/* Overlay for hover in light/dark mode */}
+        <div className={`absolute inset-0 transition-opacity duration-300 ${
+            isHovered ? 'opacity-100' : 'opacity-0'
+          } 
+          bg-black/40 dark:bg-black/70
+        `}>
           <div className="absolute bottom-4 left-4 right-4">
             {product.description && isHovered && (
-              <p className="text-white text-sm mb-3 line-clamp-2 animate-in slide-in-from-bottom-2">
+              <p className="text-white text-sm mb-3 line-clamp-2 animate-in slide-in-from-bottom-2 font-iphone">
                 {product.description}
               </p>
             )}
             {isHovered && (
               <Button 
                 onClick={handleBuyNow}
-                className="w-full bg-white text-gray-900 hover:bg-gray-100 font-semibold animate-in slide-in-from-bottom-3"
+                className="w-full bg-white/90 hover:bg-gray-100 text-gray-900 font-semibold animate-in slide-in-from-bottom-3 dark:bg-gray-900 dark:text-white dark:border-gray-700 dark:hover:bg-gray-800"
               >
                 Buy Now
               </Button>
@@ -106,17 +118,20 @@ const ProductCardVariant3: React.FC<ProductCardVariant3Props> = ({ product }) =>
       
       <CardContent className="p-4">
         <div className="flex items-start justify-between mb-2">
-          <Badge variant="secondary" className="bg-rose-50 text-rose-700 border-rose-200 text-xs">
+          <Badge
+            variant="secondary"
+            className="bg-rose-50 text-rose-700 border-rose-200 text-xs dark:bg-rose-900 dark:text-rose-200 dark:border-rose-900 font-iphone"
+          >
             {product.category}
           </Badge>
           {quantity && (
-            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full font-medium">
+            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full font-medium dark:text-gray-300 dark:bg-gray-800 font-iphone">
               {quantity}
             </span>
           )}
         </div>
         
-        <h3 className="font-serif text-lg font-bold text-gray-900 mb-3 line-clamp-2 leading-tight">
+        <h3 className="font-serif text-lg font-bold text-gray-900 mb-3 line-clamp-2 leading-tight dark:text-white font-iphone">
           {cleanName}
         </h3>
         
@@ -126,16 +141,16 @@ const ProductCardVariant3: React.FC<ProductCardVariant3Props> = ({ product }) =>
               value={product.variants.indexOf(selectedVariant).toString()} 
               onValueChange={(value) => setSelectedVariant(product.variants[parseInt(value)])}
             >
-              <SelectTrigger className="w-full border-gray-200 focus:border-rose-300 focus:ring-rose-200">
+              <SelectTrigger className="w-full border-gray-200 focus:border-rose-300 focus:ring-rose-200 dark:border-gray-700 dark:focus:border-rose-900 dark:bg-gray-800 font-iphone">
                 <div className="flex justify-between items-center w-full">
-                  <span>{selectedVariant.size}</span>
-                  <span className="font-bold text-rose-600">{selectedVariant.priceFormatted}</span>
+                  <span className="font-iphone">{selectedVariant.size}</span>
+                  <span className="font-bold text-rose-600 dark:text-rose-300 font-iphone">{selectedVariant.priceFormatted}</span>
                 </div>
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="dark:bg-gray-900 dark:text-white font-iphone">
                 {product.variants.map((variant, index) => (
                   <SelectItem key={index} value={index.toString()}>
-                    <div className="flex justify-between items-center w-full">
+                    <div className="flex justify-between items-center w-full font-iphone">
                       <span>{variant.size}</span>
                       <span className="ml-2 font-semibold">{variant.priceFormatted}</span>
                     </div>
@@ -145,15 +160,16 @@ const ProductCardVariant3: React.FC<ProductCardVariant3Props> = ({ product }) =>
             </Select>
           ) : (
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">{selectedVariant.size}</span>
-              <span className="text-xl font-bold text-rose-600">{selectedVariant.priceFormatted}</span>
+              <span className="text-sm text-gray-600 dark:text-gray-300 font-iphone">{selectedVariant.size}</span>
+              <span className="text-xl font-bold text-rose-600 dark:text-rose-300 font-iphone">{selectedVariant.priceFormatted}</span>
             </div>
           )}
           
           <Button 
             onClick={handleAddToCart}
             variant="outline"
-            className="w-full border-rose-200 text-rose-700 hover:bg-rose-50 hover:border-rose-300 font-semibold"
+            className="w-full border-rose-200 text-rose-700 hover:bg-rose-50 hover:border-rose-300 font-semibold font-iphone
+              dark:border-rose-700 dark:text-rose-200 dark:hover:bg-rose-950"
           >
             <ShoppingCart className="h-4 w-4 mr-2" />
             Add to Cart
