@@ -86,8 +86,17 @@ export const useProducts = () => {
 
       const scrapedImages = imagesResponse.data || [];
 
-      const transformedProducts: Product[] = allProductsData
-        .map((product, index) => {
+      const transformedProducts: Product[] = [];
+      
+      // Process products in batches to avoid overwhelming the AI service
+      const batchSize = 50;
+      for (let i = 0; i < allProductsData.length; i += batchSize) {
+        const batch = allProductsData.slice(i, i + batchSize);
+        console.log(`📦 Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(allProductsData.length / batchSize)}`);
+        
+        const batchPromises = batch.map(async (product, batchIndex) => {
+          const globalIndex = i + batchIndex;
+          
           if (typeof product.Price !== 'number' || isNaN(product.Price)) {
             console.warn('[🛑 MISSING OR INVALID PRICE]', product.Title, 'Raw:', product.Price);
             return null;
@@ -106,23 +115,27 @@ export const useProducts = () => {
             category = 'Beer';
           }
 
-          const { url: productImage } = findMatchingImage(product.Title || 'Unknown Product', scrapedImages);
+          // Use the enhanced async image matching
+          const { url: productImage } = await findMatchingImage(product.Title || 'Unknown Product', scrapedImages);
 
           return {
-            id: index + 1,
+            id: globalIndex + 1,
             name: product.Title || 'Unknown Product',
             price: `KES ${productPrice.toLocaleString()}`,
             description,
             category,
             image: productImage
           };
-        })
-        .filter(Boolean);
+        });
+
+        const batchResults = await Promise.all(batchPromises);
+        transformedProducts.push(...batchResults.filter(Boolean));
+      }
 
       const groupedProducts = groupProductsByBaseName(transformedProducts);
       const groupedProductsOrdered = groupProductsByBaseName(transformedProducts, true);
 
-      console.log(`✨ Successfully grouped ${transformedProducts.length} individual products into ${groupedProducts.length} product families`);
+      console.log(`✨ Successfully processed ${transformedProducts.length} products with AI-enhanced image selection`);
       console.log('🎯 Sample grouped products:', groupedProducts.slice(0, 3));
 
       setProducts(groupedProducts);

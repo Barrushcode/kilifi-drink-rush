@@ -72,7 +72,7 @@ interface ScrapedImage {
   'Image URL 10': string | null;
 }
 
-// Select the best quality image from all available URLs that matches the product category
+// Enhanced version that can use AI when multiple URLs available
 export const selectBestImageUrl = (scrapedImage: ScrapedImage, productName: string): { url: string; quality: string; urlNumber: string } => {
   const allUrls = [
     { url: scrapedImage['Image URL 1'], number: '1' },
@@ -95,6 +95,8 @@ export const selectBestImageUrl = (scrapedImage: ScrapedImage, productName: stri
     };
   }
 
+  // For now, use the traditional scoring approach
+  // The AI enhancement will be used in the main image matching service
   const scoredUrls = allUrls.map(item => assessImageQuality(item.url, item.number));
   const cleanUrls = scoredUrls.filter(item => item.score > 10);
 

@@ -2,6 +2,7 @@ import { normalizeString, extractVolume, calculateSimilarity } from '@/utils/str
 import { getMajorCategory, hasCategoryConflict } from '@/utils/categoryMatchingUtils';
 import { extractAlcoholBrand, getBrandPreferenceBonus } from '@/utils/brandAndVolumeUtils';
 import { selectBestImageUrl } from '@/utils/imageQualityUtils';
+import { IntelligentImageSelectionService } from './intelligentImageSelectionService';
 import { AIProductImageService } from '@/utils/AIProductImageService';
 import { isLowQualityOrUnrelatedImage } from '@/utils/badImageUtils';
 
@@ -20,7 +21,7 @@ interface ScrapedImage {
   'Image URL 10': string | null;
 }
 
-export const findMatchingImage = (productName: string, scrapedImages: ScrapedImage[]): { url: string; matchLevel: string } => {
+export const findMatchingImage = async (productName: string, scrapedImages: ScrapedImage[]): Promise<{ url: string; matchLevel: string }> => {
   if (!scrapedImages.length) {
     return {
       url: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
@@ -33,13 +34,36 @@ export const findMatchingImage = (productName: string, scrapedImages: ScrapedIma
 
   let selected: { url: string; matchLevel: string } | null = null;
 
-  // Level 1: Exact match with category and quality filtering
+  // Level 1: Exact match with AI-enhanced image selection
   for (const img of scrapedImages) {
     if (img['Product Name']) {
       if (
         normalizeString(productName) === normalizeString(img['Product Name']) &&
         !hasCategoryConflict(productName, img['Product Name'])
       ) {
+        // Check if multiple URLs available for AI analysis
+        const urlCount = [
+          img['Image URL 1'], img['Image URL 2'], img['Image URL 3'], img['Image URL 4'], img['Image URL 5'],
+          img['Image URL 6'], img['Image URL 7'], img['Image URL 8'], img['Image URL 9'], img['Image URL 10']
+        ].filter(url => url && url.trim() !== '').length;
+
+        if (urlCount > 1) {
+          console.log(`🤖 Using AI to select best image from ${urlCount} options for exact match: ${productName}`);
+          try {
+            const aiResult = await IntelligentImageSelectionService.selectBestImageWithAI(img, productName);
+            if (aiResult.quality !== "curated-fallback") {
+              selected = { 
+                url: aiResult.url, 
+                matchLevel: `exact-ai-selected-${aiResult.urlNumber}${aiResult.reasoning ? `-${aiResult.reasoning.substring(0, 20)}` : ''}` 
+              };
+              break;
+            }
+          } catch (error) {
+            console.error('AI selection failed, falling back to traditional method:', error);
+          }
+        }
+        
+        // Fallback to traditional method
         const { url, quality, urlNumber } = selectBestImageUrl(img, productName);
         if (quality !== "curated-fallback") {
           selected = { url, matchLevel: `exact-${quality}` };
@@ -49,7 +73,7 @@ export const findMatchingImage = (productName: string, scrapedImages: ScrapedIma
     }
   }
 
-  // Level 2: High similarity match AND correct category
+  // Level 2: High similarity match with AI enhancement
   if (!selected) {
     let bestMatches: { image: ScrapedImage; score: number }[] = [];
     for (const img of scrapedImages) {
@@ -61,8 +85,32 @@ export const findMatchingImage = (productName: string, scrapedImages: ScrapedIma
         if (totalScore > 0.7) bestMatches.push({ image: img, score: totalScore });
       }
     }
+    
     bestMatches.sort((a, b) => b.score - a.score);
     for (const match of bestMatches) {
+      const urlCount = [
+        match.image['Image URL 1'], match.image['Image URL 2'], match.image['Image URL 3'], 
+        match.image['Image URL 4'], match.image['Image URL 5'], match.image['Image URL 6'], 
+        match.image['Image URL 7'], match.image['Image URL 8'], match.image['Image URL 9'], 
+        match.image['Image URL 10']
+      ].filter(url => url && url.trim() !== '').length;
+
+      if (urlCount > 1) {
+        try {
+          const aiResult = await IntelligentImageSelectionService.selectBestImageWithAI(match.image, productName);
+          if (aiResult.quality !== "curated-fallback") {
+            selected = { 
+              url: aiResult.url, 
+              matchLevel: `high-similarity-ai-${aiResult.urlNumber}` 
+            };
+            break;
+          }
+        } catch (error) {
+          console.error('AI selection failed for high similarity match:', error);
+        }
+      }
+      
+      // Fallback to traditional method
       const { url, quality, urlNumber } = selectBestImageUrl(match.image, productName);
       if (quality !== "curated-fallback") {
         selected = { url, matchLevel: `high-similarity-${quality}` };
@@ -151,7 +199,7 @@ export const findMatchingImage = (productName: string, scrapedImages: ScrapedIma
     }
   }
 
-  // If even fallback is bad, use AI/placeholder/final fallback
+  // Final quality check with AI fallback
   if (
     !selected.url ||
     isLowQualityOrUnrelatedImage(selected.url, productName)
