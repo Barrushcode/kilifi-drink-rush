@@ -105,9 +105,7 @@ export default {
                     pink: '#d946ef', // fuchsia-500
                     'pink-light': '#e879f9', // fuchsia-400
                     purple: '#6b21a8', // purple-800
-                    'purple-dark': '#3b0764', // purple-950
-                    blue: '#22d3ee', // cyan-400
-                    'blue-dark': '#0891b2' // cyan-600
+                    'purple-dark': '#3b0764' // purple-950
                 }
 			},
 			borderRadius: {
@@ -175,14 +173,7 @@ export default {
 			},
 			backdropBlur: {
 				'xs': '2px',
-				'md': '12px',
-			},
-			boxShadow: {
-				'glow-pink': '0 0 15px rgba(217, 70, 239, 0.5)',
-				'glow-pink-hover': '0 0 25px rgba(217, 70, 239, 0.8)',
-				'glow-blue': '0 0 15px rgba(34, 211, 238, 0.5)',
-				'glow-blue-hover': '0 0 25px rgba(34, 211, 238, 0.8)',
-			},
+			}
 		}
 	},
 	plugins: [require("tailwindcss-animate")],
