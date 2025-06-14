@@ -9,12 +9,15 @@ import { useCart } from '@/contexts/CartContext';
 import PaystackCheckout from './PaystackCheckout';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { supabase } from '@/integrations/supabase/client';
+import MpesaStkPush from './MpesaStkPush';
 
 const DELIVERY_ZONES = [
   { name: 'Tezo', value: 'tezo', fee: 250 },
   { name: 'Mnarani', value: 'mnarani', fee: 150 },
   { name: 'Bofa', value: 'bofa', fee: 200 },
 ];
+
+const TILL_NUMBER = '5950470';
 
 const CheckoutSection: React.FC = () => {
   const { items, updateQuantity, removeItem, getTotalAmount, getTotalItems } = useCart();
@@ -391,19 +394,19 @@ const CheckoutSection: React.FC = () => {
 
             {/* Payment Component with Validation */}
             <div className="w-full max-w-full">
-              <PaystackCheckout 
-                amount={totalAmount} 
-                onValidationRequired={validateForm}
-                shippingDetails={{
-                  ...shippingDetails,
-                  deliveryZone: zoneObject?.name,
-                  deliveryFee: deliveryFee
+              <MpesaStkPush
+                amount={totalAmount}
+                phone={shippingDetails.phone}
+                till={TILL_NUMBER}
+                shippingDetails={shippingDetails}
+                onPaymentSuccess={() => {
+                  // Optionally: simulate email after payment for now
+                  handleSimulatePayment();
                 }}
-                cartItems={items}
               />
             </div>
 
-            {/* Inject simulate button here, under PaystackCheckout */}
+            {/* Simulate button - keep for test */}
             <div className="flex justify-end mt-4">
               <Button
                 type="button"
