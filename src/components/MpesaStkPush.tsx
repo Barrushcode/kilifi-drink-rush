@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface MpesaStkPushProps {
   amount: number;
@@ -42,7 +43,7 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
 
     setProcessing(true);
     try {
-      const { data, error } = await window.supabase.functions.invoke('mpesa-stk-push', {
+      const { data, error } = await supabase.functions.invoke('mpesa-stk-push', {
         body: {
           phone: userPhone,
           amount,
