@@ -301,6 +301,7 @@ const CheckoutSection: React.FC = () => {
 
             {/* Payment Component with Validation */}
             <div className="w-full max-w-full">
+              {/* Only PaystackCheckout is used; Stripe removed */}
               <PaystackCheckout 
                 amount={totalAmount} 
                 onValidationRequired={validateForm}
@@ -334,3 +335,4 @@ const CheckoutSection: React.FC = () => {
 };
 
 export default CheckoutSection;
+
