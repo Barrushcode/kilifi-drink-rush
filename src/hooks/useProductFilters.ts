@@ -1,32 +1,43 @@
+
 import { useMemo } from 'react';
 import { GroupedProduct } from '@/utils/productGroupingUtils';
 
-export const useProductFilters = (products: GroupedProduct[], searchTerm: string, selectedCategory: string) => {
-  // Extract categories from products and prioritize Wine first, then by alphabetical order
-  const categories = useMemo(() => {
-    const uniqueCategories = Array.from(new Set(products.map(p => p.category).filter(Boolean)));
-    
-    // Sort categories with "Wine" (case-insensitive, or containing "wine") first, then alphabetically
-    const sortedCategories = uniqueCategories.sort((a, b) => {
-      const aIsWine = a.toLowerCase().includes('wine');
-      const bIsWine = b.toLowerCase().includes('wine');
-      if (aIsWine && !bIsWine) return -1;
-      if (!aIsWine && bIsWine) return 1;
-      return a.localeCompare(b);
-    });
+// These are the ONLY categories that will be shown in filters/order
+const FIXED_CATEGORIES = [
+  'Whisky',
+  'Wine',
+  'Beers',
+  'Champagne',
+  'Liqueur',
+  'Tequila',
+  'Gin',
+  'Cognac',
+  'Brandy',
+  'Rum',
+  'Vodka',
+];
 
-    return ['All', ...sortedCategories];
-  }, [products]);
+export const useProductFilters = (products: GroupedProduct[], searchTerm: string, selectedCategory: string) => {
+  // Only show the fixed categories + All for filtering
+  const categories = useMemo(() => ['All', ...FIXED_CATEGORIES], []);
 
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
       // Search in base name and all variant sizes
       const matchesSearch = product.baseName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           product.variants.some(variant => 
-                             variant.originalProduct.name.toLowerCase().includes(searchTerm.toLowerCase())
-                           );
-      const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
-      return matchesSearch && matchesCategory;
+        product.variants.some(variant =>
+          variant.originalProduct.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      const matchesCategory =
+        selectedCategory === 'All'
+          ? true
+          : FIXED_CATEGORIES.includes(product.category);
+      // Only allow selection for matching single/allowed categories
+      const categoryMatchesSelected =
+        selectedCategory === 'All'
+          ? matchesCategory
+          : product.category === selectedCategory;
+      return matchesSearch && categoryMatchesSelected;
     });
   }, [products, searchTerm, selectedCategory]);
 
