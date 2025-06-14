@@ -21,8 +21,24 @@ const ProductGrid: React.FC<ProductGridProps> = ({
   setSearchTerm,
   setSelectedCategory
 }) => {
+  // Determine if beers category is selected (case-insensitive, future-proof).
+  const isBeersCategory =
+    typeof filteredProducts !== "undefined" &&
+    filteredProducts.length > 0 &&
+    filteredProducts[0].category &&
+    filteredProducts[0].category.toLowerCase().includes("beer");
+
   return (
     <>
+      {/* Show six-pack notice only if Beers category selected and results present */}
+      {isBeersCategory && (
+        <div className="w-full mb-6 flex justify-center">
+          <span className="bg-yellow-100 text-amber-800 px-4 py-2 text-base rounded font-semibold shadow font-iphone border border-yellow-300 flex items-center gap-2">
+            All Beers are sold as Six-Packs 🍻
+          </span>
+        </div>
+      )}
+
       {/* Products Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 md:gap-4 lg:gap-6 max-w-full mx-auto">
         {paginatedProducts.map(product => {
@@ -61,3 +77,4 @@ const ProductGrid: React.FC<ProductGridProps> = ({
 };
 
 export default ProductGrid;
+
