@@ -70,7 +70,6 @@ export const useProducts = () => {
       setLoading(true);
       setError(null);
       console.log('🚀 Starting to fetch products...');
-      // Fetch all products using pagination and scraped images in parallel
       const [allProductsData, imagesResponse] = await Promise.all([
         fetchAllProducts(),
         supabase
@@ -83,59 +82,44 @@ export const useProducts = () => {
         throw imagesResponse.error;
       }
 
-      console.log(`✅ Successfully fetched ${allProductsData.length} products`);
-      console.log(`🖼️ Successfully fetched ${imagesResponse.data?.length} images`);
-
       const scrapedImages = imagesResponse.data || [];
 
-      // Transform the products data and match with high-quality images
-      const transformedProducts: Product[] = allProductsData.map((product, index) => {
-        // Use price from Supabase "Price" column
-        const priceRaw = product.Price;
-        let productPrice: number | null = null;
+      // DIRECT 1:1 price mapping from Supabase!
+      const transformedProducts: Product[] = allProductsData
+        .map((product, index) => {
+          // Strict: Only accept valid number, no parsing fallback, Price should always be from Supabase
+          if (typeof product.Price !== 'number' || isNaN(product.Price)) {
+            console.warn('[🛑 MISSING OR INVALID PRICE]', product.Title, 'Raw:', product.Price);
+            return null;
+          }
 
-        // Handle bigint types (from Supabase) that may arrive as string or number
-        if (typeof priceRaw === 'string' && priceRaw.trim() !== '') {
-          productPrice = parseInt(priceRaw.replace(/[^\d]/g, ''), 10);
-        } else if (typeof priceRaw === 'number') {
-          productPrice = priceRaw;
-        }
+          const productPrice = product.Price;
 
-        if (typeof productPrice !== 'number' || isNaN(productPrice)) {
-          console.warn('[🛑 BAD PRICE]', product.Title, 'Raw:', priceRaw, 'Computed:', productPrice);
-          productPrice = null;
-        }
+          // You might want to log if any productPrice is still outside your expectations:
+          if (productPrice < 100 || productPrice > 500000) {
+            console.warn('[⚠️ OUT-OF-BOUNDS PRICE]', product.Title, 'Price:', productPrice);
+          }
 
-        if (productPrice === null) {
-          // If there's truly no price, mark as unavailable
-          return null;
-        }
+          const category = getCategoryFromName(product.Title || 'Unknown Product', productPrice);
+          const { url: productImage } = findMatchingImage(product.Title || 'Unknown Product', scrapedImages);
 
-        if (productPrice < 300 || productPrice > 1000000) {
-          console.warn('[⚠️ OUT-OF-BOUNDS PRICE]', product.Title, 'Price:', productPrice, 'Raw:', priceRaw);
-        }
-
-        const category = getCategoryFromName(product.Title || 'Unknown Product', productPrice);
-        const { url: productImage } = findMatchingImage(product.Title || 'Unknown Product', scrapedImages);
-
-        return {
-          id: index + 1,
-          name: product.Title || 'Unknown Product',
-          price: `KES ${productPrice.toLocaleString()}`,
-          description: product.Description || 'Quality selection for every taste',
-          category,
-          image: productImage
-        };
-      }).filter(Boolean); // Remove any with null price
+          return {
+            id: index + 1,
+            name: product.Title || 'Unknown Product',
+            price: `KES ${productPrice.toLocaleString()}`,
+            description: product.Description || 'Quality selection for every taste',
+            category,
+            image: productImage
+          };
+        })
+        .filter(Boolean);
 
       console.log('🔄 Grouping products by base name...');
-      
-      // Group products by base name and size variants
       const groupedProducts = groupProductsByBaseName(transformedProducts);
 
       console.log(`✨ Successfully grouped ${transformedProducts.length} individual products into ${groupedProducts.length} product families`);
       console.log('🎯 Sample grouped products:', groupedProducts.slice(0, 3));
-      
+
       setProducts(groupedProducts);
     } catch (error) {
       console.error('💥 Error fetching products:', error);
