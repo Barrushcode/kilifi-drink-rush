@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import ProductCatalogHeader from './ProductCatalogHeader';
@@ -62,7 +61,7 @@ const ProductCatalog: React.FC = () => {
 
   if (loading) {
     return (
-      <section id="products" className="pt-16 py-6 lg:py-12 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative overflow-hidden">
+      <section id="products" className="py-2 lg:py-4 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative overflow-hidden">
         <div className="container mx-auto px-4 lg:px-6 relative z-10 max-w-screen-2xl">
           <div className="text-center mb-8 lg:mb-12">
             <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 lg:mb-6 font-serif text-rose-600">
@@ -82,7 +81,7 @@ const ProductCatalog: React.FC = () => {
   if (error) {
     console.error('❌ ProductCatalog error:', error);
     return (
-      <section id="products" className="pt-16 py-6 lg:py-12 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative overflow-hidden">
+      <section id="products" className="py-2 lg:py-4 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative overflow-hidden">
         <div className="container mx-auto px-4 lg:px-6 relative z-10 max-w-screen-2xl">
           <div className="text-center">
             <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 lg:mb-6 font-serif text-rose-600">
@@ -103,7 +102,7 @@ const ProductCatalog: React.FC = () => {
   return (
     <section 
       id="products" 
-      className="pt-16 py-6 lg:py-12 relative overflow-hidden"
+      className="py-2 lg:py-4 relative overflow-hidden"
       style={{
         background: 'linear-gradient(to bottom, #0f1419 0%, #1a1a1a 100%)'
       }}

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -48,6 +48,12 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
   const [processing, setProcessing] = useState(false);
   const [succeeded, setSucceeded] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Scroll/focus Paystack card into view on render for better UX
+    cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,8 +109,8 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
 
   if (succeeded) {
     return (
-      <Card className="bg-barrush-charcoal/80 border-barrush-gold border">
-        <CardContent className="p-8 text-center">
+      <Card ref={cardRef} className="bg-barrush-charcoal/80 border-barrush-gold border shadow-lg">
+        <CardContent className="p-8 text-center animate-fade-in">
           <div className="text-6xl mb-4">🎉</div>
           <h3 className="text-2xl font-bold text-barrush-gold mb-4">Payment Successful!</h3>
           <p className="text-white mb-4">
@@ -130,7 +136,7 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
   }
 
   return (
-    <Card className="bg-barrush-charcoal/80 border-barrush-gold border">
+    <Card ref={cardRef} className="bg-barrush-charcoal/80 border-barrush-gold border shadow-lg">
       <CardHeader>
         <CardTitle className="text-barrush-gold text-zinc-50">Paystack Payment</CardTitle>
       </CardHeader>
@@ -146,13 +152,14 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
                 required
+                autoFocus
                 className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400"
               />
             </div>
           )}
           
           {error && (
-            <div className="text-red-400 text-sm bg-red-900/20 p-3 rounded">
+            <div className="text-red-400 text-base font-semibold bg-red-900/40 p-3 rounded border border-red-500 animate-pulse">
               {error}
             </div>
           )}
@@ -188,7 +195,7 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
           <Button
             type="submit"
             disabled={processing || (!email && !shippingDetails?.email)}
-            className="w-full bg-barrush-gold hover:bg-barrush-gold/90 text-barrush-charcoal font-semibold py-6 text-lg"
+            className={`w-full bg-barrush-gold hover:bg-barrush-gold/90 text-barrush-charcoal font-semibold py-6 text-lg transition-all duration-300 ${processing && 'opacity-60 cursor-not-allowed'}`}
           >
             {processing ? 'Processing Payment...' : `Pay KES ${amount.toLocaleString()} via Paystack`}
           </Button>

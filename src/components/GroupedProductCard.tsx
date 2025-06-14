@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -58,11 +57,26 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
 
   const handleBuyNow = () => {
     try {
-      console.log('🛒 Buy now clicked for:', product.baseName);
-      handleAddToCart();
+      // Always add current variant to cart and go to /cart
+      const cartItem = {
+        id: `${product.baseName}-${selectedVariant.size}`,
+        name: product.baseName,
+        price: selectedVariant.price,
+        priceFormatted: selectedVariant.priceFormatted,
+        size: selectedVariant.size,
+        image: product.image,
+        category: product.category
+      };
+      addItem(cartItem);
       navigate('/cart');
     } catch (error) {
       console.error('❌ Error with buy now:', error);
+      toast({
+        title: "Error",
+        description: "Failed to start checkout",
+        variant: "destructive",
+        duration: 2000,
+      });
     }
   };
 
