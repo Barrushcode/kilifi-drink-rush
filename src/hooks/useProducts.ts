@@ -30,6 +30,7 @@ interface ScrapedImage {
 
 export const useProducts = () => {
   const [products, setProducts] = useState<GroupedProduct[]>([]);
+  const [productsByOriginalOrder, setProductsByOriginalOrder] = useState<GroupedProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -123,11 +124,13 @@ export const useProducts = () => {
 
       console.log('🔄 Grouping products by base name...');
       const groupedProducts = groupProductsByBaseName(transformedProducts);
+      const groupedProductsOrdered = groupProductsByBaseName(transformedProducts, true);
 
       console.log(`✨ Successfully grouped ${transformedProducts.length} individual products into ${groupedProducts.length} product families`);
       console.log('🎯 Sample grouped products:', groupedProducts.slice(0, 3));
 
       setProducts(groupedProducts);
+      setProductsByOriginalOrder(groupedProductsOrdered);
     } catch (error) {
       console.error('💥 Error fetching products:', error);
       setError('Failed to load products. Please try again.');
@@ -142,6 +145,7 @@ export const useProducts = () => {
 
   return {
     products,
+    productsByOriginalOrder,
     loading,
     error,
     refetch: fetchProducts

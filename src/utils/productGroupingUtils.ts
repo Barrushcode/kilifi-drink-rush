@@ -57,26 +57,27 @@ export const normalizeProductName = (name: string): string => {
 };
 
 // Group products by base name
-export const groupProductsByBaseName = (products: any[]): GroupedProduct[] => {
+export const groupProductsByBaseName = (products: any[], preserveOrder = false): GroupedProduct[] => {
   const groups = new Map<string, {
     products: any[];
     baseName: string;
     normalizedKey: string;
+    originalOrder: number; // New: preserve the first index
   }>();
 
   // First pass: group products by normalized base name
-  products.forEach(product => {
+  products.forEach((product, idx) => {
     const { baseName, size } = extractSize(product.name);
     const normalizedKey = normalizeProductName(baseName);
-    
+
     if (!groups.has(normalizedKey)) {
       groups.set(normalizedKey, {
         products: [],
         baseName,
-        normalizedKey
+        normalizedKey,
+        originalOrder: idx // Track order of first occurrence
       });
     }
-    
     groups.get(normalizedKey)!.products.push({
       ...product,
       extractedSize: size
@@ -89,7 +90,7 @@ export const groupProductsByBaseName = (products: any[]): GroupedProduct[] => {
   groups.forEach((group, normalizedKey) => {
     const products = group.products;
     const firstProduct = products[0];
-    
+
     // Create variants from all products in this group
     const variants: ProductVariant[] = products.map(product => {
       const price = Number(product.price.replace(/[^\d.]/g, '')) || 0;
@@ -117,10 +118,25 @@ export const groupProductsByBaseName = (products: any[]): GroupedProduct[] => {
       variants,
       lowestPrice,
       lowestPriceFormatted,
-      matchLevel: firstProduct.matchLevel || 'grouped'
-    });
+      matchLevel: firstProduct.matchLevel || 'grouped',
+      // Add order property for outer sorting
+      originalOrder: group.originalOrder
+    } as GroupedProduct & { originalOrder: number });
   });
 
-  // Sort by lowest price descending
-  return groupedProducts.sort((a, b) => b.lowestPrice - a.lowestPrice);
+  // Sort:
+  if (preserveOrder) {
+    // Sort by original order in products array
+    return groupedProducts
+      .sort((a, b) => (a as any).originalOrder - (b as any).originalOrder)
+      .map(g => {
+        // Remove the extra property so types don't leak
+        const { originalOrder, ...rest } = g as any;
+        return rest;
+      });
+  } else {
+    // Sort by lowest price descending
+    return groupedProducts.sort((a, b) => b.lowestPrice - a.lowestPrice);
+  }
 };
+

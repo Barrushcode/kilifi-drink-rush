@@ -16,7 +16,7 @@ const ProductCatalog: React.FC = () => {
   const [showAuditReport, setShowAuditReport] = useState(false);
   const itemsPerPage = 12;
   
-  const { products, loading, error, refetch } = useProducts();
+  const { products, productsByOriginalOrder, loading, error, refetch } = useProducts();
   const { categories, filteredProducts } = useProductFilters(products, searchTerm, selectedCategory);
   const { totalPages, hasNextPage, hasPreviousPage, startIndex, endIndex } = usePagination({
     totalItems: filteredProducts.length,
@@ -24,7 +24,18 @@ const ProductCatalog: React.FC = () => {
     currentPage
   });
 
-  const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
+  // Choose product list for All: preserve original supabase order
+  const displayProducts =
+    selectedCategory === "All"
+      ? productsByOriginalOrder
+      : products;
+
+  const displayFilteredProducts =
+    selectedCategory === "All"
+      ? filteredProducts /* filter is okay, filtering after preserving order */
+      : filteredProducts; // fallback for future
+
+  const paginatedProducts = displayFilteredProducts.slice(startIndex, endIndex);
 
   // Enhanced debug logging
   useEffect(() => {
@@ -120,8 +131,8 @@ const ProductCatalog: React.FC = () => {
         />
 
         <ProductsDebugInfo
-          products={products}
-          filteredProducts={filteredProducts}
+          products={displayProducts}
+          filteredProducts={displayFilteredProducts}
           paginatedProducts={paginatedProducts}
           selectedCategory={selectedCategory}
           searchTerm={searchTerm}
@@ -129,7 +140,7 @@ const ProductCatalog: React.FC = () => {
         
         <ProductGrid
           paginatedProducts={paginatedProducts}
-          filteredProducts={filteredProducts}
+          filteredProducts={displayFilteredProducts}
           loading={loading}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
@@ -144,7 +155,7 @@ const ProductCatalog: React.FC = () => {
           hasPreviousPage={hasPreviousPage}
           startIndex={startIndex}
           endIndex={endIndex}
-          filteredProductsLength={filteredProducts.length}
+          filteredProductsLength={displayFilteredProducts.length}
         />
       </div>
     </section>
