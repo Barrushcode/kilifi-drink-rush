@@ -175,7 +175,14 @@ export default {
 			},
 			backdropBlur: {
 				'xs': '2px',
-			}
+				'md': '12px',
+			},
+			boxShadow: {
+				'glow-pink': '0 0 15px rgba(217, 70, 239, 0.5)',
+				'glow-pink-hover': '0 0 25px rgba(217, 70, 239, 0.8)',
+				'glow-blue': '0 0 15px rgba(34, 211, 238, 0.5)',
+				'glow-blue-hover': '0 0 25px rgba(34, 211, 238, 0.8)',
+			},
 		}
 	},
 	plugins: [require("tailwindcss-animate")],

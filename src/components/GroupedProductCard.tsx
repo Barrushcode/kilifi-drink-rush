@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ShoppingCart, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -116,9 +115,9 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
       />
       <div
         className="
-          bg-glass-effect rounded-2xl shadow-lg border border-barrush-steel/20
-          overflow-hidden hover:shadow-xl transition-all duration-300 font-iphone relative cursor-pointer group
-          flex flex-col
+          bg-glass-effect rounded-2xl border border-neon-blue/20 hover:border-neon-pink/50
+          backdrop-blur-md overflow-hidden transition-all duration-500 hover:scale-105
+          font-iphone relative cursor-pointer group flex flex-col h-full
         "
         onClick={() => setModalOpen(true)}
         tabIndex={0}
@@ -131,7 +130,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
           <img
             src={displayImage}
             alt={displayName}
-            className="w-full h-48 object-cover rounded-t-2xl"
+            className="w-full h-56 object-cover rounded-t-2xl"
             style={{ filter: "brightness(1)" }}
             loading="lazy"
             onError={e => {
@@ -142,23 +141,23 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
           />
         </div>
         {/* Card Details */}
-        <div className="p-5 flex flex-col gap-1">
-          <div className="flex items-center gap-2 mb-1">
-            <Badge className="bg-barrush-steel/60 text-barrush-platinum px-2 py-1 font-iphone text-xs">
+        <div className="p-6 flex flex-col flex-grow">
+          <div className="flex items-center gap-2 mb-3">
+            <Badge className="bg-neon-blue/10 text-neon-blue border border-neon-blue/20 font-semibold px-3 py-1">
               {product.category}
             </Badge>
             {!!product.variants.length && product.variants.length > 1 && (
-              <Badge variant="outline" className="text-xs font-iphone text-barrush-platinum/70 border-barrush-steel/80">
+              <Badge variant="outline" className="text-xs font-iphone text-neon-blue/70 border-neon-blue/50">
                 {product.variants.length} sizes
               </Badge>
             )}
           </div>
-          <h3 className="text-lg font-bold text-white mb-1 line-clamp-2">{displayName}</h3>
+          <h3 className="text-xl font-bold font-serif text-neon-pink-light mb-2 line-clamp-2">{displayName}</h3>
           {product.description && (
-            <p className="text-barrush-platinum/80 mb-2 text-xs line-clamp-2">{product.description}</p>
+            <p className="text-gray-300/80 mb-4 text-sm line-clamp-3 flex-grow">{product.description}</p>
           )}
           {product.variants.length > 1 ? (
-            <div className="mb-2">
+            <div className="mb-4">
               <label className="block text-xs font-medium mb-1 font-iphone text-barrush-platinum/80">
                 Size & Price:
               </label>
@@ -166,19 +165,19 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
                 value={product.variants.indexOf(selectedVariant).toString()}
                 onValueChange={handleVariantChange}
               >
-                <SelectTrigger className="h-9 font-iphone text-xs bg-barrush-midnight border-barrush-steel text-barrush-platinum">
+                <SelectTrigger className="h-10 font-iphone text-sm bg-barrush-slate/50 border-neon-blue/50 text-gray-200 focus:ring-neon-pink">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="z-50 bg-barrush-midnight border-barrush-steel">
+                <SelectContent className="z-50 bg-barrush-slate border-neon-blue/50 backdrop-blur-md">
                   {product.variants.map((variant, idx) => (
                     <SelectItem
                       key={idx}
                       value={idx.toString()}
-                      className="font-iphone text-barrush-platinum hover:!bg-barrush-steel/50 focus:!bg-barrush-steel/50"
+                      className="font-iphone text-gray-200 hover:!bg-neon-pink/20 focus:!bg-neon-pink/20"
                     >
                       <div className="flex justify-between items-center w-full">
                         <span className="text-xs">{variant.size}</span>
-                        <span className="ml-2 font-bold text-xs text-pink-400">{variant.priceFormatted}</span>
+                        <span className="ml-2 font-bold text-xs text-neon-pink-light">{variant.priceFormatted}</span>
                       </div>
                     </SelectItem>
                   ))}
@@ -186,27 +185,27 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
               </Select>
             </div>
           ) : (
-            <div className="mb-2">
+            <div className="mb-4">
               <span className="text-xs font-iphone text-barrush-platinum/80">
                 Size: {selectedVariant.size}
               </span>
             </div>
           )}
-          <div className="flex items-center justify-between mb-0 mt-2">
-            <span className="text-xl font-bold text-pink-400">{selectedVariant.priceFormatted}</span>
+          <div className="flex items-center justify-between pt-2">
+            <span className="text-2xl font-bold text-white">{selectedVariant.priceFormatted}</span>
           </div>
           {/* --- Action Buttons --- */}
-          <div className="flex gap-2 mt-4">
+          <div className="flex gap-3 mt-4">
             <Button
               onClick={handleAddToCart}
-              className="flex-1 flex items-center justify-center gap-1 font-bold px-3 py-2 text-xs transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-rose-600 hover:bg-rose-500 text-white border-none shadow-lg"
+              className="flex-1 flex items-center justify-center gap-1 font-bold px-3 text-sm transition-all duration-300 h-11 font-iphone bg-neon-pink hover:bg-neon-pink/90 text-barrush-midnight shadow-glow-pink hover:shadow-glow-pink-hover"
             >
               <ShoppingCart className="h-4 w-4 mr-1" />
               Add to Cart
             </Button>
             <Button
               onClick={handleBuyNow}
-              className="flex-1 flex items-center justify-center gap-1 font-bold px-3 py-2 text-xs transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-pink-500 hover:bg-pink-400 text-white border-none shadow-lg"
+              className="flex-1 flex items-center justify-center gap-1 font-bold px-3 text-sm transition-all duration-300 h-11 font-iphone bg-neon-blue hover:bg-neon-blue/90 text-barrush-midnight shadow-glow-blue hover:shadow-glow-blue-hover"
             >
               <CreditCard className="h-4 w-4 mr-1" />
               Buy Now
@@ -219,4 +218,3 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
 };
 
 export default GroupedProductCard;
-
