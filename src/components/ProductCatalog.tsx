@@ -8,7 +8,6 @@ import ProductLoadingSkeleton from './ProductLoadingSkeleton';
 import { useProducts } from '@/hooks/useProducts';
 import { useProductFilters } from '@/hooks/useProductFilters';
 import { usePagination } from '@/hooks/usePagination';
-import ProductCardDesignShowcase from './ProductCardDesignShowcase';
 
 const ProductCatalog: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -123,13 +122,6 @@ const ProductCatalog: React.FC = () => {
       }}
     >
       <div className="container mx-auto px-0 sm:px-1 md:px-1 lg:px-2 relative z-10 max-w-screen-2xl">
-        {/* === Product Card Design Preview Showcase === */}
-        <div className="mb-8">
-          {/** New preview component for product card designs */}
-          {<ProductCardDesignShowcase />}
-        </div>
-        {/* === End Showcase === */}
-
         <ProductCatalogHeader
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
