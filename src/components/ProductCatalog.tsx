@@ -59,10 +59,11 @@ const ProductCatalog: React.FC = () => {
     }
   }, [categories, selectedCategory]);
 
+  // Show the loading skeleton immediately, no extra margin above!
   if (loading) {
     return (
-      <section id="products" className="py-2 lg:py-4 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative overflow-hidden">
-        <div className="container mx-auto px-4 lg:px-6 relative z-10 max-w-screen-2xl">
+      <section id="products" className="py-0 lg:py-0 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative overflow-hidden">
+        <div className="container mx-auto px-0 lg:px-0 relative z-10 max-w-screen-2xl">
           <div className="text-center mb-8 lg:mb-12">
             <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 lg:mb-6 font-serif text-rose-600">
               Our Collection
@@ -81,8 +82,8 @@ const ProductCatalog: React.FC = () => {
   if (error) {
     console.error('❌ ProductCatalog error:', error);
     return (
-      <section id="products" className="py-2 lg:py-4 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative overflow-hidden">
-        <div className="container mx-auto px-4 lg:px-6 relative z-10 max-w-screen-2xl">
+      <section id="products" className="py-0 lg:py-0 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative overflow-hidden">
+        <div className="container mx-auto px-0 lg:px-0 relative z-10 max-w-screen-2xl">
           <div className="text-center">
             <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 lg:mb-6 font-serif text-rose-600">
               Our Collection
@@ -102,12 +103,12 @@ const ProductCatalog: React.FC = () => {
   return (
     <section 
       id="products" 
-      className="py-2 lg:py-4 relative overflow-hidden"
+      className="py-0 lg:py-0 relative overflow-hidden"
       style={{
         background: 'linear-gradient(to bottom, #0f1419 0%, #1a1a1a 100%)'
       }}
     >
-      <div className="container mx-auto px-4 lg:px-6 relative z-10 max-w-screen-2xl">
+      <div className="container mx-auto px-0 lg:px-0 relative z-10 max-w-screen-2xl">
         <ProductCatalogHeader
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}

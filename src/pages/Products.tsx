@@ -1,11 +1,12 @@
 
 import React from 'react';
-import ProductCatalog from '@/components/ProductCatalog';
 import AnnouncementBar from '@/components/AnnouncementBar';
+import ProductCatalog from '@/components/ProductCatalog';
 
+// Move AnnouncementBar flush to the very top, and remove min-h-screen if not needed.
 const Products = () => {
   return (
-    <div className="min-h-screen bg-barrush-midnight">
+    <div className="bg-barrush-midnight">
       <AnnouncementBar />
       <ProductCatalog />
     </div>
