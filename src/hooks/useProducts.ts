@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getCategoryFromName } from '@/utils/categoryUtils';
@@ -44,7 +45,7 @@ export const useProducts = () => {
       const { data, error } = await supabase
         .from('allthealcoholicproducts')
         .select('Title, Description, Price')
-        .order('Price', { ascending: false })
+        .order('Title', { ascending: true })
         .range(offset, offset + batchSize - 1);
 
       if (error) throw error;
