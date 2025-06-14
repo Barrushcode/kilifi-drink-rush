@@ -79,6 +79,62 @@ const CheckoutSection: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // --- Add simulate payment handler ---
+  const handleSimulatePayment = async () => {
+    // Validate form fields first
+    if (!validateForm()) {
+      window.scrollTo({top: 0, behavior: "smooth"});
+      return;
+    }
+    if (!shippingDetails.email) {
+      setErrors((prev) => ({...prev, email: "Email is required for email simulation"}));
+      return;
+    }
+    try {
+      // Compose sample data like after a real payment
+      const reference = "SIM" + Math.floor(Math.random() * 1000000);
+      // Prepare request body as in PaystackCheckout
+      const { toast } = await import('@/components/ui/use-toast');
+      const res = await fetch("/functions/v1/send-order-confirmation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: shippingDetails.email,
+          subject: `Your Barrush Order Confirmation (Simulated): #${reference}`,
+          html: `
+            <p style="font-size: 18px; color: #d946ef;"><strong>This is a simulated confirmation for testing purposes.</strong></p>
+            <p>Reference: ${reference}</p>
+            <hr />
+            <p>Order for <strong>${shippingDetails.firstName} ${shippingDetails.lastName}</strong></p>
+            <p>Delivery: ${zoneObject?.name} (KES ${deliveryFee})</p>
+            <p>Total simulated: KES ${totalAmount.toLocaleString()}</p>
+          `,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        toast({
+          title: "Simulated order email sent!",
+          description: "Check your inbox for the test confirmation.",
+          className: "bg-green-600 text-white"
+        });
+      } else {
+        toast({
+          title: "Simulation failed!",
+          description: (data?.error || "Unknown error"),
+          variant: "destructive",
+        });
+      }
+    } catch (err: any) {
+      const { toast } = await import('@/components/ui/use-toast');
+      toast({
+        title: "Simulation failed!",
+        description: err?.message || "Failed to send simulated email.",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-barrush-midnight py-12 px-4 flex items-center justify-center">
@@ -347,6 +403,19 @@ const CheckoutSection: React.FC = () => {
                 }}
                 cartItems={items}
               />
+            </div>
+
+            {/* Inject simulate button here, under PaystackCheckout */}
+            <div className="flex justify-end mt-4">
+              <Button
+                type="button"
+                variant="outline"
+                className="bg-yellow-400 text-black font-semibold px-6 py-2 border-yellow-600 hover:bg-yellow-300 transition-all"
+                onClick={handleSimulatePayment}
+                aria-label="Simulate order confirmation email (test only)"
+              >
+                Simulate Order Confirmation (Test)
+              </Button>
             </div>
 
             {/* Alternative Payment Info */}
