@@ -196,6 +196,14 @@ const getBrandPreferenceBonus = (productName: string, imageName: string): number
 
 // Enhanced image matching function with relaxed brand restrictions
 export const findMatchingImage = (productName: string, scrapedImages: ScrapedImage[]): { url: string; matchLevel: string } => {
+  // === CUSTOM PINNED IMAGE LOGIC ===
+  if (normalizeString(productName) === "johnnie walker odyssey") {
+    return {
+      url: "/lovable-uploads/5a9d2006-237a-455e-bea3-fe99287c18c3.png",
+      matchLevel: "custom-pinned"
+    };
+  }
+
   if (!scrapedImages.length) {
     return {
       url: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
