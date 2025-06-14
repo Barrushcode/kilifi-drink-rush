@@ -42,86 +42,134 @@ function calculateSimilarity(str1: string, str2: string): number {
 }
 
 async function scrapeDrinksVine(): Promise<ScrapedProduct[]> {
-  try {
-    console.log('Starting to scrape drinksvine.co.ke...');
+  const urlsToTry = [
+    'https://drinksvine.co.ke/',
+    'https://drinksvine.co.ke/collections/all',
+    'https://drinksvine.co.ke/products',
+    'https://www.drinksvine.co.ke/',
+    'https://www.drinksvine.co.ke/collections/all'
+  ];
+
+  for (const url of urlsToTry) {
+    console.log(`Trying to scrape: ${url}`);
     
-    const response = await fetch('https://drinksvine.co.ke/collections/all', {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-      }
-    });
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const html = await response.text();
-    console.log('Successfully fetched HTML from drinksvine.co.ke');
-    
-    const products: ScrapedProduct[] = [];
-    
-    // Parse product cards - this regex looks for product information in the HTML
-    const productMatches = html.matchAll(/<div[^>]*class="[^"]*product-card[^"]*"[^>]*>[\s\S]*?<\/div>/gi);
-    
-    for (const match of productMatches) {
-      const productDiv = match[0];
+    try {
+      const response = await fetch(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.5',
+          'Accept-Encoding': 'gzip, deflate, br',
+          'Connection': 'keep-alive',
+          'Upgrade-Insecure-Requests': '1'
+        }
+      });
       
-      // Extract product name
-      const nameMatch = productDiv.match(/<h[1-6][^>]*>([^<]+)<\/h[1-6]>|<a[^>]*title="([^"]+)"|<span[^>]*class="[^"]*product-title[^"]*"[^>]*>([^<]+)<\/span>/i);
-      const productName = nameMatch?.[1] || nameMatch?.[2] || nameMatch?.[3];
+      console.log(`Response status for ${url}: ${response.status}`);
+      
+      if (!response.ok) {
+        console.log(`Failed to fetch ${url}: HTTP ${response.status}`);
+        continue;
+      }
+      
+      const html = await response.text();
+      console.log(`Successfully fetched HTML from ${url}, length: ${html.length}`);
+      
+      const products = parseProductsFromHTML(html, url);
+      
+      if (products.length > 0) {
+        console.log(`Successfully scraped ${products.length} products from ${url}`);
+        return products;
+      }
+      
+    } catch (error) {
+      console.error(`Error fetching ${url}:`, error);
+      continue;
+    }
+  }
+  
+  console.log('All URLs failed, returning empty array');
+  return [];
+}
+
+function parseProductsFromHTML(html: string, sourceUrl: string): ScrapedProduct[] {
+  const products: ScrapedProduct[] = [];
+  
+  // Try multiple parsing strategies
+  const strategies = [
+    // Strategy 1: Look for Shopify-style product cards
+    /<div[^>]*class="[^"]*product[^"]*"[^>]*>[\s\S]*?<\/div>/gi,
+    // Strategy 2: Look for product links
+    /<a[^>]*href="[^"]*product[^"]*"[^>]*>[\s\S]*?<\/a>/gi,
+    // Strategy 3: Look for image elements with product-related attributes
+    /<img[^>]*alt="[^"]*"[^>]*src="[^"]*"/gi,
+  ];
+
+  for (const strategy of strategies) {
+    const matches = html.matchAll(strategy);
+    
+    for (const match of matches) {
+      const element = match[0];
+      
+      // Extract product name from various sources
+      const namePatterns = [
+        /alt="([^"]+)"/i,
+        /title="([^"]+)"/i,
+        /<h[1-6][^>]*>([^<]+)<\/h[1-6]>/i,
+        /data-product-title="([^"]+)"/i
+      ];
+      
+      let productName = '';
+      for (const pattern of namePatterns) {
+        const nameMatch = element.match(pattern);
+        if (nameMatch && nameMatch[1]) {
+          productName = nameMatch[1].trim();
+          break;
+        }
+      }
       
       // Extract image URL
-      const imgMatch = productDiv.match(/<img[^>]+src="([^"]+)"[^>]*>/i);
+      const imgMatch = element.match(/src="([^"]+)"/i);
       let imageUrl = imgMatch?.[1];
       
       if (productName && imageUrl) {
-        // Make sure the image URL is absolute
+        // Clean up image URL
         if (imageUrl.startsWith('//')) {
           imageUrl = 'https:' + imageUrl;
         } else if (imageUrl.startsWith('/')) {
-          imageUrl = 'https://drinksvine.co.ke' + imageUrl;
+          const baseUrl = new URL(sourceUrl).origin;
+          imageUrl = baseUrl + imageUrl;
         }
         
-        products.push({
-          name: productName.trim(),
-          imageUrl: imageUrl
-        });
+        // Filter out obviously non-product images
+        if (!imageUrl.includes('logo') && 
+            !imageUrl.includes('icon') && 
+            !imageUrl.includes('banner') &&
+            !productName.toLowerCase().includes('logo') &&
+            productName.length > 3) {
+          
+          products.push({
+            name: productName.trim(),
+            imageUrl: imageUrl
+          });
+        }
       }
     }
     
-    // Also try alternative parsing methods
-    const altMatches = html.matchAll(/<a[^>]*href="[^"]*products\/[^"]*"[^>]*>[\s\S]*?<\/a>/gi);
-    
-    for (const match of altMatches) {
-      const linkContent = match[0];
-      
-      const nameMatch = linkContent.match(/title="([^"]+)"|alt="([^"]+)"/i);
-      const productName = nameMatch?.[1] || nameMatch?.[2];
-      
-      const imgMatch = linkContent.match(/<img[^>]+src="([^"]+)"/i);
-      let imageUrl = imgMatch?.[1];
-      
-      if (productName && imageUrl && !products.find(p => p.name === productName.trim())) {
-        if (imageUrl.startsWith('//')) {
-          imageUrl = 'https:' + imageUrl;
-        } else if (imageUrl.startsWith('/')) {
-          imageUrl = 'https://drinksvine.co.ke' + imageUrl;
-        }
-        
-        products.push({
-          name: productName.trim(),
-          imageUrl: imageUrl
-        });
-      }
+    if (products.length > 0) {
+      console.log(`Strategy ${strategies.indexOf(strategy) + 1} found ${products.length} products`);
+      break;
     }
-    
-    console.log(`Scraped ${products.length} products from drinksvine.co.ke`);
-    return products.slice(0, 100); // Limit to first 100 products
-    
-  } catch (error) {
-    console.error('Error scraping drinksvine.co.ke:', error);
-    return [];
   }
+  
+  // Remove duplicates
+  const uniqueProducts = products.filter((product, index, self) => 
+    index === self.findIndex(p => p.name === product.name)
+  );
+  
+  console.log(`After deduplication: ${uniqueProducts.length} unique products`);
+  
+  return uniqueProducts.slice(0, 50); // Limit to 50 products for performance
 }
 
 serve(async (req) => {
@@ -142,8 +190,14 @@ serve(async (req) => {
     
     if (scrapedProducts.length === 0) {
       return new Response(
-        JSON.stringify({ error: 'No products found on drinksvine.co.ke' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ 
+          success: false,
+          error: 'No products could be scraped from drinksvine.co.ke. The website might be down, have changed its structure, or be blocking requests.',
+          scrapedProducts: 0,
+          matches: 0,
+          updated: 0
+        }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -155,7 +209,13 @@ serve(async (req) => {
     if (dbError) {
       console.error('Database error:', dbError);
       return new Response(
-        JSON.stringify({ error: 'Failed to fetch existing products' }),
+        JSON.stringify({ 
+          success: false,
+          error: 'Failed to fetch existing products from database',
+          scrapedProducts: scrapedProducts.length,
+          matches: 0,
+          updated: 0
+        }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -173,7 +233,7 @@ serve(async (req) => {
       for (const scrapedProduct of scrapedProducts) {
         const similarity = calculateSimilarity(existingProduct.Title, scrapedProduct.name);
         
-        if (similarity > 0.6 && (!bestMatch || similarity > bestMatch.similarity)) {
+        if (similarity > 0.5 && (!bestMatch || similarity > bestMatch.similarity)) {
           bestMatch = { product: scrapedProduct, similarity };
         }
       }
@@ -224,7 +284,13 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in scrape-drinksvine function:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        success: false,
+        error: error.message || 'An unexpected error occurred during scraping',
+        scrapedProducts: 0,
+        matches: 0,
+        updated: 0
+      }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
