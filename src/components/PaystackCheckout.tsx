@@ -107,14 +107,14 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
 
   if (succeeded) {
     return (
-      <Card ref={cardRef} className="bg-barrush-charcoal/80 border-barrush-gold border shadow-lg">
+      <Card ref={cardRef} className="bg-barrush-charcoal/80 border-neon-pink border shadow-lg">
         <CardContent className="p-8 text-center animate-fade-in">
           <div className="text-6xl mb-4">🎉</div>
-          <h3 className="text-2xl font-bold text-barrush-gold mb-4">Payment Successful!</h3>
+          <h3 className="text-2xl font-bold text-neon-pink mb-4">Payment Successful!</h3>
           <p className="text-white mb-4">
             Your payment of KES {amount.toLocaleString()} has been processed successfully via Paystack.
           </p>
-          <div className="bg-barrush-burgundy/20 p-4 rounded-lg mt-4">
+          <div className="bg-neon-purple/20 p-4 rounded-lg mt-4">
             <h4 className="text-white font-semibold mb-2">Order Summary:</h4>
             <div className="text-left space-y-1 text-sm text-gray-300 max-h-32 overflow-y-auto">
               {cartItems.map((item, index) => (
@@ -134,9 +134,9 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
   }
 
   return (
-    <Card ref={cardRef} className="bg-barrush-charcoal/80 border-barrush-gold border shadow-lg">
+    <Card ref={cardRef} className="bg-barrush-charcoal/80 border-neon-pink border shadow-lg">
       <CardHeader>
-        <CardTitle className="text-barrush-gold text-zinc-50">Paystack Payment</CardTitle>
+        <CardTitle className="text-neon-pink text-zinc-50">Paystack Payment</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -151,7 +151,7 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
                 placeholder="Enter your email"
                 required
                 autoFocus
-                className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400"
+                className="bg-neon-purple/40 border-neon-purple text-white placeholder:text-gray-400"
               />
             </div>
           )}
@@ -164,27 +164,22 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
           
           <div className="flex justify-between items-center text-white mb-4">
             <span className="text-lg">Total Amount:</span>
-            <span className="text-xl font-bold text-barrush-gold">KES {amount.toLocaleString()}</span>
+            <span className="text-xl font-bold text-neon-pink">KES {amount.toLocaleString()}</span>
           </div>
 
-          {/* Payment Methods Section - Icons removed */}
-          <div className="bg-barrush-burgundy/20 p-4 rounded-lg">
+          <div className="bg-neon-purple/20 p-4 rounded-lg">
             <h4 className="font-semibold text-white mb-3 text-sm">Supported Payment Methods:</h4>
             <div className="flex items-center justify-around gap-2 md:gap-4 mb-3">
               <div className="flex flex-col items-center gap-1 text-white text-xs md:text-sm">
-                {/* Icon removed */}
                 <span>Visa</span>
               </div>
               <div className="flex flex-col items-center gap-1 text-white text-xs md:text-sm">
-                {/* Icon removed */}
                 <span>Mastercard</span>
               </div>
               <div className="flex flex-col items-center gap-1 text-white text-xs md:text-sm">
-                {/* Icon removed */}
                 <span>M-PESA</span>
               </div>
               <div className="flex flex-col items-center gap-1 text-white text-xs md:text-sm">
-                {/* Icon removed */}
                 <span>Apple Pay</span>
               </div>
             </div>
@@ -193,7 +188,7 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
           <Button
             type="submit"
             disabled={processing || (!email && !shippingDetails?.email)}
-            className={`w-full bg-barrush-gold hover:bg-barrush-gold/90 text-barrush-charcoal font-semibold py-6 text-lg transition-all duration-300 ${processing && 'opacity-60 cursor-not-allowed'}`}
+            className={`w-full bg-neon-pink hover:bg-neon-pink/90 text-white font-semibold py-6 text-lg transition-all duration-300 ${processing && 'opacity-60 cursor-not-allowed'}`}
           >
             {processing ? 'Processing Payment...' : `Pay KES ${amount.toLocaleString()} via Paystack`}
           </Button>
