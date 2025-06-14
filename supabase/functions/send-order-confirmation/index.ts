@@ -2,7 +2,8 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
 
-const resend = new Resend("re_AqrRGDDW_261DsQuAMF8vYP1fP82oj7JA");
+// Use environment variable for Resend API key for security
+const resend = new Resend(Deno.env.get("RESEND_API_KEY")!);
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -25,15 +26,19 @@ serve(async (req: Request) => {
   try {
     const { to, subject, html }: EmailRequest = await req.json();
 
-    const emailTo = to || "barrushdelivery@gmail.com";
-    const emailSubject = subject || "Hello World";
-    const emailHtml = html || "<p>Congrats on sending your <strong>first email</strong>!</p>";
+    // Ensure all required fields are present
+    if (!to || !subject || !html) {
+      return new Response(
+        JSON.stringify({ ok: false, error: "Missing required fields: to, subject, and html are required." }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
 
     const response = await resend.emails.send({
-      from: "onboarding@resend.dev",
-      to: [emailTo],
-      subject: emailSubject,
-      html: emailHtml,
+      from: "Barrush Delivery <onboarding@resend.dev>",
+      to: [to],
+      subject: subject,
+      html: html,
     });
 
     return new Response(JSON.stringify({ ok: true, data: response }), {
@@ -41,6 +46,7 @@ serve(async (req: Request) => {
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   } catch (err: any) {
+    console.error("Error sending email:", err);
     return new Response(
       JSON.stringify({ ok: false, error: err.message }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }

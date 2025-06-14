@@ -3,7 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { CartItem } from '@/contexts/CartContext';
+import { useCart, CartItem } from '@/contexts/CartContext';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/components/ui/use-toast';
 
 // Declare Paystack global type
 declare global {
@@ -36,6 +38,67 @@ interface PaystackCheckoutProps {
   cartItems?: CartItem[];
 }
 
+const generateOrderEmailHtml = (reference: string, amount: number, cartItems: CartItem[], shippingDetails: any) => {
+  const itemsHtml = cartItems.map(item => `
+    <tr style="border-bottom: 1px solid #eee;">
+      <td style="padding: 10px;">${item.name} (${item.size})</td>
+      <td style="padding: 10px; text-align: center;">${item.quantity}</td>
+      <td style="padding: 10px;">${item.priceFormatted}</td>
+      <td style="padding: 10px; text-align: right;">KES ${(item.price * item.quantity).toLocaleString()}</td>
+    </tr>
+  `).join('');
+
+  const fullAddress = [
+      shippingDetails.street,
+      shippingDetails.building,
+      shippingDetails.area,
+      shippingDetails.city
+  ].filter(Boolean).join(', ');
+
+  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const deliveryFee = amount - subtotal;
+
+  return `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 40px auto; border: 1px solid #ddd; border-radius: 8px; padding: 20px; color: #333;">
+      <h1 style="color: #d946ef; font-size: 24px; text-align: center;">Thank You For Your Order!</h1>
+      <p style="text-align: center;">Your order #${reference} has been successfully placed.</p>
+      
+      <h2 style="font-size: 20px; color: #6b21a8; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 30px;">Order Summary</h2>
+      <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+        <thead>
+          <tr>
+            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Product</th>
+            <th style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">Qty</th>
+            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Price</th>
+            <th style="padding: 10px; text-align: right; border-bottom: 1px solid #ddd;">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${itemsHtml}
+        </tbody>
+      </table>
+
+      <div style="margin-top: 20px; text-align: right;">
+        <p><strong>Subtotal:</strong> KES ${subtotal.toLocaleString()}</p>
+        <p><strong>Delivery Fee:</strong> KES ${deliveryFee.toLocaleString()}</p>
+        <h3 style="color: #d946ef;"><strong>Total Paid:</strong> KES ${amount.toLocaleString()}</h3>
+      </div>
+
+      <h2 style="font-size: 20px; color: #6b21a8; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 30px;">Shipping Details</h2>
+      <div style="line-height: 1.6;">
+        <strong>Name:</strong> ${shippingDetails.firstName} ${shippingDetails.lastName}<br>
+        <strong>Phone:</strong> ${shippingDetails.phone}<br>
+        <strong>Address:</strong> ${fullAddress}<br>
+        <strong>Instructions:</strong> ${shippingDetails.instructions || 'None'}
+      </div>
+
+      <p style="margin-top: 40px; font-size: 0.9em; color: #777; text-align: center;">
+        If you have any questions, feel free to contact our support team.
+      </p>
+    </div>
+  `;
+};
+
 const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
   amount,
   onValidationRequired,
@@ -47,16 +110,15 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
   const [succeeded, setSucceeded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  const { clearCart } = useCart();
 
   useEffect(() => {
-    // Scroll/focus Paystack card into view on render for better UX
     cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Check if form validation is required and failed
     if (onValidationRequired && !onValidationRequired()) {
       setError('Please fill in all required shipping details before proceeding with payment');
       return;
@@ -83,18 +145,41 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
       currency: 'KES',
       ref: '' + Math.floor(Math.random() * 1000000000 + 1),
       channels: ['card', 'mobile_money', 'apple_pay'], // M-PESA is included in mobile_money
-      callback: function (response) {
+      callback: async function (response) {
         setProcessing(false);
         setSucceeded(true);
         console.log('Payment complete! Reference: ' + response.reference);
-        
-        // Log order details for future email integration
-        console.log('Order Details:', {
-          reference: response.reference,
-          amount: amount,
-          items: cartItems,
-          shipping: shippingDetails
-        });
+
+        try {
+          const emailHtml = generateOrderEmailHtml(response.reference, amount, cartItems, shippingDetails);
+          const { error: functionError } = await supabase.functions.invoke('send-order-confirmation', {
+            body: {
+              to: shippingDetails.email,
+              subject: `Your Barrush Order Confirmation: #${response.reference}`,
+              html: emailHtml,
+            }
+          });
+
+          if (functionError) {
+            throw functionError;
+          }
+
+          console.log('Order confirmation email sent successfully.');
+          toast({
+            title: "Order Confirmed!",
+            description: "A confirmation email has been sent.",
+            className: "bg-green-500 text-white"
+          });
+          clearCart();
+
+        } catch (emailError) {
+          console.error('Failed to send confirmation email:', emailError);
+          toast({
+            title: "Email Sending Failed",
+            description: "Your order was processed, but we couldn't send the confirmation email. Please contact support.",
+            variant: "destructive",
+          });
+        }
       },
       onClose: function () {
         setProcessing(false);
