@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Trash2, Plus, Minus } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import PaystackCheckout from './PaystackCheckout';
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+
+const DELIVERY_ZONES = [
+  { name: 'Tezo', value: 'tezo', fee: 250 },
+  { name: 'Mnarani', value: 'mnarani', fee: 150 },
+  { name: 'Bofa', value: 'bofa', fee: 200 },
+];
 
 const CheckoutSection: React.FC = () => {
   const { items, updateQuantity, removeItem, getTotalAmount, getTotalItems } = useCart();
@@ -22,9 +28,13 @@ const CheckoutSection: React.FC = () => {
     city: '',
     instructions: ''
   });
-
+  const [selectedZone, setSelectedZone] = useState(DELIVERY_ZONES[0].value); // default: Tezo
   const [errors, setErrors] = useState<{[key: string]: string}>({});
-  const deliveryFee = 300;
+
+  // Find the selected zone object
+  const zoneObject = DELIVERY_ZONES.find(z => z.value === selectedZone);
+  const deliveryFee = zoneObject ? zoneObject.fee : 0;
+
   const subtotal = getTotalAmount();
   const totalAmount = subtotal + deliveryFee;
 
@@ -40,6 +50,10 @@ const CheckoutSection: React.FC = () => {
         [field]: ''
       }));
     }
+  };
+
+  const handleZoneChange = (value: string) => {
+    setSelectedZone(value);
   };
 
   const validateForm = () => {
@@ -153,7 +167,9 @@ const CheckoutSection: React.FC = () => {
                     <span>KES {subtotal.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between text-white">
-                    <span>Express Delivery (15 minutes):</span>
+                    <span>
+                      Express Delivery ({zoneObject ? zoneObject.name : "Zone"}):
+                    </span>
                     <span>KES {deliveryFee}</span>
                   </div>
                   <div className="border-t border-neon-purple pt-2">
@@ -287,6 +303,22 @@ const CheckoutSection: React.FC = () => {
                 </div>
 
                 <div className="space-y-2">
+                  <Label htmlFor="deliveryZone" className="text-white">Delivery Location *</Label>
+                  <Select value={selectedZone} onValueChange={handleZoneChange}>
+                    <SelectTrigger id="deliveryZone" className="w-full bg-neon-purple/40 border-neon-purple text-white">
+                      <SelectValue placeholder="Choose delivery location" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {DELIVERY_ZONES.map(zone => (
+                        <SelectItem key={zone.value} value={zone.value} className="text-white">
+                          {zone.name} (KES {zone.fee})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
                   <Label htmlFor="instructions" className="text-white">Special Delivery Instructions</Label>
                   <Textarea
                     id="instructions"
@@ -301,11 +333,14 @@ const CheckoutSection: React.FC = () => {
 
             {/* Payment Component with Validation */}
             <div className="w-full max-w-full">
-              {/* Only PaystackCheckout is used; Stripe removed */}
               <PaystackCheckout 
                 amount={totalAmount} 
                 onValidationRequired={validateForm}
-                shippingDetails={shippingDetails}
+                shippingDetails={{
+                  ...shippingDetails,
+                  deliveryZone: zoneObject?.name,
+                  deliveryFee: deliveryFee
+                }}
                 cartItems={items}
               />
             </div>
