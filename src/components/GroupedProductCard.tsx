@@ -10,6 +10,7 @@ import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import ProductQuickViewModal from './ProductQuickViewModal';
 import { normalizeString } from '@/utils/stringUtils';
+import ProductImageOrIcon from './ProductImageOrIcon';
 
 interface GroupedProductCardProps {
   product: GroupedProduct;
@@ -121,9 +122,14 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         aria-label={`Open details for ${displayName}`}
         role="button"
       >
-        <div className="relative flex items-center justify-center h-32 md:h-40 lg:h-48 bg-gray-900">
-          {/* Display logo based on category */}
-          {getLogoIconForCategory(product.category)}
+        <div className="relative flex items-center justify-center h-32 md:h-40 lg:h-48 bg-gray-900 aspect-square">
+          {/* NEW: Smart product image or icon */}
+          <ProductImageOrIcon
+            src={product.image}
+            alt={displayName}
+            category={product.category}
+            className="w-full h-full"
+          />
         </div>
         <CardContent className="p-3 md:p-4 lg:p-6 flex flex-col h-full">
           <h3 className="text-sm md:text-base lg:text-xl font-bold mb-2 font-iphone line-clamp-2 text-white">
