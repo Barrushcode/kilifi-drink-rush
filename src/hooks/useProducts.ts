@@ -19,6 +19,9 @@ export const useProducts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const FALLBACK_IMAGE =
+    "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80";
+
   const fetchAllProducts = async () => {
     const allProducts = [];
     let hasMore = true;
@@ -55,42 +58,32 @@ export const useProducts = () => {
     try {
       setLoading(true);
       setError(null);
-      console.log('🚀 Starting to fetch products (AI images only)...');
+      console.log('🚀 Starting to fetch products (FAST MODE, NO AI IMAGES)...');
 
       const allProductsData = await fetchAllProducts();
 
       const transformedProducts: Product[] = [];
-      const batchSize = 20; // To avoid rate limiting
+      const batchSize = 100; // For future proof, but no AI calls
 
       for (let i = 0; i < allProductsData.length; i += batchSize) {
         const batch = allProductsData.slice(i, i + batchSize);
 
-        const batchPromises = batch.map(async (product, batchIndex) => {
+        const batchResults = batch.map((product, batchIndex) => {
           const globalIndex = i + batchIndex;
-          
           if (typeof product.Price !== 'number' || isNaN(product.Price)) {
             console.warn('[🛑 MISSING OR INVALID PRICE]', product.Title, 'Raw:', product.Price);
             return null;
           }
 
           const productPrice = product.Price;
+          // Use existing utils for category
           let category = getCategoryFromName(product.Title || 'Unknown Product', productPrice);
-
           if ((product.Description || '').toLowerCase().includes('beer')) {
             category = 'Beer';
           }
 
-          let productImage = "";
-          try {
-            const aiResult = await AIImageGenerationService.generateProductImage(
-              product.Title || 'Unknown Product',
-              category
-            );
-            productImage = aiResult.imageUrl;
-          } catch (error) {
-            console.error('[AI IMAGE ERROR]:', product.Title, error);
-            productImage = AIImageGenerationService.getFallbackImage(category);
-          }
+          // Always use fallback image for massive speed
+          const productImage = FALLBACK_IMAGE;
 
           return {
             id: globalIndex + 1,
@@ -102,7 +95,6 @@ export const useProducts = () => {
           };
         });
 
-        const batchResults = await Promise.all(batchPromises);
         transformedProducts.push(...batchResults.filter(Boolean));
       }
 
