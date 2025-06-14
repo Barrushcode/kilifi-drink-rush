@@ -1,6 +1,7 @@
-
 import { normalizeString, extractBrand, extractVolume, calculateSimilarity } from '@/utils/stringUtils';
 import { getCategoryFromName } from '@/utils/categoryUtils';
+import { AIProductImageService } from '@/utils/AIProductImageService';
+import { isLowQualityOrUnrelatedImage } from '@/utils/badImageUtils';
 
 interface ScrapedImage {
   id: number;
@@ -195,7 +196,7 @@ const getBrandPreferenceBonus = (productName: string, imageName: string): number
   return 0;
 };
 
-// Enhanced image matching function with relaxed brand restrictions
+// Enhanced image matching function with relaxed brand restrictions & AI fallback for bad images
 export const findMatchingImage = (productName: string, scrapedImages: ScrapedImage[]): { url: string; matchLevel: string } => {
   if (!scrapedImages.length) {
     return {
@@ -206,118 +207,139 @@ export const findMatchingImage = (productName: string, scrapedImages: ScrapedIma
 
   console.log(`🔍 Finding image for: "${productName}"`);
   
+  // Step 1: Try all matching logic (as before) and get the image result candidate:
+  let selected: { url: string; matchLevel: string } | null = null;
+
   // Level 1: Exact match with quality filtering
   for (const img of scrapedImages) {
     if (img['Product Name']) {
       if (normalizeString(productName) === normalizeString(img['Product Name'])) {
         const { url, quality, urlNumber } = selectBestImageUrl(img);
         if (quality !== "curated-fallback") {
-          console.log(`✅ Level 1 - Exact match: "${img['Product Name']}" (URL ${urlNumber})`);
-          return { url, matchLevel: `exact-${quality}` };
+          selected = { url, matchLevel: `exact-${quality}` };
+          break;
         }
       }
     }
   }
 
-  // Level 2: High similarity match with brand preference (not exclusion)
-  let bestMatches: { image: ScrapedImage; score: number }[] = [];
-  
-  for (const img of scrapedImages) {
-    if (img['Product Name']) {
-      // Skip only major category conflicts
-      if (hasCategoryConflict(productName, img['Product Name'])) {
-        continue;
-      }
-      
-      const similarity = calculateSimilarity(productName, img['Product Name']);
-      const brandBonus = getBrandPreferenceBonus(productName, img['Product Name']);
-      const totalScore = similarity + brandBonus;
-      
-      if (totalScore > 0.7) { // Lowered threshold for more matches
-        bestMatches.push({ image: img, score: totalScore });
+  // Level 2: High similarity match
+  if (!selected) {
+    let bestMatches: { image: ScrapedImage; score: number }[] = [];
+    for (const img of scrapedImages) {
+      if (img['Product Name']) {
+        if (hasCategoryConflict(productName, img['Product Name'])) continue;
+        const similarity = calculateSimilarity(productName, img['Product Name']);
+        const brandBonus = getBrandPreferenceBonus(productName, img['Product Name']);
+        const totalScore = similarity + brandBonus;
+        if (totalScore > 0.7) bestMatches.push({ image: img, score: totalScore });
       }
     }
-  }
-  
-  // Sort by score and try the best matches
-  bestMatches.sort((a, b) => b.score - a.score);
-  
-  for (const match of bestMatches) {
-    const { url, quality, urlNumber } = selectBestImageUrl(match.image);
-    if (quality !== "curated-fallback") {
-      console.log(`✅ Level 2 - High similarity (${match.score.toFixed(3)}): "${match.image['Product Name']}" (URL ${urlNumber})`);
-      return { url, matchLevel: `high-similarity-${quality}` };
+    bestMatches.sort((a, b) => b.score - a.score);
+    for (const match of bestMatches) {
+      const { url, quality, urlNumber } = selectBestImageUrl(match.image);
+      if (quality !== "curated-fallback") {
+        selected = { url, matchLevel: `high-similarity-${quality}` };
+        break;
+      }
     }
   }
 
-  // Level 3: Brand + volume match (still useful)
-  const productVolume = extractVolume(productName);
-  const productBrand = extractAlcoholBrand(productName);
-  
-  for (const img of scrapedImages) {
-    if (img['Product Name']) {
-      if (hasCategoryConflict(productName, img['Product Name'])) {
-        continue;
-      }
-      
-      const imageBrand = extractAlcoholBrand(img['Product Name']);
-      const imageVolume = extractVolume(img['Product Name']);
-      
-      if (productBrand && imageBrand && 
-          normalizeString(productBrand) === normalizeString(imageBrand) &&
-          productVolume && imageVolume &&
-          normalizeString(productVolume) === normalizeString(imageVolume)) {
-        const { url, quality, urlNumber } = selectBestImageUrl(img);
-        if (quality !== "curated-fallback") {
-          console.log(`✅ Level 3 - Brand + Volume match: "${img['Product Name']}" (URL ${urlNumber})`);
-          return { url, matchLevel: `brand-volume-${quality}` };
+  // Level 3: Brand + volume match
+  if (!selected) {
+    const productVolume = extractVolume(productName);
+    const productBrand = extractAlcoholBrand(productName);
+    for (const img of scrapedImages) {
+      if (img['Product Name']) {
+        if (hasCategoryConflict(productName, img['Product Name'])) continue;
+        const imageBrand = extractAlcoholBrand(img['Product Name']);
+        const imageVolume = extractVolume(img['Product Name']);
+        if (
+          productBrand && imageBrand && normalizeString(productBrand) === normalizeString(imageBrand) &&
+          productVolume && imageVolume && normalizeString(productVolume) === normalizeString(imageVolume)
+        ) {
+          const { url, quality, urlNumber } = selectBestImageUrl(img);
+          if (quality !== "curated-fallback") {
+            selected = { url, matchLevel: `brand-volume-${quality}` };
+            break;
+          }
         }
       }
     }
   }
 
-  // Level 4: Brand-only match (preference, not requirement)
-  for (const img of scrapedImages) {
-    if (img['Product Name']) {
-      if (hasCategoryConflict(productName, img['Product Name'])) {
-        continue;
-      }
-      
-      const imageBrand = extractAlcoholBrand(img['Product Name']);
-      
-      if (productBrand && imageBrand && 
-          normalizeString(productBrand) === normalizeString(imageBrand)) {
-        const { url, quality, urlNumber } = selectBestImageUrl(img);
-        if (quality !== "curated-fallback") {
-          console.log(`✅ Level 4 - Brand match: "${img['Product Name']}" (URL ${urlNumber})`);
-          return { url, matchLevel: `brand-only-${quality}` };
+  // Level 4: Brand-only match
+  if (!selected) {
+    const productBrand = extractAlcoholBrand(productName);
+    for (const img of scrapedImages) {
+      if (img['Product Name']) {
+        if (hasCategoryConflict(productName, img['Product Name'])) continue;
+        const imageBrand = extractAlcoholBrand(img['Product Name']);
+        if (
+          productBrand && imageBrand && normalizeString(productBrand) === normalizeString(imageBrand)
+        ) {
+          const { url, quality, urlNumber } = selectBestImageUrl(img);
+          if (quality !== "curated-fallback") {
+            selected = { url, matchLevel: `brand-only-${quality}` };
+            break;
+          }
         }
       }
     }
   }
 
-  // Level 5: Partial similarity match (new permissive level)
-  for (const img of scrapedImages) {
-    if (img['Product Name']) {
-      if (hasCategoryConflict(productName, img['Product Name'])) {
-        continue;
-      }
-      
-      const similarity = calculateSimilarity(productName, img['Product Name']);
-      if (similarity > 0.4) { // Much more permissive
-        const { url, quality, urlNumber } = selectBestImageUrl(img);
-        if (quality !== "curated-fallback") {
-          console.log(`✅ Level 5 - Partial similarity (${similarity.toFixed(3)}): "${img['Product Name']}" (URL ${urlNumber})`);
-          return { url, matchLevel: `partial-similarity-${quality}` };
+  // Level 5: Partial similarity match
+  if (!selected) {
+    for (const img of scrapedImages) {
+      if (img['Product Name']) {
+        if (hasCategoryConflict(productName, img['Product Name'])) continue;
+        const similarity = calculateSimilarity(productName, img['Product Name']);
+        if (similarity > 0.4) {
+          const { url, quality, urlNumber } = selectBestImageUrl(img);
+          if (quality !== "curated-fallback") {
+            selected = { url, matchLevel: `partial-similarity-${quality}` };
+            break;
+          }
         }
       }
     }
   }
 
-  // Final fallback - use curated high-quality stock image
-  console.log(`🎨 No suitable product photos found for: "${productName}" - using curated stock image`);
-  return {
-    url: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-    matchLevel: "curated-fallback"
-  };
+  // If still not found: fallback image (Unsplash)
+  if (!selected) {
+    selected = {
+      url: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+      matchLevel: "curated-fallback"
+    };
+  }
+
+  // Step 2: If the current (selected) image is bad, generate/callback AI mockup
+  if (
+    !selected.url ||
+    isLowQualityOrUnrelatedImage(selected.url, productName)
+  ) {
+    // Synchronously fallback to AI mockup (async generation not possible here, so block while generating/caching)
+    // This will cache the result via AIProductImageService so repeated requests are fast.
+    let aiUrl = AIProductImageService.imageCache?.get(productName.toLowerCase());
+    if (!aiUrl) {
+      // Image generation is async; in a real app, products should be hydrated progressively.
+      // Here, we simulate sync-forced resolution with a placeholder while issuing a background generation.
+      AIProductImageService.generateProductImage(productName)
+        .then(url => {
+          // Side effect: Will populate cache on next run
+        })
+        .catch(e => { console.error("AI image generation failed for", productName, e); });
+      // Return Unsplash fallback for now if not in cache.
+      return {
+        url: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        matchLevel: "ai-fallback-pending"
+      };
+    }
+    return {
+      url: aiUrl,
+      matchLevel: "ai-mockup"
+    };
+  }
+
+  return selected;
 };
