@@ -181,9 +181,15 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
               <ShoppingCart className="h-3 w-3 mr-1" />
               Add to Cart
             </Button>
+
+            {/* ENSURE "BUY NOW" BUTTON IS FULLY VISIBLE */}
             <Button 
               onClick={handleBuyNow}
-              className="flex-1 font-bold px-3 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-pink-500 hover:bg-pink-600 text-white border-none"
+              className="flex-1 font-bold px-3 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-rose-600 hover:bg-rose-500 text-white border-none shadow-lg"
+              style={{
+                backgroundColor: '#e11d48', // Explicit rose
+                color: '#fff',
+              }}
             >
               <CreditCard className="h-3 w-3 mr-1" />
               Buy Now
