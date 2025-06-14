@@ -8,6 +8,7 @@ import { Trash2, Plus, Minus } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import PaystackCheckout from './PaystackCheckout';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import { supabase } from '@/integrations/supabase/client';
 
 const DELIVERY_ZONES = [
   { name: 'Tezo', value: 'tezo', fee: 250 },
@@ -81,24 +82,21 @@ const CheckoutSection: React.FC = () => {
 
   // --- Add simulate payment handler ---
   const handleSimulatePayment = async () => {
-    // Validate form fields first
     if (!validateForm()) {
-      window.scrollTo({top: 0, behavior: "smooth"});
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
     if (!shippingDetails.email) {
-      setErrors((prev) => ({...prev, email: "Email is required for email simulation"}));
+      setErrors((prev) => ({ ...prev, email: "Email is required for email simulation" }));
       return;
     }
     try {
-      // Compose sample data like after a real payment
       const reference = "SIM" + Math.floor(Math.random() * 1000000);
-      // Prepare request body as in PaystackCheckout
       const { toast } = await import('@/components/ui/use-toast');
-      const res = await fetch("/functions/v1/send-order-confirmation", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+
+      // Use the Supabase client to call the edge function
+      const { data, error } = await supabase.functions.invoke('send-order-confirmation', {
+        body: {
           to: shippingDetails.email,
           subject: `Your Barrush Order Confirmation (Simulated): #${reference}`,
           html: `
@@ -109,10 +107,10 @@ const CheckoutSection: React.FC = () => {
             <p>Delivery: ${zoneObject?.name} (KES ${deliveryFee})</p>
             <p>Total simulated: KES ${totalAmount.toLocaleString()}</p>
           `,
-        }),
+        }
       });
-      const data = await res.json();
-      if (res.ok && data.ok) {
+
+      if (!error && data && data.ok) {
         toast({
           title: "Simulated order email sent!",
           description: "Check your inbox for the test confirmation.",
@@ -121,7 +119,7 @@ const CheckoutSection: React.FC = () => {
       } else {
         toast({
           title: "Simulation failed!",
-          description: (data?.error || "Unknown error"),
+          description: (error?.message || data?.error || "Unknown error"),
           variant: "destructive",
         });
       }
