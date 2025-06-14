@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -71,6 +70,8 @@ const ProductCardVariant2: React.FC<ProductCardVariant2Props> = ({ product }) =>
 
   return (
     <Card className={`
+      border-4 border-yellow-500
+      /* DEBUG OUTLINE – REMOVE ME */
       group h-full 
       bg-gradient-to-br 
       from-white via-gray-50 to-gray-100 
@@ -79,6 +80,9 @@ const ProductCardVariant2: React.FC<ProductCardVariant2Props> = ({ product }) =>
       shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden rounded-2xl transform hover:-translate-y-1
       font-iphone
     `}>
+      <div className="bg-yellow-300 text-black px-2 py-1 text-xs font-bold uppercase mb-1">
+        DEBUG: PRODUCT CARD – {cleanName}
+      </div>
       <div className="relative">
         <div className="
           aspect-[4/3] overflow-hidden 

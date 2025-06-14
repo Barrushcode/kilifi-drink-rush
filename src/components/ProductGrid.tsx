@@ -55,7 +55,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
         style={{ width: '100%' }}
       >
         {paginatedProducts.map(product => {
-          console.log('🔧 Rendering product card for:', product.baseName, 'with price:', product.lowestPriceFormatted);
+          console.log('[ProductGrid] Rendering product card for:', product.baseName, 'variants:', product.variants.length);
           return (
             <ProductCardVariant2 key={product.id} product={product} />
           );

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import ProductCatalogHeader from './ProductCatalogHeader';
@@ -112,7 +111,9 @@ const ProductCatalog: React.FC = () => {
     );
   }
 
-  console.log('🎯 Rendering ProductCatalog with', paginatedProducts.length, 'products');
+  // ADD DEBUG LOG
+  console.log('[ProductCatalog] paginatedProducts:', paginatedProducts.length, paginatedProducts);
+  console.log('[ProductCatalog] displayFilteredProducts:', displayFilteredProducts.length, displayFilteredProducts);
 
   return (
     <section 
