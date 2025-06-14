@@ -1,10 +1,8 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { CreditCard, Smartphone, Apple } from 'lucide-react'; // Added Smartphone and Apple, kept CreditCard
 import { CartItem } from '@/contexts/CartContext';
 
 // Declare Paystack global type
@@ -169,24 +167,24 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
             <span className="text-xl font-bold text-barrush-gold">KES {amount.toLocaleString()}</span>
           </div>
 
-          {/* Payment Methods Section - Updated with Lucide Icons */}
+          {/* Payment Methods Section - Icons removed */}
           <div className="bg-barrush-burgundy/20 p-4 rounded-lg">
             <h4 className="font-semibold text-white mb-3 text-sm">Supported Payment Methods:</h4>
             <div className="flex items-center justify-around gap-2 md:gap-4 mb-3">
               <div className="flex flex-col items-center gap-1 text-white text-xs md:text-sm">
-                <CreditCard className="h-6 w-6 md:h-8 md:w-8 text-blue-400" />
+                {/* Icon removed */}
                 <span>Visa</span>
               </div>
               <div className="flex flex-col items-center gap-1 text-white text-xs md:text-sm">
-                <CreditCard className="h-6 w-6 md:h-8 md:w-8 text-orange-400" />
+                {/* Icon removed */}
                 <span>Mastercard</span>
               </div>
               <div className="flex flex-col items-center gap-1 text-white text-xs md:text-sm">
-                <Smartphone className="h-6 w-6 md:h-8 md:w-8 text-green-400" />
+                {/* Icon removed */}
                 <span>M-PESA</span>
               </div>
               <div className="flex flex-col items-center gap-1 text-white text-xs md:text-sm">
-                <Apple className="h-6 w-6 md:h-8 md:w-8 text-gray-400" />
+                {/* Icon removed */}
                 <span>Apple Pay</span>
               </div>
             </div>
