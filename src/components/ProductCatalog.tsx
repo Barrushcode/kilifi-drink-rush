@@ -59,18 +59,18 @@ const ProductCatalog: React.FC = () => {
     }
   }, [categories, selectedCategory]);
 
-  // Show the loading skeleton immediately, no extra margin above!
+  // Show the loading skeleton tightly with no extra margin above!
   if (loading) {
     return (
-      <section id="products" className="py-0 lg:py-0 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative overflow-hidden">
-        <div className="container mx-auto px-0 lg:px-0 relative z-10 max-w-screen-2xl">
-          <div className="text-center mb-8 lg:mb-12">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 lg:mb-6 font-serif text-rose-600">
+      <section id="products" className="pt-0 pb-0 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative overflow-hidden">
+        <div className="container mx-auto px-0 lg:px-2 relative z-10 max-w-screen-2xl">
+          <div className="text-center mb-3">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-0 font-serif text-rose-600">
               Our Collection
             </h2>
-            <div className="w-12 lg:w-16 h-px bg-barrush-copper mx-auto mb-6 lg:mb-8"></div>
-            <p className="text-lg lg:text-xl text-barrush-platinum/90 max-w-3xl mx-auto mb-8 lg:mb-12 leading-relaxed font-iphone">
-              Loading our curated selection with size variants...
+            <div className="w-12 lg:w-16 h-px bg-barrush-copper mx-auto my-3"></div>
+            <p className="text-lg lg:text-xl text-barrush-platinum/90 max-w-3xl mx-auto mb-1 leading-relaxed font-iphone">
+              Loading our curated selection...
             </p>
           </div>
           <ProductLoadingSkeleton />
@@ -82,8 +82,8 @@ const ProductCatalog: React.FC = () => {
   if (error) {
     console.error('❌ ProductCatalog error:', error);
     return (
-      <section id="products" className="py-0 lg:py-0 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative overflow-hidden">
-        <div className="container mx-auto px-0 lg:px-0 relative z-10 max-w-screen-2xl">
+      <section id="products" className="pt-0 pb-0 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative overflow-hidden">
+        <div className="container mx-auto px-0 lg:px-2 relative z-10 max-w-screen-2xl">
           <div className="text-center">
             <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 lg:mb-6 font-serif text-rose-600">
               Our Collection
@@ -103,12 +103,12 @@ const ProductCatalog: React.FC = () => {
   return (
     <section 
       id="products" 
-      className="py-0 lg:py-0 relative overflow-hidden"
+      className="pt-0 pb-0 relative overflow-hidden"
       style={{
         background: 'linear-gradient(to bottom, #0f1419 0%, #1a1a1a 100%)'
       }}
     >
-      <div className="container mx-auto px-0 lg:px-0 relative z-10 max-w-screen-2xl">
+      <div className="container mx-auto px-1 sm:px-2 md:px-2 lg:px-2 relative z-10 max-w-screen-2xl">
         <ProductCatalogHeader
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}

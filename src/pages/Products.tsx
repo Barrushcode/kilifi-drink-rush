@@ -8,6 +8,7 @@ const Products = () => {
   return (
     <div className="bg-barrush-midnight">
       <AnnouncementBar />
+      {/* Removed min-h-screen, no extra vertical space */}
       <ProductCatalog />
     </div>
   );

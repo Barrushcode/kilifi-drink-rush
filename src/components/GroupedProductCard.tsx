@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -128,7 +127,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         product={product}
       />
       <Card 
-        className="overflow-hidden h-full shadow-lg hover:shadow-xl transition-all duration-300 group hover:scale-105 bg-barrush-slate border-barrush-steel/30 cursor-pointer"
+        className="overflow-hidden h-full min-h-[350px] shadow-lg hover:shadow-xl transition-all duration-300 group hover:scale-105 bg-barrush-slate border-barrush-steel/30 cursor-pointer flex flex-col"
         onClick={handleCardClick}
         tabIndex={0}
         onKeyDown={e => {
@@ -137,9 +136,9 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         aria-label={`Open details for ${displayName}`}
         role="button"
       >
-        <CardContent className="p-3 md:p-4 lg:p-6 flex flex-col h-full">
+        <CardContent className="p-2 md:p-4 lg:p-5 flex flex-col h-full">
           {/* Image */}
-          <div className="w-full h-32 md:h-44 lg:h-48 rounded-lg overflow-hidden mb-3 relative">
+          <div className="w-full h-24 md:h-32 lg:h-40 rounded-lg overflow-hidden mb-2 relative">
             <img
               src={displayImage}
               alt={displayName}
@@ -147,17 +146,15 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
               loading="lazy"
               style={{ background: '#222', display: 'block' }}
               onError={e => {
-                // fallback if primary or fallback both fail
-                const img = e.currentTarget as HTMLImageElement;
-                if (img.src !== FALLBACK_IMAGE) img.src = FALLBACK_IMAGE;
+                if (e.currentTarget.src !== FALLBACK_IMAGE) e.currentTarget.src = FALLBACK_IMAGE;
               }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-barrush-midnight/60 to-transparent group-hover:from-barrush-midnight/40 transition-all duration-300" />
           </div>
-          <h3 className="text-sm md:text-base lg:text-xl font-bold mb-2 font-iphone line-clamp-2 text-barrush-platinum">
+          <h3 className="text-xs md:text-base lg:text-xl font-bold mb-1 font-iphone line-clamp-2 text-barrush-platinum">
             {displayName}
           </h3>
-          <div className="flex flex-wrap items-center gap-1 md:gap-2 mb-3">
+          <div className="flex flex-wrap items-center gap-1 md:gap-2 mb-2">
             <Badge className="px-2 py-1 text-xs font-iphone bg-barrush-steel/60 text-barrush-platinum border-barrush-steel/80">
               {product.category}
             </Badge>
@@ -168,13 +165,13 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
             )}
           </div>
           {product.description && (
-            <p className="mb-3 text-xs md:text-sm line-clamp-2 font-iphone text-barrush-platinum/80">
+            <p className="mb-2 text-xs md:text-sm line-clamp-2 font-iphone text-barrush-platinum/80">
               {product.description}
             </p>
           )}
           {/* Size Selector */}
           {product.variants.length > 1 ? (
-            <div className="mb-3">
+            <div className="mb-2">
               <label className="block text-xs font-medium mb-1 font-iphone text-barrush-platinum/80">
                 Size & Price:
               </label>
@@ -204,7 +201,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
               </Select>
             </div>
           ) : (
-            <div className="mb-3">
+            <div className="mb-2">
               <span className="text-xs font-iphone text-barrush-platinum/80">
                 Size: {selectedVariant.size}
               </span>
@@ -222,19 +219,19 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
               )}
             </div>
             {/* Action Buttons */}
-            <div className="flex gap-2 mt-2 z-10">
+            <div className="flex gap-2 mt-1 z-10 w-full">
               <Button 
                 onClick={(e) => { e.stopPropagation(); handleAddToCart(); }}
-                className="flex-1 font-bold px-3 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-transparent border-2 border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white"
+                className="flex-1 font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-transparent border-2 border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white w-full"
               >
                 <ShoppingCart className="h-3 w-3 mr-1" />
                 Add to Cart
               </Button>
               <Button 
                 onClick={(e) => { e.stopPropagation(); handleBuyNow(); }}
-                className="flex-1 font-bold px-3 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-rose-600 hover:bg-rose-500 text-white border-none shadow-lg"
+                className="flex-1 font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-rose-600 hover:bg-rose-500 text-white border-none shadow-lg w-full"
                 style={{
-                  backgroundColor: '#e11d48', // Explicit rose
+                  backgroundColor: '#e11d48',
                   color: '#fff',
                 }}
               >
@@ -250,4 +247,3 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
 };
 
 export default GroupedProductCard;
-
