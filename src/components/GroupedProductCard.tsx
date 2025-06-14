@@ -12,6 +12,30 @@ import { useToast } from '@/hooks/use-toast';
 import ProductQuickViewModal from './ProductQuickViewModal';
 import { normalizeString } from '@/utils/stringUtils';
 
+// Utility to determine if the product image is appropriate
+function isImageAppropriate(url?: string) {
+  if (!url) return false;
+  const lowerUrl = url.toLowerCase();
+  // Exclude low quality/social domains
+  const badDomains = [
+    'youtube.com', 'youtu.be', 'pinterest.com', 'facebook.com', 'instagram.com',
+    'twitter.com', 'tiktok.com', 'reddit.com', 'blogspot.com', 'wordpress.com',
+    'wikimedia.org', 'wikipedia.org', 'tumblr.com', 'placeholder', 'no-image',
+    'svg', 'icon', 'logo'
+  ];
+  if (badDomains.some(domain => lowerUrl.includes(domain))) return false;
+  // Exclude clearly broken, tiny images
+  if (
+    lowerUrl.endsWith('.svg') ||
+    /150|default|thumb|generic/i.test(lowerUrl) ||
+    lowerUrl.includes('placeholder')
+  ) return false;
+  // Accept only links with .jpg/.jpeg/.png/webp and of reasonable length
+  if (!/\.(jpg|jpeg|png|webp)$/i.test(lowerUrl)) return false;
+  // Accept high-quality known sources, otherwise fallback if no other indicators
+  return true;
+}
+
 interface GroupedProductCardProps {
   product: GroupedProduct;
 }
@@ -19,6 +43,8 @@ interface GroupedProductCardProps {
 function capitalizeWords(str: string) {
   return str.replace(/\w\S*/g, (w) => w.replace(/^\w/, (c) => c.toUpperCase()));
 }
+
+const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80";
 
 const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(product.variants[0]);
@@ -84,7 +110,6 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
 
   // Make main card clickable except button row
   const handleCardClick = (e: React.MouseEvent) => {
-    // Prevent click if pressing buttons
     const tag = (e.target as HTMLElement).tagName.toLowerCase();
     if (tag === 'button' || tag === 'svg' || (e.target as HTMLElement).closest('button')) return;
     setModalOpen(true);
@@ -92,6 +117,8 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
 
   // Normalize and capitalize product name for display
   const displayName = capitalizeWords(normalizeString(product.baseName));
+  // Display only if image is appropriate, else fallback
+  const displayImage = isImageAppropriate(product.image) ? product.image : FALLBACK_IMAGE;
 
   return (
     <>
@@ -101,7 +128,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         product={product}
       />
       <Card 
-        className="overflow-hidden h-full shadow-md hover:shadow-lg transition-all duration-300 group hover:scale-105 bg-barrush-slate border-barrush-steel/30 cursor-pointer"
+        className="overflow-hidden h-full shadow-lg hover:shadow-xl transition-all duration-300 group hover:scale-105 bg-barrush-slate border-barrush-steel/30 cursor-pointer"
         onClick={handleCardClick}
         tabIndex={0}
         onKeyDown={e => {
@@ -111,6 +138,22 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         role="button"
       >
         <CardContent className="p-3 md:p-4 lg:p-6 flex flex-col h-full">
+          {/* Image */}
+          <div className="w-full h-32 md:h-44 lg:h-48 rounded-lg overflow-hidden mb-3 relative">
+            <img
+              src={displayImage}
+              alt={displayName}
+              className="w-full h-full object-cover transition-opacity duration-300"
+              loading="lazy"
+              style={{ background: '#222', display: 'block' }}
+              onError={e => {
+                // fallback if primary or fallback both fail
+                const img = e.currentTarget as HTMLImageElement;
+                if (img.src !== FALLBACK_IMAGE) img.src = FALLBACK_IMAGE;
+              }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-barrush-midnight/60 to-transparent group-hover:from-barrush-midnight/40 transition-all duration-300" />
+          </div>
           <h3 className="text-sm md:text-base lg:text-xl font-bold mb-2 font-iphone line-clamp-2 text-barrush-platinum">
             {displayName}
           </h3>
@@ -151,7 +194,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
                     >
                       <div className="flex justify-between items-center w-full">
                         <span className="text-xs">{variant.size}</span>
-                        <span className="ml-2 font-bold text-xs text-pink-400"> {/* Kept pink price in dropdown for now, can be changed if needed */}
+                        <span className="ml-2 font-bold text-xs text-pink-400">
                           {variant.priceFormatted}
                         </span>
                       </div>
@@ -182,14 +225,18 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
             <div className="flex gap-2 mt-2 z-10">
               <Button 
                 onClick={(e) => { e.stopPropagation(); handleAddToCart(); }}
-                className="flex-1 font-bold px-3 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-transparent border-2 border-barrush-copper text-barrush-copper hover:bg-barrush-copper hover:text-barrush-midnight"
+                className="flex-1 font-bold px-3 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-transparent border-2 border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white"
               >
                 <ShoppingCart className="h-3 w-3 mr-1" />
                 Add to Cart
               </Button>
               <Button 
                 onClick={(e) => { e.stopPropagation(); handleBuyNow(); }}
-                className="flex-1 font-bold px-3 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-barrush-copper text-barrush-midnight hover:bg-barrush-copper/90 border-none shadow-lg"
+                className="flex-1 font-bold px-3 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-rose-600 hover:bg-rose-500 text-white border-none shadow-lg"
+                style={{
+                  backgroundColor: '#e11d48', // Explicit rose
+                  color: '#fff',
+                }}
               >
                 <CreditCard className="h-3 w-3 mr-1" />
                 Buy Now
