@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getCategoryFromName } from '@/utils/categoryUtils';
@@ -70,9 +69,7 @@ export const useProducts = () => {
     try {
       setLoading(true);
       setError(null);
-      
       console.log('🚀 Starting to fetch products...');
-      
       // Fetch all products using pagination and scraped images in parallel
       const [allProductsData, imagesResponse] = await Promise.all([
         fetchAllProducts(),
@@ -93,10 +90,34 @@ export const useProducts = () => {
 
       // Transform the products data and match with high-quality images
       const transformedProducts: Product[] = allProductsData.map((product, index) => {
-        const productPrice = Number(product.Price) || 0;
+        // Use price from Supabase "Price" column
+        const priceRaw = product.Price;
+        let productPrice: number | null = null;
+
+        // Handle bigint types (from Supabase) that may arrive as string or number
+        if (typeof priceRaw === 'string' && priceRaw.trim() !== '') {
+          productPrice = parseInt(priceRaw.replace(/[^\d]/g, ''), 10);
+        } else if (typeof priceRaw === 'number') {
+          productPrice = priceRaw;
+        }
+
+        if (typeof productPrice !== 'number' || isNaN(productPrice)) {
+          console.warn('[🛑 BAD PRICE]', product.Title, 'Raw:', priceRaw, 'Computed:', productPrice);
+          productPrice = null;
+        }
+
+        if (productPrice === null) {
+          // If there's truly no price, mark as unavailable
+          return null;
+        }
+
+        if (productPrice < 300 || productPrice > 1000000) {
+          console.warn('[⚠️ OUT-OF-BOUNDS PRICE]', product.Title, 'Price:', productPrice, 'Raw:', priceRaw);
+        }
+
         const category = getCategoryFromName(product.Title || 'Unknown Product', productPrice);
-        const { url: productImage, matchLevel } = findMatchingImage(product.Title || 'Unknown Product', scrapedImages);
-        
+        const { url: productImage } = findMatchingImage(product.Title || 'Unknown Product', scrapedImages);
+
         return {
           id: index + 1,
           name: product.Title || 'Unknown Product',
@@ -105,7 +126,7 @@ export const useProducts = () => {
           category,
           image: productImage
         };
-      });
+      }).filter(Boolean); // Remove any with null price
 
       console.log('🔄 Grouping products by base name...');
       
