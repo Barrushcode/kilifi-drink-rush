@@ -8,6 +8,7 @@ interface OptimizedImageProps {
   className?: string;
   priority?: boolean;
   fallbackSrc?: string;
+  bustCache?: boolean;
 }
 
 const OptimizedImage: React.FC<OptimizedImageProps> = ({ 
@@ -15,7 +16,8 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   alt, 
   className = "",
   priority = false,
-  fallbackSrc = "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+  fallbackSrc = "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+  bustCache = false
 }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -25,11 +27,13 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   console.log('🖼️ OptimizedImage rendering:', { src, alt, loading, error });
 
   useEffect(() => {
-    setImageSrc(src);
+    // Add cache busting parameter if requested
+    const cacheBustedSrc = bustCache ? `${src}?t=${Date.now()}` : src;
+    setImageSrc(cacheBustedSrc);
     setLoading(true);
     setError(false);
     setRetryCount(0);
-  }, [src]);
+  }, [src, bustCache]);
 
   const handleImageLoad = () => {
     console.log('✅ Image loaded successfully:', imageSrc);
@@ -44,7 +48,8 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     
     if (imageSrc !== fallbackSrc && retryCount < 1) {
       console.log('🔄 Trying fallback image:', fallbackSrc);
-      setImageSrc(fallbackSrc);
+      const cacheBustedFallback = bustCache ? `${fallbackSrc}?t=${Date.now()}` : fallbackSrc;
+      setImageSrc(cacheBustedFallback);
       setLoading(true);
       setError(false);
       setRetryCount(prev => prev + 1);

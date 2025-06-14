@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 interface ImageAnalysisResult {
@@ -157,5 +156,10 @@ export class IntelligentImageSelectionService {
         reasoning: "AI analysis failed, using first available"
       };
     }
+  }
+
+  static clearCache(): void {
+    this.cache.clear();
+    console.log('🧹 Intelligent Image Selection cache cleared');
   }
 }

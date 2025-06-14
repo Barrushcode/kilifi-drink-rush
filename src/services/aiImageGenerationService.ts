@@ -105,5 +105,18 @@ export class AIImageGenerationService {
 
   static clearCache(): void {
     this.cache.clear();
+    console.log('🧹 AI Image Generation cache cleared');
+  }
+
+  static clearBrowserImageCache(): void {
+    // Force browser to reload images by clearing cache
+    if ('caches' in window) {
+      caches.names().then(names => {
+        names.forEach(name => {
+          caches.delete(name);
+        });
+      });
+    }
+    console.log('🧹 Browser image cache clearing initiated');
   }
 }
