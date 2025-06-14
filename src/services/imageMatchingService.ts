@@ -1,4 +1,3 @@
-
 import { normalizeString, extractBrand, extractVolume, calculateSimilarity } from '@/utils/stringUtils';
 import { getCategoryFromName } from '@/utils/categoryUtils';
 
@@ -95,7 +94,7 @@ const assessImageQuality = (url: string, urlNumber: string): ImageQualityScore =
 
   const lowerUrl = url.toLowerCase();
   let score = 30; // Higher base score for more permissive matching
-  let source: 'high' | 'medium' | 'low' = 'medium';
+  let source: 'medium' | 'high' | 'low' = 'medium';
 
   // High-quality domains get significant boost
   if (HIGH_QUALITY_DOMAINS.some(domain => lowerUrl.includes(domain))) {
@@ -120,11 +119,11 @@ const assessImageQuality = (url: string, urlNumber: string): ImageQualityScore =
   // High resolution indicators
   if (lowerUrl.includes('1200') || lowerUrl.includes('1000') || lowerUrl.includes('large')) score += 20;
   if (lowerUrl.includes('original') || lowerUrl.includes('full')) score += 15;
-  
+
   // Reduced penalties for smaller images (still usable)
   if (lowerUrl.includes('thumb') || lowerUrl.includes('small') || lowerUrl.includes('150')) score -= 15;
   if (lowerUrl.includes('200') || lowerUrl.includes('300')) score -= 10;
-  
+
   // Social media penalties (but not as harsh)
   if (lowerUrl.includes('maxresdefault') || lowerUrl.includes('hqdefault')) score -= 25;
 
