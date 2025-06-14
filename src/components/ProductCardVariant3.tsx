@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
-import { ShoppingCart, ChevronDown } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 import { GroupedProduct, ProductVariant } from '@/utils/productGroupingUtils';
 import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
@@ -70,14 +70,12 @@ const ProductCardVariant3: React.FC<ProductCardVariant3Props> = ({ product }) =>
   };
 
   return (
-    <Card 
+    <Card
       className={`
-        group h-full 
-        font-iphone
-        bg-white border border-gray-100 
-        hover:border-rose-200 transition-all duration-300 
-        overflow-hidden rounded-2xl shadow-sm hover:shadow-lg
-        dark:bg-gray-900 dark:border-gray-800 dark:hover:border-rose-800
+        group h-full
+        bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800
+        hover:border-rose-200 dark:hover:border-rose-800 transition-all duration-300
+        overflow-hidden rounded-2xl shadow-sm hover:shadow-lg font-iphone
       `}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -91,23 +89,23 @@ const ProductCardVariant3: React.FC<ProductCardVariant3Props> = ({ product }) =>
             loading="lazy"
           />
         </div>
-        
-        {/* Overlay for hover in light/dark mode */}
-        <div className={`absolute inset-0 transition-opacity duration-300 ${
-            isHovered ? 'opacity-100' : 'opacity-0'
-          } 
-          bg-black/40 dark:bg-black/70
+
+        {/* Overlay for hover */}
+        <div className={`
+          absolute inset-0 transition-opacity duration-300 z-10
+          ${isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'}
+          bg-black/40 dark:bg-black/80
         `}>
-          <div className="absolute bottom-4 left-4 right-4">
+          <div className="absolute bottom-4 left-4 right-4 font-iphone">
             {product.description && isHovered && (
-              <p className="text-white text-sm mb-3 line-clamp-2 animate-in slide-in-from-bottom-2 font-iphone">
+              <p className="text-white text-sm mb-3 animate-in slide-in-from-bottom-2 font-iphone">
                 {product.description}
               </p>
             )}
             {isHovered && (
-              <Button 
+              <Button
                 onClick={handleBuyNow}
-                className="w-full bg-white/90 hover:bg-gray-100 text-gray-900 font-semibold animate-in slide-in-from-bottom-3 dark:bg-gray-900 dark:text-white dark:border-gray-700 dark:hover:bg-gray-800"
+                className="w-full bg-white/90 hover:bg-gray-100 text-gray-900 font-semibold font-iphone dark:bg-gray-900 dark:text-white dark:border-gray-700 dark:hover:bg-gray-800 shadow"
               >
                 Buy Now
               </Button>
@@ -115,8 +113,8 @@ const ProductCardVariant3: React.FC<ProductCardVariant3Props> = ({ product }) =>
           </div>
         </div>
       </div>
-      
-      <CardContent className="p-4">
+
+      <CardContent className="p-4 font-iphone">
         <div className="flex items-start justify-between mb-2">
           <Badge
             variant="secondary"
@@ -130,15 +128,15 @@ const ProductCardVariant3: React.FC<ProductCardVariant3Props> = ({ product }) =>
             </span>
           )}
         </div>
-        
+
         <h3 className="font-serif text-lg font-bold text-gray-900 mb-3 line-clamp-2 leading-tight dark:text-white font-iphone">
           {cleanName}
         </h3>
-        
+
         <div className="space-y-3">
           {product.variants.length > 1 ? (
-            <Select 
-              value={product.variants.indexOf(selectedVariant).toString()} 
+            <Select
+              value={product.variants.indexOf(selectedVariant).toString()}
               onValueChange={(value) => setSelectedVariant(product.variants[parseInt(value)])}
             >
               <SelectTrigger className="w-full border-gray-200 focus:border-rose-300 focus:ring-rose-200 dark:border-gray-700 dark:focus:border-rose-900 dark:bg-gray-800 font-iphone">
@@ -164,8 +162,8 @@ const ProductCardVariant3: React.FC<ProductCardVariant3Props> = ({ product }) =>
               <span className="text-xl font-bold text-rose-600 dark:text-rose-300 font-iphone">{selectedVariant.priceFormatted}</span>
             </div>
           )}
-          
-          <Button 
+
+          <Button
             onClick={handleAddToCart}
             variant="outline"
             className="w-full border-rose-200 text-rose-700 hover:bg-rose-50 hover:border-rose-300 font-semibold font-iphone
