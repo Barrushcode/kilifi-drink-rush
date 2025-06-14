@@ -19,10 +19,10 @@ const Navigation = () => {
   return (
     <>
       <nav className="fixed top-0 left-0 right-0 z-40 bg-barrush-midnight/90 backdrop-blur-md border-b border-barrush-steel/30">
-        <div className="container mx-auto px-4 lg:px-6 py-3 lg:py-4 bg-slate-950">
+        <div className="container mx-auto px-4 lg:px-6 py-2 bg-slate-950">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center">
-              <img src="/lovable-uploads/817c7ccd-c1cf-4844-8188-1b0d231cd0b9.png" alt="Barrushke Delivery" className="h-10 lg:h-12 w-auto" />
+              <img src="/lovable-uploads/817c7ccd-c1cf-4844-8188-1b0d231cd0b9.png" alt="Barrushke Delivery" className="h-8 lg:h-10 w-auto" />
             </Link>
             
             {/* Desktop Navigation */}
