@@ -1,37 +1,31 @@
+
 import React, { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { ShoppingCart, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
-import { ShoppingCart, CreditCard } from 'lucide-react';
 import { GroupedProduct, ProductVariant } from '@/utils/productGroupingUtils';
 import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import ProductQuickViewModal from './ProductQuickViewModal';
 import { normalizeString } from '@/utils/stringUtils';
 
-// Utility to determine if the product image is appropriate
 function isImageAppropriate(url?: string) {
   if (!url) return false;
   const lowerUrl = url.toLowerCase();
-  // Exclude low quality/social domains
   const badDomains = [
     'youtube.com', 'youtu.be', 'pinterest.com', 'facebook.com', 'instagram.com',
     'twitter.com', 'tiktok.com', 'reddit.com', 'blogspot.com', 'wordpress.com',
-    'wikimedia.org', 'wikipedia.org', 'tumblr.com', 'placeholder', 'no-image',
-    'svg', 'icon', 'logo'
+    'wikimedia.org', 'wikipedia.org', 'tumblr.com', 'placeholder', 'no-image', 'svg', 'icon', 'logo'
   ];
   if (badDomains.some(domain => lowerUrl.includes(domain))) return false;
-  // Exclude clearly broken, tiny images
   if (
     lowerUrl.endsWith('.svg') ||
     /150|default|thumb|generic/i.test(lowerUrl) ||
     lowerUrl.includes('placeholder')
   ) return false;
-  // Accept only links with .jpg/.jpeg/.png/webp and of reasonable length
   if (!/\.(jpg|jpeg|png|webp)$/i.test(lowerUrl)) return false;
-  // Accept high-quality known sources, otherwise fallback if no other indicators
   return true;
 }
 
@@ -52,7 +46,8 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
   const { addItem } = useCart();
   const { toast } = useToast();
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     try {
       const cartItem = {
         id: `${product.baseName}-${selectedVariant.size}`,
@@ -60,7 +55,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         price: selectedVariant.price,
         priceFormatted: selectedVariant.priceFormatted,
         size: selectedVariant.size,
-        image: product.image, // Retaining image for cart/modal data
+        image: product.image,
         category: product.category
       };
       addItem(cartItem);
@@ -79,7 +74,8 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
     }
   };
 
-  const handleBuyNow = () => {
+  const handleBuyNow = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     try {
       const cartItem = {
         id: `${product.baseName}-${selectedVariant.size}`,
@@ -87,7 +83,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         price: selectedVariant.price,
         priceFormatted: selectedVariant.priceFormatted,
         size: selectedVariant.size,
-        image: product.image, // Retaining image for cart/modal data
+        image: product.image,
         category: product.category
       };
       addItem(cartItem);
@@ -107,16 +103,8 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
     setSelectedVariant(variant);
   };
 
-  // Make main card clickable except button row
-  const handleCardClick = (e: React.MouseEvent) => {
-    const tag = (e.target as HTMLElement).tagName.toLowerCase();
-    if (tag === 'button' || tag === 'svg' || (e.target as HTMLElement).closest('button')) return;
-    setModalOpen(true);
-  };
-
-  // Normalize and capitalize product name for display
+  // Normalize product name
   const displayName = capitalizeWords(normalizeString(product.baseName));
-  // Display only if image is appropriate, else fallback
   const displayImage = isImageAppropriate(product.image) ? product.image : FALLBACK_IMAGE;
 
   return (
@@ -126,74 +114,71 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         onOpenChange={setModalOpen}
         product={product}
       />
-      <Card 
-        className="overflow-hidden h-full min-h-[370px] shadow-lg transition-all duration-300 group hover:scale-105 bg-barrush-slate border-barrush-steel/30 flex flex-col"
-        onClick={handleCardClick}
+      <div
+        className="
+          bg-glass-effect rounded-2xl shadow-lg border border-barrush-steel/20
+          overflow-hidden hover:shadow-xl transition-all duration-300 font-iphone relative cursor-pointer group
+          flex flex-col
+        "
+        onClick={() => setModalOpen(true)}
         tabIndex={0}
-        onKeyDown={e => {
-          if (e.key === 'Enter') setModalOpen(true);
-        }}
-        aria-label={`Open details for ${displayName}`}
         role="button"
+        aria-label={`Open details for ${displayName}`}
+        onKeyDown={e => { if (e.key === 'Enter') setModalOpen(true); }}
       >
-        <CardContent className="p-2 md:p-4 lg:p-5 flex flex-col h-full">
-          {/* Image */}
-          <div className="w-full h-24 md:h-32 lg:h-40 rounded-lg overflow-hidden mb-2 relative">
-            <img
-              src={displayImage}
-              alt={displayName}
-              className="w-full h-full object-cover transition-opacity duration-300"
-              loading="lazy"
-              style={{ background: '#222', display: 'block' }}
-              onError={e => {
-                if (e.currentTarget.src !== FALLBACK_IMAGE) e.currentTarget.src = FALLBACK_IMAGE;
-              }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-barrush-midnight/60 to-transparent group-hover:from-barrush-midnight/40 transition-all duration-300" />
-          </div>
-          <h3 className="text-xs md:text-base lg:text-xl font-bold mb-1 font-iphone line-clamp-2 text-barrush-platinum">
-            {displayName}
-          </h3>
-          <div className="flex flex-wrap items-center gap-1 md:gap-2 mb-2">
-            <Badge className="px-2 py-1 text-xs font-iphone bg-barrush-steel/60 text-barrush-platinum border-barrush-steel/80">
+        {/* Top Image */}
+        <div className="relative">
+          <img
+            src={displayImage}
+            alt={displayName}
+            className="w-full h-48 object-cover rounded-t-2xl"
+            style={{ filter: "brightness(1)" }}
+            loading="lazy"
+            onError={e => {
+              if ((e.currentTarget as HTMLImageElement).src !== FALLBACK_IMAGE) {
+                (e.currentTarget as HTMLImageElement).src = FALLBACK_IMAGE;
+              }
+            }}
+          />
+        </div>
+        {/* Card Details */}
+        <div className="p-5 flex flex-col gap-1">
+          <div className="flex items-center gap-2 mb-1">
+            <Badge className="bg-barrush-steel/60 text-barrush-platinum px-2 py-1 font-iphone text-xs">
               {product.category}
             </Badge>
-            {product.variants.length > 1 && (
+            {!!product.variants.length && product.variants.length > 1 && (
               <Badge variant="outline" className="text-xs font-iphone text-barrush-platinum/70 border-barrush-steel/80">
                 {product.variants.length} sizes
               </Badge>
             )}
           </div>
+          <h3 className="text-lg font-bold text-white mb-1 line-clamp-2">{displayName}</h3>
           {product.description && (
-            <p className="mb-2 text-xs md:text-sm line-clamp-2 font-iphone text-barrush-platinum/80">
-              {product.description}
-            </p>
+            <p className="text-barrush-platinum/80 mb-2 text-xs line-clamp-2">{product.description}</p>
           )}
-          {/* Size Selector */}
           {product.variants.length > 1 ? (
             <div className="mb-2">
               <label className="block text-xs font-medium mb-1 font-iphone text-barrush-platinum/80">
                 Size & Price:
               </label>
-              <Select 
-                value={product.variants.indexOf(selectedVariant).toString()} 
+              <Select
+                value={product.variants.indexOf(selectedVariant).toString()}
                 onValueChange={handleVariantChange}
               >
-                <SelectTrigger className="h-10 font-iphone text-xs bg-barrush-midnight border-barrush-steel text-barrush-platinum">
+                <SelectTrigger className="h-9 font-iphone text-xs bg-barrush-midnight border-barrush-steel text-barrush-platinum">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="z-50 bg-barrush-midnight border-barrush-steel">
-                  {product.variants.map((variant, index) => (
-                    <SelectItem 
-                      key={index} 
-                      value={index.toString()}
+                  {product.variants.map((variant, idx) => (
+                    <SelectItem
+                      key={idx}
+                      value={idx.toString()}
                       className="font-iphone text-barrush-platinum hover:!bg-barrush-steel/50 focus:!bg-barrush-steel/50"
                     >
                       <div className="flex justify-between items-center w-full">
                         <span className="text-xs">{variant.size}</span>
-                        <span className="ml-2 font-bold text-xs text-pink-400">
-                          {variant.priceFormatted}
-                        </span>
+                        <span className="ml-2 font-bold text-xs text-pink-400">{variant.priceFormatted}</span>
                       </div>
                     </SelectItem>
                   ))}
@@ -207,43 +192,31 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
               </span>
             </div>
           )}
-          <div className="flex flex-col gap-2 mt-auto">
-            <div className="flex flex-col">
-              <span className="text-base md:text-lg lg:text-xl font-bold font-iphone text-barrush-platinum">
-                {selectedVariant.priceFormatted}
-              </span>
-              {product.variants.length > 1 && selectedVariant !== product.variants[0] && (
-                <span className="text-xs font-iphone text-barrush-platinum/70">
-                  from {product.lowestPriceFormatted}
-                </span>
-              )}
-            </div>
-            {/* Action Buttons */}
-            <div className="flex gap-2 mt-1 z-10 w-full flex-col sm:flex-row">
-              <Button 
-                onClick={(e) => { e.stopPropagation(); handleAddToCart(); }}
-                className="flex-1 font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-transparent border-2 border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white w-full"
-              >
-                <ShoppingCart className="h-3 w-3 mr-1" />
-                Add to Cart
-              </Button>
-              <Button 
-                onClick={(e) => { e.stopPropagation(); handleBuyNow(); }}
-                className="flex-1 font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-rose-600 hover:bg-rose-500 text-white border-none shadow-lg w-full"
-                style={{
-                  backgroundColor: '#e11d48',
-                  color: '#fff',
-                }}
-              >
-                <CreditCard className="h-3 w-3 mr-1" />
-                Buy Now
-              </Button>
-            </div>
+          <div className="flex items-center justify-between mb-0 mt-2">
+            <span className="text-xl font-bold text-pink-400">{selectedVariant.priceFormatted}</span>
           </div>
-        </CardContent>
-      </Card>
+          {/* --- Action Buttons --- */}
+          <div className="flex gap-2 mt-4">
+            <Button
+              onClick={handleAddToCart}
+              className="flex-1 flex items-center justify-center gap-1 font-bold px-3 py-2 text-xs transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-rose-600 hover:bg-rose-500 text-white border-none shadow-lg"
+            >
+              <ShoppingCart className="h-4 w-4 mr-1" />
+              Add to Cart
+            </Button>
+            <Button
+              onClick={handleBuyNow}
+              className="flex-1 flex items-center justify-center gap-1 font-bold px-3 py-2 text-xs transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-pink-500 hover:bg-pink-400 text-white border-none shadow-lg"
+            >
+              <CreditCard className="h-4 w-4 mr-1" />
+              Buy Now
+            </Button>
+          </div>
+        </div>
+      </div>
     </>
   );
 };
 
 export default GroupedProductCard;
+
