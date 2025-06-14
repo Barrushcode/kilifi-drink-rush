@@ -35,7 +35,7 @@ const Index = () => {
           </div>
           
           <div className="grid md:grid-cols-2 gap-10 max-w-4xl mx-auto">
-            <Card className="bg-glass-effect border-barrush-steel/30 border hover:border-barrush-gold/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden">
+            <Card className="bg-barrush-charcoal border-2 border-barrush-gold/60 hover:border-barrush-gold transition-all duration-300 hover:shadow-lg hover:shadow-barrush-gold/20 group overflow-hidden hover:-translate-y-1">
               <div 
                 className="h-64 bg-cover bg-center relative overflow-hidden" 
                 style={{
@@ -57,7 +57,7 @@ const Index = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-glass-effect border-barrush-steel/30 border hover:border-barrush-gold/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden">
+            <Card className="bg-barrush-charcoal border-2 border-barrush-gold/60 hover:border-barrush-gold transition-all duration-300 hover:shadow-lg hover:shadow-barrush-gold/20 group overflow-hidden hover:-translate-y-1">
               <div 
                 className="h-64 bg-cover bg-center relative overflow-hidden" 
                 style={{

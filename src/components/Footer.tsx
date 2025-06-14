@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Instagram, Twitter, Youtube, Facebook, Linkedin } from 'lucide-react';
 
@@ -5,7 +6,7 @@ const paymentLogos = [
   {
     name: "Visa",
     svg: (
-      <svg width="50" height="32" viewBox="0 0 50 32" fill="none" aria-label="Visa" className="m-1">
+      <svg width="56" height="36" viewBox="0 0 50 32" fill="none" aria-label="Visa" className="m-1">
         <rect rx="4" width="50" height="32" fill="#183ACB"/>
         <text x="50%" y="58%" textAnchor="middle" fontWeight="bold" fontSize="15" fill="#fff" fontFamily="Arial">VISA</text>
       </svg>
@@ -14,7 +15,7 @@ const paymentLogos = [
   {
     name: "Mastercard",
     svg: (
-      <svg width="50" height="32" viewBox="0 0 50 32" fill="none" aria-label="Mastercard" className="m-1">
+      <svg width="56" height="36" viewBox="0 0 50 32" fill="none" aria-label="Mastercard" className="m-1">
         <rect rx="4" width="50" height="32" fill="#fff"/>
         <circle cx="21" cy="16" r="10" fill="#EB001B"/>
         <circle cx="29" cy="16" r="10" fill="#F79E1B" style={{mixBlendMode:'multiply', opacity:0.85}}/>
@@ -24,7 +25,7 @@ const paymentLogos = [
   {
     name: "M-PESA",
     svg: (
-      <svg width="50" height="32" viewBox="0 0 50 32" aria-label="M-PESA" className="m-1">
+      <svg width="56" height="36" viewBox="0 0 50 32" aria-label="M-PESA" className="m-1">
         <rect rx="4" width="50" height="32" fill="#fff"/>
         <text x="50%" y="57%" textAnchor="middle" fontWeight="bold" fontSize="14" fill="#009A49" fontFamily="Arial">&nbsp;M-PESA</text>
         <rect x="14" y="8" width="6" height="16" rx="2" fill="#009A49" />
@@ -36,7 +37,7 @@ const paymentLogos = [
   {
     name: "Apple Pay",
     svg: (
-      <svg width="50" height="32" viewBox="0 0 50 32" fill="none" aria-label="Apple Pay" className="m-1">
+      <svg width="56" height="36" viewBox="0 0 50 32" fill="none" aria-label="Apple Pay" className="m-1">
         <rect rx="4" width="50" height="32" fill="#111" />
         <text x="17" y="21" fontWeight="bold" fontSize="13" fill="#fff" fontFamily="Arial"></text>
         <text x="32" y="21" fontWeight="bold" fontSize="14" fill="#fff" fontFamily="Arial">Pay</text>
