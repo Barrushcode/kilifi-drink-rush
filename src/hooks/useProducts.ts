@@ -100,14 +100,21 @@ export const useProducts = () => {
             console.warn('[⚠️ OUT-OF-BOUNDS PRICE]', product.Title, 'Price:', productPrice);
           }
 
-          const category = getCategoryFromName(product.Title || 'Unknown Product', productPrice);
+          const description = product.Description || '';
+          let category = getCategoryFromName(product.Title || 'Unknown Product', productPrice);
+
+          // If description mentions 'beer' (case-insensitive), make category 'Beer'
+          if (description.toLowerCase().includes('beer')) {
+            category = 'Beer';
+          }
+
           const { url: productImage } = findMatchingImage(product.Title || 'Unknown Product', scrapedImages);
 
           return {
             id: index + 1,
             name: product.Title || 'Unknown Product',
             price: `KES ${productPrice.toLocaleString()}`,
-            description: product.Description || 'Quality selection for every taste',
+            description,
             category,
             image: productImage
           };
