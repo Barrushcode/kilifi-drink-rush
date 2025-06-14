@@ -33,19 +33,19 @@ const AgeVerification: React.FC<AgeVerificationProps> = ({ onVerified }) => {
 
   return (
     <div className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <Card className="bg-barrush-midnight border-cyan-400 border-2 max-w-md w-full
-                    shadow-[0_0_40px_rgba(34,211,238,0.6)] animate-pulse">
+      <Card className="bg-barrush-midnight border-neon-blue border-2 max-w-md w-full
+                    shadow-[0_0_40px_theme(colors.neon.blue/0.6)] animate-pulse">
         <CardContent className="p-8 text-center">
           <div className="mb-8">
-            <h2 className="text-3xl font-bold text-cyan-400 mb-4 font-serif tracking-wide
-                          drop-shadow-[0_0_15px_rgba(34,211,238,0.8)] animate-pulse">
+            <h2 className="text-3xl font-bold text-neon-blue mb-4 font-serif tracking-wide
+                          drop-shadow-[0_0_15px_theme(colors.neon.blue/0.8)] animate-pulse">
               Age Verification
             </h2>
-            <div className="w-16 h-0.5 bg-cyan-400 mx-auto mb-6 shadow-[0_0_10px_rgba(34,211,238,0.8)]"></div>
-            <p className="text-cyan-300 text-xl mb-4 drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]">
+            <div className="w-16 h-0.5 bg-neon-blue mx-auto mb-6 shadow-[0_0_10px_theme(colors.neon.blue/0.8)]"></div>
+            <p className="text-neon-blue/80 text-xl mb-4 drop-shadow-[0_0_8px_theme(colors.neon.blue/0.4)]">
               You must be 18+ to access this site
             </p>
-            <p className="text-cyan-200/80">
+            <p className="text-neon-blue/70">
               Are you of legal drinking age?
             </p>
           </div>
@@ -53,24 +53,24 @@ const AgeVerification: React.FC<AgeVerificationProps> = ({ onVerified }) => {
           <div className="flex flex-col sm:flex-row gap-4">
             <Button 
               onClick={handleYes}
-              className="bg-cyan-400 hover:bg-cyan-300 text-black font-semibold flex-1
-                        shadow-[0_0_25px_rgba(34,211,238,0.8)] hover:shadow-[0_0_35px_rgba(34,211,238,1)]
-                        transition-all duration-300 animate-pulse border border-cyan-300"
+              className="bg-neon-blue hover:bg-neon-blue/90 text-black font-semibold flex-1
+                        shadow-[0_0_25px_theme(colors.neon.blue/0.8)] hover:shadow-[0_0_35px_theme(colors.neon.blue)]
+                        transition-all duration-300 animate-pulse border border-neon-blue/80"
             >
               ✓ Yes, I'm over 18
             </Button>
             <Button 
               onClick={handleNo}
               variant="outline"
-              className="border-red-400 text-red-400 hover:bg-red-400/20 flex-1
-                        shadow-[0_0_15px_rgba(248,113,113,0.5)] hover:shadow-[0_0_25px_rgba(248,113,113,0.7)]
+              className="border-neon-pink text-neon-pink hover:bg-neon-pink/20 flex-1
+                        shadow-[0_0_15px_theme(colors.neon.pink/0.5)] hover:shadow-[0_0_25px_theme(colors.neon.pink/0.7)]
                         transition-all duration-300"
             >
               ✗ No, I'm under 18
             </Button>
           </div>
           
-          <p className="text-xs text-cyan-200/60 mt-6">
+          <p className="text-xs text-neon-blue/60 mt-6">
             By clicking "Yes", you confirm you are 18+ years old
           </p>
         </CardContent>

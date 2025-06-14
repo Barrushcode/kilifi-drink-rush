@@ -49,21 +49,21 @@ const paymentLogos = [
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
   return (
-    <footer className="bg-barrush-charcoal border-t-2 border-barrush-gold">
+    <footer className="bg-barrush-slate border-t-2 border-neon-blue">
       <div className="container mx-auto px-6 py-12">
         <div className="grid md:grid-cols-3 gap-8">
           {/* Brand Section */}
           <div className="text-center md:text-left">
-            <h3 className="text-3xl font-bold text-barrush-gold mb-4">BARRUSH</h3>
-            <p className="text-barrush-platinum/80 mb-4">
+            <h3 className="text-3xl font-bold text-neon-blue mb-4">BARRUSH</h3>
+            <p className="text-gray-300/80 mb-4">
               Premium alcohol delivery in Kilifi County. Get your drink rush on!
             </p>
             <div className="flex justify-center md:justify-start space-x-4 mb-3">
-              <Instagram className="h-6 w-6 text-barrush-gold hover:text-barrush-gold/80 cursor-pointer transition-colors" />
-              <Twitter className="h-6 w-6 text-barrush-gold hover:text-barrush-gold/80 cursor-pointer transition-colors" />
-              <Youtube className="h-6 w-6 text-barrush-gold hover:text-barrush-gold/80 cursor-pointer transition-colors" />
-              <Facebook className="h-6 w-6 text-barrush-gold hover:text-barrush-gold/80 cursor-pointer transition-colors" />
-              <Linkedin className="h-6 w-6 text-barrush-gold hover:text-barrush-gold/80 cursor-pointer transition-colors" />
+              <Instagram className="h-6 w-6 text-neon-blue hover:text-neon-blue/80 cursor-pointer transition-colors" />
+              <Twitter className="h-6 w-6 text-neon-blue hover:text-neon-blue/80 cursor-pointer transition-colors" />
+              <Youtube className="h-6 w-6 text-neon-blue hover:text-neon-blue/80 cursor-pointer transition-colors" />
+              <Facebook className="h-6 w-6 text-neon-blue hover:text-neon-blue/80 cursor-pointer transition-colors" />
+              <Linkedin className="h-6 w-6 text-neon-blue hover:text-neon-blue/80 cursor-pointer transition-colors" />
             </div>
             {/* Payment logos */}
             <div className="flex flex-wrap justify-center md:justify-start items-center gap-1 mb-3" aria-label="Accepted Payments">
@@ -75,8 +75,8 @@ const Footer: React.FC = () => {
           
           {/* Contact Info */}
           <div className="text-center">
-            <h4 className="text-xl font-bold text-barrush-gold mb-4">Contact Info</h4>
-            <div className="space-y-2 text-barrush-platinum">
+            <h4 className="text-xl font-bold text-neon-blue mb-4">Contact Info</h4>
+            <div className="space-y-2 text-gray-300">
               <p><strong>M-PESA Till:</strong> 5950470</p>
               <p><strong>Support:</strong> 0117808024</p>
               <p><strong>Email:</strong> barrushdelivery@gmail.com</p>
@@ -85,8 +85,8 @@ const Footer: React.FC = () => {
           
           {/* Business Hours & Delivery */}
           <div className="text-center md:text-right">
-            <h4 className="text-xl font-bold text-barrush-gold mb-4">Service Info</h4>
-            <div className="space-y-2 text-barrush-platinum">
+            <h4 className="text-xl font-bold text-neon-blue mb-4">Service Info</h4>
+            <div className="space-y-2 text-gray-300">
               <p><strong>Business Hours:</strong> 9 AM - 11 PM</p>
               <p className="bg-inherit"><strong>Delivery Zones:</strong> Tezo, Mnarani, Bofa</p>
             </div>
@@ -94,15 +94,15 @@ const Footer: React.FC = () => {
         </div>
         
         {/* Bottom Section */}
-        <div className="mt-12 pt-8 border-t border-barrush-burgundy">
+        <div className="mt-12 pt-8 border-t border-neon-pink/50">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-barrush-platinum/60 text-center md:text-left mb-4 md:mb-0">
+            <p className="text-gray-400 text-center md:text-left mb-4 md:mb-0">
               © {currentYear} Barrush. All rights reserved. Drink responsibly. 18+ only.
             </p>
             <div className="flex space-x-6">
-              <a href="#" className="text-barrush-platinum/60 hover:text-barrush-gold transition-colors">Terms</a>
-              <a href="#" className="text-barrush-platinum/60 hover:text-barrush-gold transition-colors">Privacy</a>
-              <a href="#" className="text-barrush-platinum/60 hover:text-barrush-gold transition-colors">Age Policy</a>
+              <a href="#" className="text-gray-400 hover:text-neon-blue transition-colors">Terms</a>
+              <a href="#" className="text-gray-400 hover:text-neon-blue transition-colors">Privacy</a>
+              <a href="#" className="text-gray-400 hover:text-neon-blue transition-colors">Age Policy</a>
             </div>
           </div>
         </div>

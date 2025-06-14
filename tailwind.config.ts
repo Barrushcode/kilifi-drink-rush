@@ -105,7 +105,9 @@ export default {
                     pink: '#d946ef', // fuchsia-500
                     'pink-light': '#e879f9', // fuchsia-400
                     purple: '#6b21a8', // purple-800
-                    'purple-dark': '#3b0764' // purple-950
+                    'purple-dark': '#3b0764', // purple-950
+                    blue: '#22d3ee', // cyan-400
+                    'blue-dark': '#0891b2' // cyan-600
                 }
 			},
 			borderRadius: {

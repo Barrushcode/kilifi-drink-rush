@@ -18,23 +18,23 @@ const HeroSection: React.FC = () => {
       }} />
       
       {/* Modern overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-barrush-midnight/20 via-transparent to-barrush-midnight/60 text-8xl font-bold text-[#f426df]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-barrush-midnight/20 via-transparent to-barrush-midnight/60" />
       
       {/* Content */}
       <div className="relative z-10 text-center max-w-6xl mx-auto px-6">
         <div className="animate-fade-in">
-          <h1 className="text-7xl font-bold mb-8 tracking-tight font-serif md:text-[(#800020] text-[#f762cd]">
+          <h1 className="text-7xl font-bold mb-8 tracking-tight font-serif text-neon-pink-light">
             BARRUSH
           </h1>
-          <div className="w-20 h-px mx-auto mb-8 bg-cyan-500 rounded-xl"></div>
-          <p className="text-3xl md:text-4xl text-barrush-platinum mb-6 font-light">
+          <div className="w-20 h-px mx-auto mb-8 bg-neon-blue rounded-xl"></div>
+          <p className="text-3xl md:text-4xl text-gray-200 mb-6 font-light">
             Get Your Drink Rush On
           </p>
-          <p className="text-xl text-barrush-platinum/80 mb-16 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl text-gray-300/80 mb-16 max-w-3xl mx-auto leading-relaxed">
             Premium spirits and curated cocktails delivered with urban sophistication across Kilifi County.
           </p>
           
-          <Button onClick={handleOrderClick} size="lg" className="font-bold px-16 py-6 text-xl transition-all duration-300 hover:scale-105 shadow-2xl bg-[(#800020] bg-[#800080] text-zinc-50">
+          <Button onClick={handleOrderClick} size="lg" className="font-bold px-16 py-6 text-xl transition-all duration-300 hover:scale-105 shadow-2xl bg-neon-purple hover:bg-neon-purple/90 text-zinc-50">
             Let's Order
           </Button>
         </div>
