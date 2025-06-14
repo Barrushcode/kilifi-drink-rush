@@ -20,8 +20,6 @@ function capitalizeWords(str: string) {
   return str.replace(/\w\S*/g, (w) => w.replace(/^\w/, (c) => c.toUpperCase()));
 }
 
-// Removed getLogoIconForCategory function as it was causing errors and icons are no longer displayed
-
 const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(product.variants[0]);
   const [modalOpen, setModalOpen] = useState(false);
@@ -103,7 +101,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         product={product}
       />
       <Card 
-        className="overflow-hidden h-full shadow-lg hover:shadow-xl transition-all duration-300 group hover:scale-105 bg-barrush-slate border-barrush-steel/30 cursor-pointer"
+        className="overflow-hidden h-full shadow-md hover:shadow-lg transition-all duration-300 group hover:scale-105 bg-barrush-slate border-barrush-steel/30 cursor-pointer"
         onClick={handleCardClick}
         tabIndex={0}
         onKeyDown={e => {
@@ -153,7 +151,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
                     >
                       <div className="flex justify-between items-center w-full">
                         <span className="text-xs">{variant.size}</span>
-                        <span className="ml-2 font-bold text-xs text-pink-400">
+                        <span className="ml-2 font-bold text-xs text-pink-400"> {/* Kept pink price in dropdown for now, can be changed if needed */}
                           {variant.priceFormatted}
                         </span>
                       </div>
@@ -184,18 +182,14 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
             <div className="flex gap-2 mt-2 z-10">
               <Button 
                 onClick={(e) => { e.stopPropagation(); handleAddToCart(); }}
-                className="flex-1 font-bold px-3 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-transparent border-2 border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white"
+                className="flex-1 font-bold px-3 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-transparent border-2 border-barrush-copper text-barrush-copper hover:bg-barrush-copper hover:text-barrush-midnight"
               >
                 <ShoppingCart className="h-3 w-3 mr-1" />
                 Add to Cart
               </Button>
               <Button 
                 onClick={(e) => { e.stopPropagation(); handleBuyNow(); }}
-                className="flex-1 font-bold px-3 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-rose-600 hover:bg-rose-500 text-white border-none shadow-lg"
-                style={{
-                  backgroundColor: '#e11d48', // Explicit rose
-                  color: '#fff',
-                }}
+                className="flex-1 font-bold px-3 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-barrush-copper text-barrush-midnight hover:bg-barrush-copper/90 border-none shadow-lg"
               >
                 <CreditCard className="h-3 w-3 mr-1" />
                 Buy Now
@@ -209,3 +203,4 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
 };
 
 export default GroupedProductCard;
+
