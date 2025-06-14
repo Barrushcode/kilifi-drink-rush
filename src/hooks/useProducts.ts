@@ -85,10 +85,8 @@ export const useProducts = () => {
 
       const scrapedImages = imagesResponse.data || [];
 
-      // DIRECT 1:1 price mapping from Supabase!
       const transformedProducts: Product[] = allProductsData
         .map((product, index) => {
-          // Strict: Only accept valid number, no parsing fallback, Price should always be from Supabase
           if (typeof product.Price !== 'number' || isNaN(product.Price)) {
             console.warn('[🛑 MISSING OR INVALID PRICE]', product.Title, 'Raw:', product.Price);
             return null;
@@ -96,7 +94,6 @@ export const useProducts = () => {
 
           const productPrice = product.Price;
 
-          // You might want to log if any productPrice is still outside your expectations:
           if (productPrice < 100 || productPrice > 500000) {
             console.warn('[⚠️ OUT-OF-BOUNDS PRICE]', product.Title, 'Price:', productPrice);
           }
@@ -104,7 +101,6 @@ export const useProducts = () => {
           const description = product.Description || '';
           let category = getCategoryFromName(product.Title || 'Unknown Product', productPrice);
 
-          // If description mentions 'beer' (case-insensitive), make category 'Beer'
           if (description.toLowerCase().includes('beer')) {
             category = 'Beer';
           }
@@ -122,7 +118,6 @@ export const useProducts = () => {
         })
         .filter(Boolean);
 
-      console.log('🔄 Grouping products by base name...');
       const groupedProducts = groupProductsByBaseName(transformedProducts);
       const groupedProductsOrdered = groupProductsByBaseName(transformedProducts, true);
 

@@ -24,17 +24,18 @@ const ProductCatalog: React.FC = () => {
     currentPage
   });
 
-  // Choose product list for All: preserve original supabase order
-  const displayProducts =
-    selectedCategory === "All"
-      ? productsByOriginalOrder
-      : products;
+  // Always preserve original order for "All", even after filters/search!
+  const displayProducts = selectedCategory === "All"
+    ? productsByOriginalOrder
+    : products;
 
-  const displayFilteredProducts =
-    selectedCategory === "All"
-      ? filteredProducts /* filter is okay, filtering after preserving order */
-      : filteredProducts; // fallback for future
+  // When in "All", reapply filters/search on productsByOriginalOrder in original Supabase order.
+  // For other categories, keep the already filteredProducts output
+  const displayFilteredProducts = selectedCategory === "All"
+    ? useProductFilters(productsByOriginalOrder, searchTerm, "All").filteredProducts
+    : filteredProducts;
 
+  // Preserve Supabase order post-filtering/pagination for "All".
   const paginatedProducts = displayFilteredProducts.slice(startIndex, endIndex);
 
   // Enhanced debug logging
