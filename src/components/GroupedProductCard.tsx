@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,17 +20,7 @@ function capitalizeWords(str: string) {
   return str.replace(/\w\S*/g, (w) => w.replace(/^\w/, (c) => c.toUpperCase()));
 }
 
-const getLogoIconForCategory = (category: string) => {
-  const lowerCat = category.toLowerCase();
-  if (lowerCat.includes('wine') || lowerCat.includes('champagne')) {
-    return <Wine size={62} color="#e11d48" className="m-auto" />;
-  }
-  if (lowerCat.includes('beer')) {
-    return <Beer size={62} color="#eab308" className="m-auto" />;
-  }
-  // Everything else (spirits, vodka, etc.): use wine icon with different color
-  return <Wine size={62} color="#db2777" className="m-auto" />;
-};
+// Removed getLogoIconForCategory function as it was causing errors and icons are no longer displayed
 
 const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(product.variants[0]);
@@ -46,7 +37,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         price: selectedVariant.price,
         priceFormatted: selectedVariant.priceFormatted,
         size: selectedVariant.size,
-        image: product.image,
+        image: product.image, // Retaining image for cart/modal data
         category: product.category
       };
       addItem(cartItem);
@@ -73,7 +64,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         price: selectedVariant.price,
         priceFormatted: selectedVariant.priceFormatted,
         size: selectedVariant.size,
-        image: product.image,
+        image: product.image, // Retaining image for cart/modal data
         category: product.category
       };
       addItem(cartItem);
@@ -97,7 +88,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
   const handleCardClick = (e: React.MouseEvent) => {
     // Prevent click if pressing buttons
     const tag = (e.target as HTMLElement).tagName.toLowerCase();
-    if (tag === 'button' || tag === 'svg') return;
+    if (tag === 'button' || tag === 'svg' || (e.target as HTMLElement).closest('button')) return;
     setModalOpen(true);
   };
 
@@ -112,7 +103,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         product={product}
       />
       <Card 
-        className="overflow-hidden h-full shadow-lg hover:shadow-xl transition-all duration-300 group hover:scale-105 bg-gray-800 border-gray-600 cursor-pointer"
+        className="overflow-hidden h-full shadow-lg hover:shadow-xl transition-all duration-300 group hover:scale-105 bg-barrush-slate border-barrush-steel/30 cursor-pointer"
         onClick={handleCardClick}
         tabIndex={0}
         onKeyDown={e => {
@@ -121,45 +112,44 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         aria-label={`Open details for ${displayName}`}
         role="button"
       >
-        {/* REMOVED: Icon/Image area */}
         <CardContent className="p-3 md:p-4 lg:p-6 flex flex-col h-full">
-          <h3 className="text-sm md:text-base lg:text-xl font-bold mb-2 font-iphone line-clamp-2 text-white">
+          <h3 className="text-sm md:text-base lg:text-xl font-bold mb-2 font-iphone line-clamp-2 text-barrush-platinum">
             {displayName}
           </h3>
           <div className="flex flex-wrap items-center gap-1 md:gap-2 mb-3">
-            <Badge className="px-2 py-1 text-xs font-iphone bg-gray-600 text-gray-200 border-gray-500">
+            <Badge className="px-2 py-1 text-xs font-iphone bg-barrush-steel/60 text-barrush-platinum border-barrush-steel/80">
               {product.category}
             </Badge>
             {product.variants.length > 1 && (
-              <Badge variant="outline" className="text-xs font-iphone text-gray-300 border-gray-500">
+              <Badge variant="outline" className="text-xs font-iphone text-barrush-platinum/70 border-barrush-steel/80">
                 {product.variants.length} sizes
               </Badge>
             )}
           </div>
           {product.description && (
-            <p className="mb-3 text-xs md:text-sm line-clamp-2 font-iphone text-gray-300">
+            <p className="mb-3 text-xs md:text-sm line-clamp-2 font-iphone text-barrush-platinum/80">
               {product.description}
             </p>
           )}
           {/* Size Selector */}
           {product.variants.length > 1 ? (
             <div className="mb-3">
-              <label className="block text-xs font-medium mb-1 font-iphone text-gray-300">
+              <label className="block text-xs font-medium mb-1 font-iphone text-barrush-platinum/80">
                 Size & Price:
               </label>
               <Select 
                 value={product.variants.indexOf(selectedVariant).toString()} 
                 onValueChange={handleVariantChange}
               >
-                <SelectTrigger className="h-10 font-iphone text-xs bg-gray-700 border-gray-600 text-white">
+                <SelectTrigger className="h-10 font-iphone text-xs bg-barrush-midnight border-barrush-steel text-barrush-platinum">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="z-50 bg-gray-700 border-gray-600">
+                <SelectContent className="z-50 bg-barrush-midnight border-barrush-steel">
                   {product.variants.map((variant, index) => (
                     <SelectItem 
                       key={index} 
                       value={index.toString()}
-                      className="font-iphone text-white"
+                      className="font-iphone text-barrush-platinum hover:!bg-barrush-steel/50 focus:!bg-barrush-steel/50"
                     >
                       <div className="flex justify-between items-center w-full">
                         <span className="text-xs">{variant.size}</span>
@@ -174,18 +164,18 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
             </div>
           ) : (
             <div className="mb-3">
-              <span className="text-xs font-iphone text-gray-300">
+              <span className="text-xs font-iphone text-barrush-platinum/80">
                 Size: {selectedVariant.size}
               </span>
             </div>
           )}
           <div className="flex flex-col gap-2 mt-auto">
             <div className="flex flex-col">
-              <span className="text-base md:text-lg lg:text-xl font-bold font-iphone text-white">
+              <span className="text-base md:text-lg lg:text-xl font-bold font-iphone text-barrush-platinum">
                 {selectedVariant.priceFormatted}
               </span>
               {product.variants.length > 1 && selectedVariant !== product.variants[0] && (
-                <span className="text-xs font-iphone text-gray-400">
+                <span className="text-xs font-iphone text-barrush-platinum/70">
                   from {product.lowestPriceFormatted}
                 </span>
               )}
