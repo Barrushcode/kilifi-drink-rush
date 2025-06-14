@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -85,7 +86,7 @@ const CheckoutSection: React.FC = () => {
     <div className="min-h-screen bg-barrush-midnight py-12 overflow-x-hidden">
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-barrush-gold mb-4 text-zinc-50">
+          <h1 className="text-4xl md:text-5xl font-bold text-neon-pink mb-4 text-zinc-50">
             Checkout
           </h1>
           <p className="text-xl text-white">
@@ -96,15 +97,15 @@ const CheckoutSection: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 max-w-none">
           {/* Order Summary */}
           <div className="w-full max-w-full">
-            <Card className="bg-barrush-charcoal/80 border-barrush-gold border w-full">
+            <Card className="bg-barrush-charcoal/80 border-neon-pink border w-full">
               <CardHeader>
-                <CardTitle className="text-barrush-gold text-zinc-50">Order Summary</CardTitle>
+                <CardTitle className="text-neon-pink text-zinc-50">Order Summary</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Cart Items */}
                 <div className="space-y-3 max-h-96 overflow-y-auto">
                   {items.map((item) => (
-                    <div key={item.id} className="flex items-center space-x-3 p-3 bg-barrush-burgundy/20 rounded-lg">
+                    <div key={item.id} className="flex items-center space-x-3 p-3 bg-neon-purple/40 rounded-lg">
                       <img 
                         src={item.image} 
                         alt={item.name}
@@ -113,7 +114,7 @@ const CheckoutSection: React.FC = () => {
                       <div className="flex-1 min-w-0">
                         <h4 className="text-white font-semibold text-sm truncate">{item.name}</h4>
                         <p className="text-gray-300 text-xs">{item.size}</p>
-                        <p className="text-barrush-gold font-bold text-sm">{item.priceFormatted}</p>
+                        <p className="text-neon-pink-light font-bold text-sm">{item.priceFormatted}</p>
                       </div>
                       <div className="flex items-center space-x-2">
                         <Button
@@ -146,7 +147,7 @@ const CheckoutSection: React.FC = () => {
                   ))}
                 </div>
 
-                <div className="border-t border-barrush-burgundy pt-4 space-y-2">
+                <div className="border-t border-neon-purple pt-4 space-y-2">
                   <div className="flex justify-between text-white">
                     <span>Subtotal ({getTotalItems()} items):</span>
                     <span>KES {subtotal.toLocaleString()}</span>
@@ -155,21 +156,21 @@ const CheckoutSection: React.FC = () => {
                     <span>Express Delivery (15 minutes):</span>
                     <span>KES {deliveryFee}</span>
                   </div>
-                  <div className="border-t border-barrush-burgundy pt-2">
+                  <div className="border-t border-neon-purple pt-2">
                     <div className="flex justify-between text-xl font-bold text-white">
                       <span>Total:</span>
-                      <span className="text-barrush-gold">KES {totalAmount.toLocaleString()}</span>
+                      <span className="text-neon-pink">KES {totalAmount.toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
                 
-                <div className="mt-6 pt-6 border-t border-barrush-burgundy">
-                  <h4 className="font-semibold text-barrush-gold mb-3 text-zinc-50">Payment Options</h4>
+                <div className="mt-6 pt-6 border-t border-neon-purple">
+                  <h4 className="font-semibold text-neon-pink mb-3 text-zinc-50">Payment Options</h4>
                   <p className="text-sm text-white mb-4">
                     Choose your preferred payment method:
                   </p>
                   <div className="space-y-2 text-white">
-                    <p>• M-PESA Till Number: <strong className="text-barrush-gold">5950470</strong></p>
+                    <p>• M-PESA Till Number: <strong className="text-neon-pink">5950470</strong></p>
                     <p>• Card Payment via Paystack</p>
                     <p>• Mobile Money & Apple Pay (Paystack)</p>
                   </div>
@@ -181,9 +182,9 @@ const CheckoutSection: React.FC = () => {
           {/* Right Column - Forms and Payment */}
           <div className="space-y-6 w-full max-w-full">
             {/* Shipping Information */}
-            <Card className="bg-barrush-charcoal/80 border-barrush-gold border w-full">
+            <Card className="bg-barrush-charcoal/80 border-neon-pink border w-full">
               <CardHeader>
-                <CardTitle className="text-barrush-gold text-zinc-50">Shipping Information</CardTitle>
+                <CardTitle className="text-neon-pink text-zinc-50">Shipping Information</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -194,7 +195,7 @@ const CheckoutSection: React.FC = () => {
                       value={shippingDetails.firstName}
                       onChange={(e) => handleInputChange('firstName', e.target.value)}
                       placeholder="Enter first name"
-                      className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400 w-full"
+                      className="bg-neon-purple/40 border-neon-purple text-white placeholder:text-gray-400 w-full"
                     />
                     {errors.firstName && <p className="text-red-400 text-sm">{errors.firstName}</p>}
                   </div>
@@ -205,7 +206,7 @@ const CheckoutSection: React.FC = () => {
                       value={shippingDetails.lastName}
                       onChange={(e) => handleInputChange('lastName', e.target.value)}
                       placeholder="Enter last name"
-                      className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400 w-full"
+                      className="bg-neon-purple/40 border-neon-purple text-white placeholder:text-gray-400 w-full"
                     />
                     {errors.lastName && <p className="text-red-400 text-sm">{errors.lastName}</p>}
                   </div>
@@ -219,7 +220,7 @@ const CheckoutSection: React.FC = () => {
                     value={shippingDetails.phone}
                     onChange={(e) => handleInputChange('phone', e.target.value)}
                     placeholder="0712345678 or +254712345678"
-                    className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400 w-full"
+                    className="bg-neon-purple/40 border-neon-purple text-white placeholder:text-gray-400 w-full"
                   />
                   {errors.phone && <p className="text-red-400 text-sm">{errors.phone}</p>}
                 </div>
@@ -232,7 +233,7 @@ const CheckoutSection: React.FC = () => {
                     value={shippingDetails.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
                     placeholder="your@email.com"
-                    className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400 w-full"
+                    className="bg-neon-purple/40 border-neon-purple text-white placeholder:text-gray-400 w-full"
                   />
                   {errors.email && <p className="text-red-400 text-sm">{errors.email}</p>}
                 </div>
@@ -244,7 +245,7 @@ const CheckoutSection: React.FC = () => {
                     value={shippingDetails.street}
                     onChange={(e) => handleInputChange('street', e.target.value)}
                     placeholder="Street name and number"
-                    className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400 w-full"
+                    className="bg-neon-purple/40 border-neon-purple text-white placeholder:text-gray-400 w-full"
                   />
                   {errors.street && <p className="text-red-400 text-sm">{errors.street}</p>}
                 </div>
@@ -257,7 +258,7 @@ const CheckoutSection: React.FC = () => {
                       value={shippingDetails.building}
                       onChange={(e) => handleInputChange('building', e.target.value)}
                       placeholder="Building name/number"
-                      className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400 w-full"
+                      className="bg-neon-purple/40 border-neon-purple text-white placeholder:text-gray-400 w-full"
                     />
                   </div>
                   <div className="space-y-2">
@@ -267,7 +268,7 @@ const CheckoutSection: React.FC = () => {
                       value={shippingDetails.area}
                       onChange={(e) => handleInputChange('area', e.target.value)}
                       placeholder="Area or estate name"
-                      className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400 w-full"
+                      className="bg-neon-purple/40 border-neon-purple text-white placeholder:text-gray-400 w-full"
                     />
                     {errors.area && <p className="text-red-400 text-sm">{errors.area}</p>}
                   </div>
@@ -280,7 +281,7 @@ const CheckoutSection: React.FC = () => {
                     value={shippingDetails.city}
                     onChange={(e) => handleInputChange('city', e.target.value)}
                     placeholder="Nairobi, Mombasa, etc."
-                    className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400 w-full"
+                    className="bg-neon-purple/40 border-neon-purple text-white placeholder:text-gray-400 w-full"
                   />
                   {errors.city && <p className="text-red-400 text-sm">{errors.city}</p>}
                 </div>
@@ -292,7 +293,7 @@ const CheckoutSection: React.FC = () => {
                     value={shippingDetails.instructions}
                     onChange={(e) => handleInputChange('instructions', e.target.value)}
                     placeholder="Gate code, directions, or special requests (optional)"
-                    className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400 min-h-[80px] w-full"
+                    className="bg-neon-purple/40 border-neon-purple text-white placeholder:text-gray-400 min-h-[80px] w-full"
                   />
                 </div>
               </CardContent>
@@ -310,15 +311,15 @@ const CheckoutSection: React.FC = () => {
             </div>
 
             {/* Alternative Payment Info */}
-            <Card className="bg-barrush-burgundy/20 border-barrush-burgundy border w-full">
+            <Card className="bg-neon-purple/20 border-neon-purple border w-full">
               <CardContent className="p-6">
-                <h4 className="font-semibold text-barrush-gold mb-3 text-zinc-50">Alternative Payment</h4>
+                <h4 className="font-semibold text-neon-pink mb-3 text-zinc-50">Alternative Payment</h4>
                 <p className="text-white mb-4">
                   You can also pay directly via M-PESA:
                 </p>
                 <div className="bg-barrush-charcoal/50 p-4 rounded-lg">
                   <p className="text-center text-white">
-                    <strong className="text-barrush-gold text-xl">Till Number: 5950470</strong>
+                    <strong className="text-neon-pink text-xl">Till Number: 5950470</strong>
                   </p>
                   <p className="text-center text-sm text-white/80 mt-2">
                     Send KES {totalAmount.toLocaleString()} and contact us with your transaction ID

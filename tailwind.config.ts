@@ -100,7 +100,13 @@ export default {
 					burgundy: '#6f1a1a',
 					steel: '#374151',
 					smoke: '#6b7280'
-				}
+				},
+				neon: {
+                    pink: '#d946ef', // fuchsia-500
+                    'pink-light': '#e879f9', // fuchsia-400
+                    purple: '#6b21a8', // purple-800
+                    'purple-dark': '#3b0764' // purple-950
+                }
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
