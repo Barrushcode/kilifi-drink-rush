@@ -31,10 +31,12 @@ export const useProductFilters = (products: GroupedProduct[], searchTerm: string
       if (selectedCategory === 'All') {
         return matchesSearch;
       }
-      // Match any category that includes the selectedCategory as substring (case-insensitive)
+      // Enhanced: match if productCategory includes selectedCategory OR selectedCategory includes productCategory (case-insensitive)
       const productCategoryLC = product.category.toLowerCase();
       const selectedCategoryLC = selectedCategory.toLowerCase();
-      const matchesCategory = productCategoryLC.includes(selectedCategoryLC);
+      const matchesCategory =
+        productCategoryLC.includes(selectedCategoryLC) ||
+        selectedCategoryLC.includes(productCategoryLC);
       return matchesSearch && matchesCategory;
     });
   }, [products, searchTerm, selectedCategory]);
