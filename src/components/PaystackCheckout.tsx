@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useNavigate } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -111,6 +111,7 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
   const [error, setError] = useState<string | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const { clearCart } = useCart();
+  const navigate = useNavigate();
 
   useEffect(() => {
     cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -171,6 +172,10 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
             className: "bg-green-500 text-white"
           });
           clearCart();
+          // After success, redirect to order placed
+          setTimeout(() => {
+            navigate("/order-placed");
+          }, 1200);
 
         } catch (emailError) {
           console.error('Failed to send confirmation email:', emailError);

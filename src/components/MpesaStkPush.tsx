@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from "react-router-dom";
 
 interface MpesaStkPushProps {
   amount: number;
@@ -24,6 +24,7 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
   const [userPhone, setUserPhone] = useState(phone || "");
   const [processing, setProcessing] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const isValidPhone = (value: string) => 
     /^(\+254|0)[17]\d{8}$/.test(value);
@@ -70,6 +71,10 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
       });
       setProcessing(false);
       if (onPaymentSuccess) onPaymentSuccess();
+      // After a small delay, redirect to order placed
+      setTimeout(() => {
+        navigate("/order-placed");
+      }, 1500);
 
     } catch (err: any) {
       setMessage("Payment failed. Try again later.");
