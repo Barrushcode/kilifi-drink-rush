@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getCategoryFromName } from '@/utils/categoryUtils';
@@ -31,7 +32,7 @@ export const useProducts = () => {
     while (hasMore) {
       const { data, error } = await supabase
         .from('allthealcoholicproducts')
-        .select('Title, Description, Price')
+        .select('Title, Description, Price, "Product image URL"')
         .order('Title', { ascending: true })
         .range(offset, offset + batchSize - 1);
 
@@ -58,7 +59,7 @@ export const useProducts = () => {
     try {
       setLoading(true);
       setError(null);
-      console.log('🚀 Starting to fetch products (FAST MODE, NO AI IMAGES)...');
+      console.log('🚀 Starting to fetch products (with images)...');
 
       const allProductsData = await fetchAllProducts();
 
@@ -82,8 +83,8 @@ export const useProducts = () => {
             category = 'Beer';
           }
 
-          // Always use fallback image for massive speed
-          const productImage = FALLBACK_IMAGE;
+          // Use product image URL if available, otherwise fallback
+          const productImage = product['Product image URL'] || FALLBACK_IMAGE;
 
           return {
             id: globalIndex + 1,
