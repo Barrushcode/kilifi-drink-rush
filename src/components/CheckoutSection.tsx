@@ -257,7 +257,7 @@ const CheckoutSection: React.FC = () => {
                       value={shippingDetails.building}
                       onChange={(e) => handleInputChange('building', e.target.value)}
                       placeholder="Building name/number"
-                      className="!bg-barrush-burgundy/20 !border-barrush-burgundy !text-white placeholder:!text-gray-400 w-full"
+                      className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400 w-full"
                     />
                   </div>
                   <div className="space-y-2">
@@ -267,7 +267,7 @@ const CheckoutSection: React.FC = () => {
                       value={shippingDetails.area}
                       onChange={(e) => handleInputChange('area', e.target.value)}
                       placeholder="Area or estate name"
-                      className="!bg-barrush-burgundy/20 !border-barrush-burgundy !text-white placeholder:!text-gray-400 w-full"
+                      className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400 w-full"
                     />
                     {errors.area && <p className="text-red-400 text-sm">{errors.area}</p>}
                   </div>
@@ -280,7 +280,7 @@ const CheckoutSection: React.FC = () => {
                     value={shippingDetails.city}
                     onChange={(e) => handleInputChange('city', e.target.value)}
                     placeholder="Nairobi, Mombasa, etc."
-                    className="!bg-barrush-burgundy/20 !border-barrush-burgundy !text-white placeholder:!text-gray-400 w-full"
+                    className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400 w-full"
                   />
                   {errors.city && <p className="text-red-400 text-sm">{errors.city}</p>}
                 </div>
@@ -292,7 +292,7 @@ const CheckoutSection: React.FC = () => {
                     value={shippingDetails.instructions}
                     onChange={(e) => handleInputChange('instructions', e.target.value)}
                     placeholder="Gate code, directions, or special requests (optional)"
-                    className="!bg-barrush-burgundy/20 !border-barrush-burgundy !text-white placeholder:!text-gray-400 min-h-[80px] w-full"
+                    className="bg-barrush-burgundy/20 border-barrush-burgundy text-white placeholder:text-gray-400 min-h-[80px] w-full"
                   />
                 </div>
               </CardContent>

@@ -95,7 +95,9 @@ export default {
 					slate: '#1a1a1a',
 					midnight: '#0f1419',
 					platinum: '#e5e5e5',
-					copper: '#c9a96e',
+					gold: '#c9a96e',
+					charcoal: '#2D3748',
+					burgundy: '#6f1a1a',
 					steel: '#374151',
 					smoke: '#6b7280'
 				}
