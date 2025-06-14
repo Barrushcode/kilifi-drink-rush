@@ -12,12 +12,12 @@ const DeliveryZonesSection: React.FC = () => {
     name: "Mnarani",
     fee: "KES 150",
     icon: "🏖️",
-    description: "Coastal delivery zone"
+    description: "Standard delivery service"
   }, {
     name: "Bofa",
     fee: "KES 200",
     icon: "🚴‍♂️",
-    description: "Eco-friendly bike delivery",
+    description: "Standard delivery service",
     special: true
   }];
   return <section className="py-20 bg-barrush-charcoal">
