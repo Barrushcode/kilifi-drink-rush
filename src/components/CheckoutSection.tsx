@@ -310,7 +310,11 @@ const CheckoutSection: React.FC = () => {
                     </SelectTrigger>
                     <SelectContent>
                       {DELIVERY_ZONES.map(zone => (
-                        <SelectItem key={zone.value} value={zone.value} className="text-white">
+                        <SelectItem
+                          key={zone.value}
+                          value={zone.value}
+                          className="text-black hover:bg-gray-200"
+                        >
                           {zone.name} (KES {zone.fee})
                         </SelectItem>
                       ))}
