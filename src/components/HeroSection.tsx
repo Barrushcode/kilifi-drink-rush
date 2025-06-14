@@ -11,35 +11,38 @@ const HeroSection: React.FC = () => {
   };
 
   return (
-    <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-pink-500/40 via-sky-600/60 to-barrush-midnight/90">
-      {/* Layered Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-pink-400/20 via-sky-400/10 to-barrush-midnight/80 z-0" />
-      {/* Modern overlay border effect */}
-      <div className="absolute inset-0 pointer-events-none z-0" style={{
-        background:
-          "radial-gradient(circle at 55% 38%, rgba(244,38,205,0.12) 0%, rgba(38,168,244,0.10) 30%, rgba(15,20,25,0.00) 78%)"
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Background Image - Modern urban bar */}
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{
+        backgroundImage: `linear-gradient(rgba(15, 20, 25, 0.7), rgba(15, 20, 25, 0.5)), url('https://images.unsplash.com/photo-1566417713940-fe7c737a9ef2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')`
       }} />
+      
+      {/* Modern overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-barrush-midnight/20 via-transparent to-barrush-midnight/60" />
+      
       {/* Content */}
-      <div className="relative z-10 text-center max-w-6xl mx-auto px-6 py-16 flex flex-col items-center justify-center">
+      <div className="relative z-10 text-center max-w-6xl mx-auto px-6">
         <div className="animate-fade-in">
-          <h1 className="text-6xl md:text-7xl font-bold mb-8 tracking-tight font-serif bg-gradient-to-br from-pink-400 via-fuchsia-500 to-blue-400 bg-clip-text text-transparent drop-shadow-xl">
+          <h1 className="text-7xl font-bold mb-8 tracking-tight font-serif text-neon-pink-light">
             BARRUSH
           </h1>
-          <div className="w-20 h-px mx-auto mb-8 bg-gradient-to-r from-blue-400 via-fuchsia-400 to-cyan-500 rounded-xl"></div>
-          <p className="text-3xl md:text-4xl mb-6 font-light text-barrush-platinum/90 drop-shadow-lg">
+          <div className="w-20 h-px mx-auto mb-8 bg-neon-blue rounded-xl"></div>
+          <p className="text-3xl md:text-4xl text-gray-200 mb-6 font-light">
             Get Your Drink Rush On
           </p>
-          <p className="text-xl md:text-2xl text-barrush-platinum/80 mb-12 md:mb-16 max-w-3xl mx-auto leading-relaxed font-iphone">
+          <p className="text-xl text-gray-300/80 mb-16 max-w-3xl mx-auto leading-relaxed">
             Premium spirits and curated cocktails delivered with urban sophistication across Kilifi County.
           </p>
-          <Button
-            onClick={handleOrderClick}
-            size="lg"
-            className="font-bold px-16 py-5 text-xl transition-all duration-300 hover:scale-105 shadow-xl bg-gradient-to-r from-pink-500 via-fuchsia-500 to-blue-400 text-white border-none ring-2 ring-blue-300/30"
-          >
+          
+          <Button onClick={handleOrderClick} size="lg" className="font-bold px-16 py-6 text-xl transition-all duration-300 hover:scale-105 shadow-2xl bg-neon-purple hover:bg-neon-purple/90 text-zinc-50">
             Let's Order
           </Button>
         </div>
+      </div>
+      
+      {/* Scroll indicator */}
+      <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 animate-bounce">
+        
       </div>
     </section>
   );

@@ -18,7 +18,7 @@ const Navigation = () => {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-40 bg-barrush-midnight/90 backdrop-blur-md border-b border-barrush-steel/30">
+      <nav className="fixed top-0 left-0 right-0 z-40 bg-barrush-midnight/90 backdrop-blur-md border-b border-neon-blue/30">
         <div className="container mx-auto px-4 lg:px-6 py-2 bg-slate-950">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center">
@@ -31,7 +31,7 @@ const Navigation = () => {
                 <NavigationMenuList>
                   <NavigationMenuItem>
                     <NavigationMenuLink asChild>
-                      <Link to="/" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-barrush-platinum hover:text-rose-600 hover:bg-barrush-steel/20 font-iphone")}>
+                      <Link to="/" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-gray-200 hover:text-neon-pink hover:bg-gray-800/50 font-iphone")}>
                         Home
                       </Link>
                     </NavigationMenuLink>
@@ -39,7 +39,7 @@ const Navigation = () => {
                   
                   <NavigationMenuItem>
                     <NavigationMenuLink asChild>
-                      <Link to="/products" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-barrush-platinum hover:text-rose-600 hover:bg-barrush-steel/20 font-iphone")}>
+                      <Link to="/products" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-gray-200 hover:text-neon-pink hover:bg-gray-800/50 font-iphone")}>
                         Products
                       </Link>
                     </NavigationMenuLink>
@@ -47,7 +47,7 @@ const Navigation = () => {
                   
                   <NavigationMenuItem>
                     <NavigationMenuLink asChild>
-                      <Link to="/recipes" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-barrush-platinum hover:text-rose-600 hover:bg-barrush-steel/20 font-iphone")}>
+                      <Link to="/recipes" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-gray-200 hover:text-neon-pink hover:bg-gray-800/50 font-iphone")}>
                         Recipes
                       </Link>
                     </NavigationMenuLink>
@@ -55,7 +55,7 @@ const Navigation = () => {
 
                   <NavigationMenuItem>
                     <NavigationMenuLink asChild>
-                      <Link to="/help" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-barrush-platinum hover:text-rose-600 hover:bg-barrush-steel/20 font-iphone")}>
+                      <Link to="/help" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-gray-200 hover:text-neon-pink hover:bg-gray-800/50 font-iphone")}>
                         Help
                       </Link>
                     </NavigationMenuLink>
@@ -63,7 +63,7 @@ const Navigation = () => {
 
                   <NavigationMenuItem>
                     <NavigationMenuLink asChild>
-                      <Link to="/cart" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-barrush-platinum hover:text-rose-600 hover:bg-barrush-steel/20 flex items-center gap-2 font-iphone relative")}>
+                      <Link to="/cart" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-gray-200 hover:text-neon-pink hover:bg-gray-800/50 flex items-center gap-2 font-iphone relative")}>
                         <ShoppingCart className="h-4 w-4" />
                         Cart
                         {totalItems > 0 && (
@@ -85,7 +85,7 @@ const Navigation = () => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="text-barrush-platinum hover:bg-barrush-steel/20 h-touch w-touch"
+                    className="text-gray-200 hover:bg-gray-800/50 h-touch w-touch"
                   >
                     <ShoppingCart className="h-5 w-5" />
                     {totalItems > 0 && (
@@ -99,7 +99,7 @@ const Navigation = () => {
                   variant="ghost"
                   size="icon"
                   onClick={() => setMobileMenuOpen(true)}
-                  className="text-barrush-platinum hover:bg-barrush-steel/20 h-touch w-touch"
+                  className="text-gray-200 hover:bg-gray-800/50 h-touch w-touch"
                 >
                   <Menu className="h-5 w-5" />
                 </Button>
