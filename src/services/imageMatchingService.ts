@@ -203,7 +203,7 @@ export const findMatchingImage = (productName: string, scrapedImages: ScrapedIma
 
   if (normalized === "johnnie walker odyssey" || normalized === "john walker & sons odyssey") {
     return {
-      url: "/lovable-uploads/4bba2ec3-688d-43cc-9a08-6f75bc4a023c.png",
+      url: "/lovable-uploads/a8e2526a-0991-4970-b4b2-9b9b2d234eba.png",
       matchLevel: "custom-pinned"
     };
   }
@@ -217,7 +217,7 @@ export const findMatchingImage = (productName: string, scrapedImages: ScrapedIma
 
   if (normalized.includes("private collection")) {
     return {
-      url: "/lovable-uploads/e0908648-dc14-4384-adec-f22901d56cf3.png",
+      url: "/lovable-uploads/b45136a6-065c-41c0-b7d2-c9a93f1f3c4e.png",
       matchLevel: "custom-pinned"
     };
   }
