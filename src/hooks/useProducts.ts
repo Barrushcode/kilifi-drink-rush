@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getCategoryFromName } from '@/utils/categoryUtils';
@@ -25,6 +24,11 @@ export const useProducts = () => {
   const [productsByOriginalOrder, setProductsByOriginalOrder] = useState<GroupedProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Import the AI image generation service
+  // NOTE: Path may need to be adjusted if your file is elsewhere!
+  // import inline here to avoid circular reference
+  const { AIImageGenerationService } = require('@/services/aiImageGenerationService');
 
   const fetchAllProducts = async () => {
     const allProducts = [];
@@ -63,27 +67,16 @@ export const useProducts = () => {
       setLoading(true);
       setError(null);
       console.log('🚀 Starting to fetch products...');
-      const [allProductsData, imagesResponse] = await Promise.all([
-        fetchAllProducts(),
-        supabase
-          .from('refinedproductimages')
-          .select('id, "Product Name", "Final Image URL"')
-      ]);
 
-      if (imagesResponse.error) {
-        console.error('❌ Refined images fetch error:', imagesResponse.error);
-        throw imagesResponse.error;
-      }
-
-      const refinedImages = imagesResponse.data || [];
+      const allProductsData = await fetchAllProducts();
 
       const transformedProducts: Product[] = [];
       
       // Process products in batches
-      const batchSize = 100;
+      const batchSize = 20; // Lower batch size to avoid rate limiting
       for (let i = 0; i < allProductsData.length; i += batchSize) {
         const batch = allProductsData.slice(i, i + batchSize);
-        console.log(`📦 Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(allProductsData.length / batchSize)}`);
+        console.log(`📦 [AI MODE] Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(allProductsData.length / batchSize)}`);
         
         const batchPromises = batch.map(async (product, batchIndex) => {
           const globalIndex = i + batchIndex;
@@ -106,8 +99,25 @@ export const useProducts = () => {
             category = 'Beer';
           }
 
-          // Use the refined images for matching
-          const { url: productImage } = await findMatchingImage(product.Title || 'Unknown Product', refinedImages);
+          // Always generate an AI image and ignore database images
+          let productImage = "";
+          let aiResult = null;
+          try {
+            aiResult = await AIImageGenerationService.generateProductImage(
+              product.Title || 'Unknown Product',
+              category
+            );
+            productImage = aiResult;
+            if (aiResult.cached) {
+              console.log(`[AI IMAGE][CACHED]: ${product.Title} → ${productImage}`);
+            } else {
+              console.log(`[AI IMAGE][FRESH]: ${product.Title} → ${productImage}`);
+            }
+          } catch (error) {
+            console.error('[AI IMAGE ERROR]:', product.Title, error);
+            // As a last resort, just use the fallback for the category
+            productImage = AIImageGenerationService.getFallbackImage(category);
+          }
 
           return {
             id: globalIndex + 1,
@@ -126,7 +136,7 @@ export const useProducts = () => {
       const groupedProducts = groupProductsByBaseName(transformedProducts);
       const groupedProductsOrdered = groupProductsByBaseName(transformedProducts, true);
 
-      console.log(`✨ Successfully processed ${transformedProducts.length} products using refined images`);
+      console.log(`✨ [AI MODE] Successfully processed ${transformedProducts.length} products (AI images only)`);
       console.log('🎯 Sample grouped products:', groupedProducts.slice(0, 3));
 
       setProducts(groupedProducts);
