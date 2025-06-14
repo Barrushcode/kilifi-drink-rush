@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getCategoryFromName } from '@/utils/categoryUtils';
 import { groupProductsByBaseName, GroupedProduct } from '@/utils/productGroupingUtils';
+import { AIImageGenerationService } from '@/services/aiImageGenerationService';
 
 interface Product {
   id: number;
@@ -17,9 +18,6 @@ export const useProducts = () => {
   const [productsByOriginalOrder, setProductsByOriginalOrder] = useState<GroupedProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Inline require to avoid circular reference
-  const { AIImageGenerationService } = require('@/services/aiImageGenerationService');
 
   const fetchAllProducts = async () => {
     const allProducts = [];
