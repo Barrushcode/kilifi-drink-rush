@@ -2,50 +2,64 @@
 import React from 'react';
 import { Truck } from 'lucide-react';
 
+// AnnouncementBar: sits at the top, colored gradient left-to-right, animated marquee, always visible.
 const AnnouncementBar: React.FC = () => {
   return (
-    <div className="w-full relative overflow-hidden bg-gradient-to-r from-blue-500 via-purple-400 to-pink-500 text-white py-3 px-4 sm:px-6">
-      <div className="absolute inset-0 flex items-center">
+    <div className="w-full z-50 fixed top-0 left-0 right-0 h-12 flex items-center bg-gradient-to-r from-blue-500 via-purple-400 to-pink-500 text-white overflow-hidden">
+      <div className="relative w-full h-full flex items-center">
         <div
-          className="animate-marquee whitespace-nowrap flex items-center justify-center w-full"
+          className="flex items-center animate-marquee whitespace-nowrap min-w-full h-full"
           style={{
-            animation: 'marquee 15s linear infinite'
+            animation: "marquee-banner 16s linear infinite",
           }}
         >
-          <span className="flex items-center space-x-2 text-sm md:text-base font-medium w-full">
+          <span className="flex items-center text-sm md:text-base font-medium mr-16">
             <Truck className="h-5 w-5 flex-shrink-0 mr-2" />
             <span>
-              🎉 <strong>FREE DELIVERY</strong> on orders above KES 5,000! 
+              🎉 <strong>FREE DELIVERY</strong> on orders above KES 5,000!
             </span>
           </span>
-          {/* Duplicate for smooth marquee */}
-          <span className="flex items-center space-x-2 text-sm md:text-base font-medium w-full ml-16">
+          <span className="flex items-center text-sm md:text-base font-medium mr-16">
             <Truck className="h-5 w-5 flex-shrink-0 mr-2" />
             <span>
-              🎉 <strong>FREE DELIVERY</strong> on orders above KES 5,000! 
+              🎉 <strong>FREE DELIVERY</strong> on orders above KES 5,000!
+            </span>
+          </span>
+          <span className="flex items-center text-sm md:text-base font-medium mr-16">
+            <Truck className="h-5 w-5 flex-shrink-0 mr-2" />
+            <span>
+              🎉 <strong>FREE DELIVERY</strong> on orders above KES 5,000!
             </span>
           </span>
         </div>
+        {/* If animation fails, fallback static message */}
+        <noscript>
+          <span className="flex items-center text-sm md:text-base font-medium">
+            <Truck className="h-5 w-5 flex-shrink-0 mr-2" />
+            <span>
+              🎉 <strong>FREE DELIVERY</strong> on orders above KES 5,000!
+            </span>
+          </span>
+        </noscript>
       </div>
-      {/* Spacer to maintain bar height */}
-      <div className="opacity-0">.</div>
-      <style>
-        {`
-          @keyframes marquee {
-            0% {
-              transform: translateX(-50%);
-            }
-            100% {
-              transform: translateX(0%);
-            }
+      <style>{`
+        @keyframes marquee-banner {
+          0% {
+            transform: translateX(0%);
           }
-          @media (max-width: 640px) {
-            .animate-marquee {
-              animation-duration: 24s !important;
-            }
+          100% {
+            transform: translateX(-33%);
           }
-        `}
-      </style>
+        }
+        .animate-marquee {
+          will-change: transform;
+        }
+        @media (max-width: 640px) {
+          .animate-marquee {
+            animation-duration: 28s !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };
