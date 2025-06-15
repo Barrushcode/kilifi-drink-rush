@@ -149,7 +149,6 @@ const CheckoutSection: React.FC = () => {
       await logOrderToSupabase({
         buyerName: shippingDetails.firstName + " " + shippingDetails.lastName,
         buyerEmail: shippingDetails.email,
-        buyerGender: shippingDetails.gender || undefined,
         buyerPhone: shippingDetails.phone,
         region: zoneObject?.name || "",
         city: shippingDetails.city,
