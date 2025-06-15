@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useCart } from '@/contexts/CartContext';
-import { supabase } from '@/integrations/supabase/client';
-import { postToZapierWebhook } from "@/utils/zapierWebhook";
-import { logOrderToSupabase } from "@/utils/logOrderToSupabase";
 import ShippingInfoForm from './ShippingInfoForm';
 import ZapierWebhookInput from './ZapierWebhookInput';
 import OrderSummaryCard from './OrderSummaryCard';
 import PaymentOptionsPanel from './PaymentOptionsPanel';
 import AlternativePaymentInfo from './AlternativePaymentInfo';
+import { useCheckout } from '@/hooks/useCheckout';
 
 const DELIVERY_ZONES = [{
   name: 'Tezo',
@@ -32,161 +30,22 @@ const CheckoutSection: React.FC = () => {
     getTotalAmount,
     getTotalItems
   } = useCart();
-  const [shippingDetails, setShippingDetails] = useState({
-    firstName: '',
-    lastName: '',
-    phone: '',
-    email: '',
-    street: '',
-    building: '',
-    area: '',
-    city: '',
-    instructions: ''
-  });
-  const [selectedZone, setSelectedZone] = useState(DELIVERY_ZONES[0].value); // default: Tezo
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [zapierWebhookUrl, setZapierWebhookUrl] = useState("");
 
-  // Find the selected zone object
-  const zoneObject = DELIVERY_ZONES.find(z => z.value === selectedZone);
-  const subtotal = getTotalAmount();
-  // Free delivery: If subtotal > 5000, fee = 0
-  const deliveryFee = subtotal > 5000 ? 0 : zoneObject ? zoneObject.fee : 0;
-  const totalAmount = subtotal + deliveryFee;
-
-  const handleInputChange = (field: string, value: string) => {
-    setShippingDetails(prev => ({
-      ...prev,
-      [field]: value
-    }));
-    if (errors[field]) {
-      setErrors(prev => ({
-        ...prev,
-        [field]: ''
-      }));
-    }
-  };
-
-  const handleZoneChange = (value: string) => {
-    setSelectedZone(value);
-  };
-
-  const validateForm = () => {
-    const newErrors: { [key: string]: string } = {};
-    if (!shippingDetails.firstName.trim()) newErrors.firstName = 'First name is required';
-    if (!shippingDetails.lastName.trim()) newErrors.lastName = 'Last name is required';
-    if (!shippingDetails.phone.trim()) newErrors.phone = 'Phone number is required';
-    if (!shippingDetails.email.trim()) newErrors.email = 'Email is required';
-    if (!shippingDetails.street.trim()) newErrors.street = 'Street address is required';
-    if (!shippingDetails.area.trim()) newErrors.area = 'Area is required';
-    if (!shippingDetails.city.trim()) newErrors.city = 'City is required';
-    if (shippingDetails.email && !/\S+@\S+\.\S+/.test(shippingDetails.email)) {
-      newErrors.email = 'Please enter a valid email address';
-    }
-    if (shippingDetails.phone && !/^(\+254|0)[17]\d{8}$/.test(shippingDetails.phone)) {
-      newErrors.phone = 'Please enter a valid Kenyan phone number';
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  // --- Add simulate payment handler ---
-  const handleSimulatePayment = async () => {
-    if (!validateForm()) {
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-      return;
-    }
-    if (!shippingDetails.email) {
-      setErrors(prev => ({
-        ...prev,
-        email: "Email is required for email simulation"
-      }));
-      return;
-    }
-    try {
-      const reference = "SIM" + Math.floor(Math.random() * 1000000);
-      const { toast } = await import('@/components/ui/use-toast');
-      // Use the Supabase client to call the edge function
-      const recipients = [shippingDetails.email, "barrushdelivery@gmail.com"];
-      const {
-        data,
-        error
-      } = await supabase.functions.invoke('send-order-confirmation', {
-        body: {
-          to: recipients, // send to both addresses
-          subject: `Order Confirmed! (Simulated): #${reference}`,
-          html: `
-            <div style="font-family: Arial, sans-serif;">
-              <h1 style="color: #10b981">Order Confirmed! (Simulated)</h1>
-              <p><b>This is only a demo confirmation to show what a real customer email would look like.</b></p>
-              <ul>
-                <li><b>Name:</b> ${shippingDetails.firstName} ${shippingDetails.lastName}</li>
-                <li><b>Reference:</b> ${reference}</li>
-                <li><b>Delivery:</b> ${zoneObject?.name} (KES ${deliveryFee})</li>
-                <li><b>Total:</b> KES ${totalAmount.toLocaleString()}</li>
-              </ul>
-            </div>
-          `
-        }
-      });
-      if (!error && data && data.ok) {
-        toast({
-          title: "Simulated order email sent!",
-          description: "Check your inbox for the test confirmation.",
-          className: "bg-green-600 text-white"
-        });
-      } else {
-        toast({
-          title: "Simulation failed!",
-          description: error?.message || data?.error || "Unknown error",
-          variant: "destructive"
-        });
-      }
-      // On success, log order to Supabase:
-      await logOrderToSupabase({
-        buyerName: shippingDetails.firstName + " " + shippingDetails.lastName,
-        buyerEmail: shippingDetails.email,
-        buyerPhone: shippingDetails.phone,
-        region: zoneObject?.name || "",
-        city: shippingDetails.city,
-        street: shippingDetails.street,
-        building: shippingDetails.building,
-        instructions: shippingDetails.instructions,
-        items,
-        subtotal,
-        deliveryFee,
-        totalAmount,
-        orderReference: reference,
-        orderSource: "simulated"
-      });
-      // ✴️ POST TO ZAPIER WEBHOOK (if URL is present)
-      if (zapierWebhookUrl) {
-        await postToZapierWebhook(zapierWebhookUrl, {
-          simulation: true,
-          reference,
-          type: "test",
-          shippingDetails,
-          items,
-          subtotal,
-          deliveryZone: zoneObject?.name,
-          deliveryFee,
-          totalAmount
-        });
-      }
-    } catch (err: any) {
-      const {
-        toast
-      } = await import('@/components/ui/use-toast');
-      toast({
-        title: "Simulation failed!",
-        description: err?.message || "Failed to send simulated email.",
-        variant: "destructive"
-      });
-    }
-  };
+  // Use refactored checkout logic hook
+  const {
+    shippingDetails,
+    errors,
+    zapierWebhookUrl,
+    setZapierWebhookUrl,
+    selectedZone,
+    handleInputChange,
+    handleZoneChange,
+    zoneObject,
+    subtotal,
+    deliveryFee,
+    totalAmount,
+    handleSimulatePayment
+  } = useCheckout(DELIVERY_ZONES, items, getTotalAmount);
 
   if (items.length === 0) {
     return (
