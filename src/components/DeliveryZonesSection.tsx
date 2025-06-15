@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -33,7 +32,7 @@ const DeliveryZonesSection: React.FC = () => {
         
         <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
           {zones.map((zone, index) => <Card key={index} className={`bg-barrush-burgundy/20 border-blue-500 border-2 transition-all duration-300 hover:scale-105`}>
-              <CardContent className="p-8 text-center">
+              <CardContent className="p-8 text-center bg-slate-950">
                 <div className="text-5xl mb-4">{zone.icon}</div>
                 <h3 className="text-2xl font-bold text-barrush-gold mb-2 text-zinc-50">
                   {zone.name}
@@ -56,4 +55,3 @@ const DeliveryZonesSection: React.FC = () => {
     </section>;
 };
 export default DeliveryZonesSection;
-
