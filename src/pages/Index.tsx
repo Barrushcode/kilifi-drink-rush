@@ -25,11 +25,11 @@ const Index = () => {
         <DeliveryZonesSection />
         
         {/* Quick Navigation Section */}
-        <section className="py-24 bg-gradient-to-b from-barrush-slate to-barrush-midnight relative">
-          {/* Make this container full width, keep padding for readability */}
-          <div className="container mx-auto px-6 md:px-12 lg:px-20 relative z-10 w-full">
-            <div className="text-center mb-20">
-              <h2 className="text-5xl md:text-6xl font-bold mb-6 font-serif text-rose-600">
+        <section className="py-24 bg-gradient-to-b from-barrush-slate to-barrush-midnight relative w-full">
+          {/* Make this container full width, no centering or max-width on desktop */}
+          <div className="px-0 md:px-0 lg:px-0 relative z-10 w-full">
+            <div className="text-center mb-20 w-full">
+              <h2 className="text-5xl md:text-6xl font-bold mb-6 font-serif text-rose-600 w-full">
                 Explore Our Collection
               </h2>
               <div className="w-16 h-px bg-barrush-copper mx-auto mb-8"></div>
@@ -38,9 +38,9 @@ const Index = () => {
               </p>
             </div>
             
-            {/* Remove max-w-5xl, use w-full */}
-            <div className="grid md:grid-cols-2 gap-10 w-full mx-auto">
-              <Card className="bg-glass-effect border-barrush-steel/30 border hover:border-barrush-copper/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden">
+            {/* Now grid is truly full width, even on desktop */}
+            <div className="grid md:grid-cols-2 gap-10 w-full px-6 lg:px-20">
+              <Card className="bg-glass-effect border-barrush-steel/30 border hover:border-barrush-copper/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden w-full">
                 <div 
                   className="h-64 md:h-80 bg-cover bg-center relative overflow-hidden"
                   style={{
@@ -62,7 +62,7 @@ const Index = () => {
                 </CardContent>
               </Card>
 
-              <Card className="bg-glass-effect border-barrush-steel/30 border hover:border-barrush-copper/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden">
+              <Card className="bg-glass-effect border-barrush-steel/30 border hover:border-barrush-copper/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden w-full">
                 <div 
                   className="h-64 md:h-80 bg-cover bg-center relative overflow-hidden"
                   style={{

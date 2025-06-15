@@ -5,9 +5,9 @@ import { Instagram, Twitter, Youtube, Facebook, Linkedin } from 'lucide-react';
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
   return (
-    <footer className="bg-barrush-charcoal border-t-2 border-pink-500">
-      <div className="container mx-auto px-6 py-12 bg-slate-950">
-        <div className="grid md:grid-cols-3 gap-8">
+    <footer className="bg-barrush-charcoal border-t-2 border-pink-500 w-full">
+      <div className="w-full px-0 py-12 bg-slate-950">
+        <div className="grid md:grid-cols-3 gap-8 w-full px-8">
           {/* Brand Section */}
           <div className="text-center md:text-left">
             <h3 className="text-3xl font-bold text-barrush-gold mb-4 text-zinc-50">BARRUSH</h3>
@@ -45,8 +45,8 @@ const Footer: React.FC = () => {
         </div>
         
         {/* Bottom Section */}
-        <div className="mt-12 pt-8 border-t border-pink-500">
-          <div className="flex flex-col md:flex-row justify-between items-center">
+        <div className="mt-12 pt-8 border-t border-pink-500 w-full px-8">
+          <div className="flex flex-col md:flex-row justify-between items-center w-full">
             <p className="text-barrush-cream/60 text-center md:text-left mb-4 md:mb-0 text-zinc-50">
               © {currentYear} Barrush. All rights reserved. Drink responsibly. 18+ only.
             </p>
