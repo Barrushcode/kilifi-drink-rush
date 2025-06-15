@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +10,7 @@ import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import ProductQuickViewModal from './ProductQuickViewModal';
 import { normalizeString } from '@/utils/stringUtils';
+import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
 
 // Utility to determine if the product image is appropriate
 function isImageAppropriate(url?: string) {
@@ -48,6 +49,8 @@ const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1569529465841-dfecdab7
 const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(product.variants[0]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [supabaseImage, setSupabaseImage] = useState<string | null>(null);
+
   const navigate = useNavigate();
   const { addItem } = useCart();
   const { toast } = useToast();
@@ -114,10 +117,21 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
     setModalOpen(true);
   };
 
+  // Use effect to look for supabase storage image by product name
+  useEffect(() => {
+    let ignore = false;
+    async function fetchImage() {
+      const url = await getSupabaseProductImageUrl(product.baseName);
+      if (!ignore) setSupabaseImage(url);
+    }
+    fetchImage();
+    return () => { ignore = true; };
+  }, [product.baseName]);
+
   // Normalize and capitalize product name for display
   const displayName = capitalizeWords(normalizeString(product.baseName));
-  // Display only if image is appropriate, else fallback
-  const displayImage = isImageAppropriate(product.image) ? product.image : FALLBACK_IMAGE;
+  // Preferred order: Supabase image, then product.image, then fallback
+  let displayImage = supabaseImage || (isImageAppropriate(product.image) ? product.image : FALLBACK_IMAGE);
 
   return (
     <>
