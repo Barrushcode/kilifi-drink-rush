@@ -18,6 +18,7 @@ import Navigation from "./components/Navigation";
 import OrderPlaced from "./pages/OrderPlaced";
 import CartDrawer from "@/components/CartDrawer";
 import { MiniCartDrawerProvider, useMiniCartDrawer } from "@/contexts/CartContext";
+import AnnouncementBar from "@/components/AnnouncementBar";
 
 const MiniCartDrawerWrapper = () => {
   const { open, closeDrawer } = useMiniCartDrawer();
@@ -35,6 +36,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Navigation />
+            <AnnouncementBar />
             {/* Enhanced desktop layout wrapper */}
             <div className="pt-16 lg:pt-20 min-h-screen bg-background flex flex-col">
               <MiniCartDrawerWrapper />
@@ -58,3 +60,4 @@ const App = () => (
 );
 
 export default App;
+
