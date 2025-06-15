@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 const HowItWorksSection: React.FC = () => {
@@ -30,7 +31,7 @@ const HowItWorksSection: React.FC = () => {
         </div>
         
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
-          {steps.map((step, index) => <Card key={index} className="bg-barrush-charcoal/80 border-barrush-gold border hover:border-barrush-gold/80 transition-all duration-300 hover:scale-105">
+          {steps.map((step, index) => <Card key={index} className="bg-barrush-charcoal/80 border-blue-500 border hover:border-blue-400 transition-all duration-300 hover:scale-105">
               <CardContent className="p-6 text-center">
                 <div className="text-4xl mb-4">{step.number}</div>
                 <h3 className="text-xl font-bold text-barrush-gold mb-4 text-zinc-50">

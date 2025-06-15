@@ -32,7 +32,7 @@ const DeliveryZonesSection: React.FC = () => {
         </div>
         
         <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-          {zones.map((zone, index) => <Card key={index} className={`${zone.special ? 'bg-barrush-gold/10 border-barrush-gold border-2' : 'bg-barrush-burgundy/20 border-barrush-burgundy border'} transition-all duration-300 hover:scale-105`}>
+          {zones.map((zone, index) => <Card key={index} className={`bg-barrush-burgundy/20 border-blue-500 border-2 transition-all duration-300 hover:scale-105`}>
               <CardContent className="p-8 text-center">
                 <div className="text-5xl mb-4">{zone.icon}</div>
                 <h3 className="text-2xl font-bold text-barrush-gold mb-2 text-zinc-50">
@@ -56,3 +56,4 @@ const DeliveryZonesSection: React.FC = () => {
     </section>;
 };
 export default DeliveryZonesSection;
+
