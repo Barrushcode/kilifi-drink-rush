@@ -10,6 +10,7 @@ import PaystackCheckout from './PaystackCheckout';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { supabase } from '@/integrations/supabase/client';
 import MpesaStkPush from './MpesaStkPush';
+import { postToZapierWebhook } from "@/utils/zapierWebhook";
 const DELIVERY_ZONES = [{
   name: 'Tezo',
   value: 'tezo',
@@ -47,6 +48,7 @@ const CheckoutSection: React.FC = () => {
   const [errors, setErrors] = useState<{
     [key: string]: string;
   }>({});
+  const [zapierWebhookUrl, setZapierWebhookUrl] = useState("");
 
   // Find the selected zone object
   const zoneObject = DELIVERY_ZONES.find(z => z.value === selectedZone);
@@ -141,6 +143,20 @@ const CheckoutSection: React.FC = () => {
           title: "Simulation failed!",
           description: error?.message || data?.error || "Unknown error",
           variant: "destructive"
+        });
+      }
+      // ✴️ POST TO ZAPIER WEBHOOK (if URL is present)
+      if (zapierWebhookUrl) {
+        await postToZapierWebhook(zapierWebhookUrl, {
+          simulation: true,
+          reference,
+          type: "test",
+          shippingDetails,
+          items,
+          subtotal,
+          deliveryZone: zoneObject?.name,
+          deliveryFee,
+          totalAmount
         });
       }
     } catch (err: any) {
@@ -316,6 +332,37 @@ const CheckoutSection: React.FC = () => {
                 <div className="space-y-2">
                   <Label htmlFor="instructions" className="text-white">Special Delivery Instructions</Label>
                   <Textarea id="instructions" value={shippingDetails.instructions} onChange={e => handleInputChange('instructions', e.target.value)} placeholder="Gate code, directions, or special requests (optional)" className="bg-neon-purple/40 border-neon-purple text-white placeholder:text-gray-400 min-h-[80px] w-full" />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* 🔗 Zapier Webhook Input */}
+            <Card className="bg-barrush-charcoal/80 border-pink-400 border w-full">
+              <CardHeader>
+                <CardTitle className="text-neon-pink">Zapier Integration</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <label className="block text-white mb-2 font-bold" htmlFor="zapierWebhook">Zapier Webhook URL</label>
+                <Input
+                  id="zapierWebhook"
+                  placeholder="Paste your Zapier webhook URL here"
+                  value={zapierWebhookUrl}
+                  onChange={e => setZapierWebhookUrl(e.target.value)}
+                  className="bg-barrush-charcoal text-white border-pink-400"
+                />
+                <div className="text-xs text-gray-400 mt-2">
+                  <span>
+                    When you submit payment, order data will be sent to this URL for recordkeeping (Google Sheets, etc). 
+                    <a 
+                      href="https://zapier.com/app/zaps" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="underline text-pink-300 ml-1"
+                    >
+                      Set up your Zap here
+                    </a>
+                    .
+                  </span>
                 </div>
               </CardContent>
             </Card>
