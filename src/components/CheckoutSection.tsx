@@ -37,9 +37,9 @@ const CheckoutSection: React.FC = () => {
 
   // Find the selected zone object
   const zoneObject = DELIVERY_ZONES.find(z => z.value === selectedZone);
-  const deliveryFee = zoneObject ? zoneObject.fee : 0;
-
   const subtotal = getTotalAmount();
+  // Free delivery: If subtotal > 5000, fee = 0
+  const deliveryFee = subtotal > 5000 ? 0 : (zoneObject ? zoneObject.fee : 0);
   const totalAmount = subtotal + deliveryFee;
 
   const handleInputChange = (field: string, value: string) => {

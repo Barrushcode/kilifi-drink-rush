@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export interface CartItem {
@@ -24,8 +23,39 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+// --- Add Mini Cart Drawer Context ---
+interface MiniCartDrawerContextType {
+  open: boolean;
+  openDrawer: () => void;
+  closeDrawer: () => void;
+}
+
+const MiniCartDrawerContext = createContext<MiniCartDrawerContextType | undefined>(undefined);
+
+export const MiniCartDrawerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [open, setOpen] = useState(false);
+
+  const openDrawer = () => setOpen(true);
+  const closeDrawer = () => setOpen(false);
+
+  return (
+    <MiniCartDrawerContext.Provider value={{ open, openDrawer, closeDrawer }}>
+      {children}
+    </MiniCartDrawerContext.Provider>
+  );
+};
+
+export const useMiniCartDrawer = () => {
+  const context = useContext(MiniCartDrawerContext);
+  if (context === undefined) {
+    throw new Error('useMiniCartDrawer must be used within a MiniCartDrawerProvider');
+  }
+  return context;
+};
+
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
+  const miniCartDrawer = useContext(MiniCartDrawerContext);
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -55,10 +85,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const addItem = (newItem: Omit<CartItem, 'quantity'>) => {
     console.log('➕ Adding item to cart:', newItem);
     setItems(prevItems => {
-      const existingItem = prevItems.find(item => 
+      const existingItem = prevItems.find(item =>
         item.id === newItem.id && item.size === newItem.size
       );
-
       if (existingItem) {
         console.log('🔄 Updating existing item quantity');
         return prevItems.map(item =>
@@ -67,10 +96,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             : item
         );
       }
-
       console.log('🆕 Adding new item to cart');
       return [...prevItems, { ...newItem, quantity: 1 }];
     });
+    if (miniCartDrawer && miniCartDrawer.openDrawer) miniCartDrawer.openDrawer();
   };
 
   const removeItem = (id: string) => {
