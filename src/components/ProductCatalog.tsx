@@ -77,13 +77,13 @@ const ProductCatalog: React.FC = () => {
   if (loading) {
     return (
       <section id="products" className="pt-0 pb-0 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative overflow-hidden">
-        <div className="container mx-auto px-0 lg:px-2 relative z-10 max-w-screen-2xl mt-0 mb-0">
-          <div className="text-center mb-2 mt-2">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-0 font-serif text-rose-600">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 relative z-10 mt-0 mb-0">
+          <div className="text-center mb-8 mt-8">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-0 font-serif text-rose-600">
               Our Collection
             </h2>
-            <div className="w-12 lg:w-16 h-px bg-barrush-copper mx-auto my-3"></div>
-            <p className="text-lg lg:text-xl text-barrush-platinum/90 max-w-3xl mx-auto mb-1 leading-relaxed font-iphone">
+            <div className="w-16 lg:w-20 h-px bg-barrush-copper mx-auto my-6"></div>
+            <p className="text-lg lg:text-xl text-barrush-platinum/90 max-w-3xl mx-auto mb-4 leading-relaxed font-iphone">
               Loading our curated selection...
             </p>
           </div>
@@ -97,13 +97,13 @@ const ProductCatalog: React.FC = () => {
     console.error('❌ ProductCatalog error:', error);
     return (
       <section id="products" className="pt-0 pb-0 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative overflow-hidden">
-        <div className="container mx-auto px-0 lg:px-2 relative z-10 max-w-screen-2xl">
-          <div className="text-center">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 lg:mb-6 font-serif text-rose-600">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 relative z-10">
+          <div className="text-center py-16">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 font-serif text-rose-600">
               Our Collection
             </h2>
-            <p className="text-lg lg:text-xl text-red-400 mb-4 font-iphone">{error}</p>
-            <Button onClick={refetch} className="bg-rose-600 hover:bg-rose-500 h-touch px-6 font-iphone">
+            <p className="text-lg lg:text-xl text-red-400 mb-6 font-iphone">{error}</p>
+            <Button onClick={refetch} className="bg-rose-600 hover:bg-rose-500 h-touch px-8 py-4 font-iphone text-lg">
               Try Again
             </Button>
           </div>
@@ -122,7 +122,7 @@ const ProductCatalog: React.FC = () => {
         background: 'linear-gradient(to bottom, #0f1419 0%, #1a1a1a 100%)'
       }}
     >
-      <div className="container mx-auto px-0 sm:px-1 md:px-1 lg:px-2 relative z-10 max-w-screen-2xl">
+      <div className="max-w-7xl mx-auto px-4 lg:px-8 relative z-10">
         <ProductCatalogHeader
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
@@ -166,4 +166,3 @@ const ProductCatalog: React.FC = () => {
 };
 
 export default ProductCatalog;
-

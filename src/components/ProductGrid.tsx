@@ -31,26 +31,29 @@ const ProductGrid: React.FC<ProductGridProps> = ({
   return (
     <>
       {isBeersCategory && (
-        <div className="w-full mb-2 flex justify-center">
-          <span className="bg-yellow-100 text-amber-800 px-3 py-1 text-xs rounded font-semibold shadow font-iphone border border-yellow-300 flex items-center gap-2">
+        <div className="w-full mb-6 flex justify-center">
+          <span className="bg-yellow-100 text-amber-800 px-4 py-2 text-sm rounded-lg font-semibold shadow font-iphone border border-yellow-300 flex items-center gap-2">
             All Beers are sold as Six-Packs 🍻
           </span>
         </div>
       )}
 
+      {/* Enhanced desktop grid layout */}
       <div className="
         grid 
         grid-cols-1
         sm:grid-cols-2 
         md:grid-cols-3 
         lg:grid-cols-4 
-        xl:grid-cols-6 
-        gap-2 
-        md:gap-3 
-        lg:gap-5 
+        xl:grid-cols-5
+        2xl:grid-cols-6
+        gap-4 
+        lg:gap-6
+        xl:gap-8
         max-w-full 
         mx-auto
-        pb-4
+        pb-8
+        lg:pb-12
       "
         style={{ width: '100%' }}
       >
@@ -63,9 +66,9 @@ const ProductGrid: React.FC<ProductGridProps> = ({
       </div>
       
       {filteredProducts.length === 0 && !loading && (
-        <div className="text-center mt-6">
+        <div className="text-center mt-12 py-16">
           <p 
-            className="text-base lg:text-lg font-iphone"
+            className="text-lg lg:text-xl font-iphone mb-6"
             style={{ color: 'rgba(229, 231, 235, 0.7)' }}
           >
             No products found matching your search criteria.
@@ -75,7 +78,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
               setSearchTerm('');
               setSelectedCategory('All');
             }}
-            className="mt-4 font-iphone"
+            className="font-iphone px-8 py-4 text-lg"
             style={{
               backgroundColor: '#e11d48',
               color: '#ffffff'

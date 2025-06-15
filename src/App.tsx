@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -34,8 +35,8 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Navigation />
-            {/* Flexible content wrapper for desktop */}
-            <div className="pt-0 min-h-screen bg-background flex flex-col">
+            {/* Enhanced desktop layout wrapper */}
+            <div className="pt-16 lg:pt-20 min-h-screen bg-background flex flex-col">
               <MiniCartDrawerWrapper />
               <Routes>
                 <Route path="/" element={<Index />} />
@@ -46,7 +47,6 @@ const App = () => (
                 <Route path="/login" element={<Login />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/order-placed" element={<OrderPlaced />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>

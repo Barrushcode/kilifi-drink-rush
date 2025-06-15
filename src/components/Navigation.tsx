@@ -18,27 +18,26 @@ const Navigation = () => {
 
   return (
     <>
-      {/* Black header - full width */}
+      {/* Enhanced desktop navigation with better spacing */}
       <nav className="fixed top-0 left-0 right-0 z-40 bg-black border-b border-barrush-steel/30">
-        <div className="container mx-auto px-0 lg:px-0 py-2 bg-black">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 py-3 bg-black">
           <div className="flex items-center justify-between">
-            {/* Logo aligned flush left */}
-            <Link to="/" className="flex items-center mr-4">
+            {/* Logo with consistent sizing */}
+            <Link to="/" className="flex items-center">
               <img 
                 src="/lovable-uploads/817c7ccd-c1cf-4844-8188-1b0d231cd0b9.png" 
                 alt="Barrushke Delivery" 
-                className="h-8 lg:h-10 w-auto"
-                style={{ marginLeft: 0 }}
+                className="h-8 lg:h-12 w-auto"
               />
             </Link>
             
-            {/* Desktop Navigation */}
+            {/* Desktop Navigation with improved spacing */}
             {!isMobile && (
               <NavigationMenu>
-                <NavigationMenuList>
+                <NavigationMenuList className="gap-2">
                   <NavigationMenuItem>
                     <NavigationMenuLink asChild>
-                      <Link to="/" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-barrush-platinum hover:text-rose-600 hover:bg-barrush-steel/20 font-iphone")}>
+                      <Link to="/" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-barrush-platinum hover:text-rose-600 hover:bg-barrush-steel/20 font-iphone px-6 py-3")}>
                         Home
                       </Link>
                     </NavigationMenuLink>
@@ -46,7 +45,7 @@ const Navigation = () => {
                   
                   <NavigationMenuItem>
                     <NavigationMenuLink asChild>
-                      <Link to="/products" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-barrush-platinum hover:text-rose-600 hover:bg-barrush-steel/20 font-iphone")}>
+                      <Link to="/products" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-barrush-platinum hover:text-rose-600 hover:bg-barrush-steel/20 font-iphone px-6 py-3")}>
                         Products
                       </Link>
                     </NavigationMenuLink>
@@ -54,7 +53,7 @@ const Navigation = () => {
                   
                   <NavigationMenuItem>
                     <NavigationMenuLink asChild>
-                      <Link to="/recipes" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-barrush-platinum hover:text-rose-600 hover:bg-barrush-steel/20 font-iphone")}>
+                      <Link to="/recipes" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-barrush-platinum hover:text-rose-600 hover:bg-barrush-steel/20 font-iphone px-6 py-3")}>
                         Recipes
                       </Link>
                     </NavigationMenuLink>
@@ -62,7 +61,7 @@ const Navigation = () => {
 
                   <NavigationMenuItem>
                     <NavigationMenuLink asChild>
-                      <Link to="/help" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-barrush-platinum hover:text-rose-600 hover:bg-barrush-steel/20 font-iphone")}>
+                      <Link to="/help" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-barrush-platinum hover:text-rose-600 hover:bg-barrush-steel/20 font-iphone px-6 py-3")}>
                         Help
                       </Link>
                     </NavigationMenuLink>
@@ -70,7 +69,7 @@ const Navigation = () => {
 
                   <NavigationMenuItem>
                     <NavigationMenuLink asChild>
-                      <Link to="/cart" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-barrush-platinum hover:text-rose-600 hover:bg-barrush-steel/20 flex items-center gap-2 font-iphone relative")}>
+                      <Link to="/cart" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-barrush-platinum hover:text-rose-600 hover:bg-barrush-steel/20 flex items-center gap-2 font-iphone relative px-6 py-3")}>
                         <ShoppingCart className="h-4 w-4" />
                         Cart
                         {totalItems > 0 && (
@@ -126,4 +125,3 @@ const Navigation = () => {
 };
 
 export default Navigation;
-
