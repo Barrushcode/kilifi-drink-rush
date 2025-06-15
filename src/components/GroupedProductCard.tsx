@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import ProductQuickViewModal from './ProductQuickViewModal';
 import { normalizeString } from '@/utils/stringUtils';
 import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
+import ProductImageLoader from './ProductImageLoader';
 
 // Utility to determine if the product image is appropriate
 function isImageAppropriate(url?: string) {
@@ -153,15 +154,11 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         <CardContent className="p-2 md:p-4 lg:p-5 flex flex-col h-full">
           {/* Image */}
           <div className="w-full h-24 md:h-32 lg:h-40 rounded-lg overflow-hidden mb-2 relative">
-            <img
+            <ProductImageLoader
               src={displayImage}
               alt={displayName}
-              className="w-full h-full object-cover transition-opacity duration-300"
-              loading="lazy"
-              style={{ background: '#222', display: 'block' }}
-              onError={e => {
-                if (e.currentTarget.src !== FALLBACK_IMAGE) e.currentTarget.src = FALLBACK_IMAGE;
-              }}
+              className="w-full h-full object-cover"
+              priority={false}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-barrush-midnight/60 to-transparent group-hover:from-barrush-midnight/40 transition-all duration-300" />
           </div>
