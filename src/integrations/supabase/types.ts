@@ -129,30 +129,6 @@ export type Database = {
         }
         Relationships: []
       }
-      products: {
-        Row: {
-          description: string | null
-          id: number
-          image_url: string | null
-          name: string
-          price: number | null
-        }
-        Insert: {
-          description?: string | null
-          id?: number
-          image_url?: string | null
-          name: string
-          price?: number | null
-        }
-        Update: {
-          description?: string | null
-          id?: number
-          image_url?: string | null
-          name?: string
-          price?: number | null
-        }
-        Relationships: []
-      }
       refinedproductimages: {
         Row: {
           "Final Image URL": string
