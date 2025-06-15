@@ -2,14 +2,14 @@
 import React from "react";
 import { Truck } from "lucide-react";
 
-// AnnouncementBar: Always sits below header, has strong blue-to-pink gradient, high z-index, visible content.
+// Always sits below header, has a strong blue-to-pink gradient and visible content.
 const AnnouncementBar: React.FC = () => {
   return (
     <div
-      className="w-full min-h-12 h-12 flex items-center overflow-hidden shadow"
+      className="w-full h-12 flex items-center overflow-hidden shadow border-2 border-pink-600"
       style={{
-        background:
-          "linear-gradient(90deg, #3b82f6 0%, #a78bfa 45%, #ec4899 100%)",
+        background: "linear-gradient(90deg, #3b82f6 0%, #a78bfa 45%, #ec4899 100%)",
+        color: "white",
         zIndex: 30,
         position: "relative",
         minHeight: "3rem",
