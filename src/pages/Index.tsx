@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import AgeVerification from '@/components/AgeVerification';
@@ -17,19 +16,18 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-barrush-midnight flex flex-col items-center">
-      {/* HeroSection and content constrained for desktop */}
-      <div className="w-full max-w-[1440px] flex-1 flex flex-col">
+    <div className="min-h-screen bg-barrush-midnight flex flex-col items-center w-full">
+      {/* Remove max-w-[1440px]: stretch all content on desktop */}
+      <div className="w-full flex-1 flex flex-col">
         <HeroSection />
 
         <HowItWorksSection />
         <DeliveryZonesSection />
         
         {/* Quick Navigation Section */}
-        <section
-          className="py-24 bg-gradient-to-b from-barrush-slate to-barrush-midnight relative"
-        >
-          <div className="container mx-auto px-6 md:px-12 lg:px-20 relative z-10 max-w-7xl">
+        <section className="py-24 bg-gradient-to-b from-barrush-slate to-barrush-midnight relative">
+          {/* Make this container full width, keep padding for readability */}
+          <div className="container mx-auto px-6 md:px-12 lg:px-20 relative z-10 w-full">
             <div className="text-center mb-20">
               <h2 className="text-5xl md:text-6xl font-bold mb-6 font-serif text-rose-600">
                 Explore Our Collection
@@ -40,7 +38,8 @@ const Index = () => {
               </p>
             </div>
             
-            <div className="grid md:grid-cols-2 gap-10 max-w-5xl mx-auto">
+            {/* Remove max-w-5xl, use w-full */}
+            <div className="grid md:grid-cols-2 gap-10 w-full mx-auto">
               <Card className="bg-glass-effect border-barrush-steel/30 border hover:border-barrush-copper/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden">
                 <div 
                   className="h-64 md:h-80 bg-cover bg-center relative overflow-hidden"
