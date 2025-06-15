@@ -115,12 +115,13 @@ const CheckoutSection: React.FC = () => {
       } = await import('@/components/ui/use-toast');
 
       // Use the Supabase client to call the edge function
+      const recipients = [shippingDetails.email, "barrushdelivery@gmail.com"];
       const {
         data,
         error
       } = await supabase.functions.invoke('send-order-confirmation', {
         body: {
-          to: shippingDetails.email,
+          to: recipients, // send to both addresses
           subject: `Your Barrush Order Confirmation (Simulated): #${reference}`,
           html: `
             <p style="font-size: 18px; color: #d946ef;"><strong>This is a simulated confirmation for testing purposes.</strong></p>
