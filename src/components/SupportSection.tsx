@@ -1,13 +1,14 @@
+
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
 /**
- * Utility for neon border shadows
+ * Utility for neon border shadows (reduced intensity)
  */
-const neonShadow = '0 0 16px 2px #d946ef, 0 0 24px 5px #6b21a8';
-const neonPinkShadow = '0 0 12px 2px #d946ef, 0 0 24px 4px #e879f9';
-const neonBlueShadow = '0 0 12px 2px #6b21a8, 0 0 24px 4px #3b0764';
+const neonShadow = '0 0 6px 1px #d946efcc, 0 0 12px 2px #6b21a899';
+const neonPinkShadow = '0 0 4px 1px #d946efcc, 0 0 8px 1.5px #e879f9cc';
+const neonBlueShadow = '0 0 4px 1px #6b21a8cc, 0 0 8px 1.5px #3b0764cc';
 
 const SupportSection: React.FC = () => {
   const handleWhatsAppClick = () => {
@@ -55,7 +56,8 @@ const SupportSection: React.FC = () => {
               </Button>
 
               <div className="text-barrush-cream/80 space-y-2">
-                <p className="text-zinc-50">
+                {/* SUPPORT NUMBER with black background and rounded styling */}
+                <p className="bg-black rounded-md py-2 px-4 inline-block text-zinc-50">
                   <strong className="text-barrush-gold">Support Number:</strong> 0117808024
                 </p>
                 <p className="text-sm text-zinc-100">
