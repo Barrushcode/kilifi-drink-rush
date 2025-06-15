@@ -22,22 +22,23 @@ const AnnouncementBar: React.FC = () => {
             animation: "marquee-banner 16s linear infinite",
           }}
         >
+          {/* Changed message for clarity per user request */}
           <span className="flex items-center text-white text-base font-semibold mr-16 drop-shadow">
             <Truck className="h-5 w-5 flex-shrink-0 mr-2" />
             <span>
-              🎉 <strong>FREE DELIVERY</strong> on orders above KES 5,000!
+              🎉 <strong>FREE DELIVERY</strong> for orders above KES 5,000!
             </span>
           </span>
           <span className="flex items-center text-white text-base font-semibold mr-16 drop-shadow">
             <Truck className="h-5 w-5 flex-shrink-0 mr-2" />
             <span>
-              🎉 <strong>FREE DELIVERY</strong> on orders above KES 5,000!
+              🎉 <strong>FREE DELIVERY</strong> for orders above KES 5,000!
             </span>
           </span>
           <span className="flex items-center text-white text-base font-semibold mr-16 drop-shadow">
             <Truck className="h-5 w-5 flex-shrink-0 mr-2" />
             <span>
-              🎉 <strong>FREE DELIVERY</strong> on orders above KES 5,000!
+              🎉 <strong>FREE DELIVERY</strong> for orders above KES 5,000!
             </span>
           </span>
         </div>
@@ -45,7 +46,7 @@ const AnnouncementBar: React.FC = () => {
           <span className="flex items-center text-white text-base font-medium">
             <Truck className="h-5 w-5 flex-shrink-0 mr-2" />
             <span>
-              🎉 <strong>FREE DELIVERY</strong> on orders above KES 5,000!
+              🎉 <strong>FREE DELIVERY</strong> for orders above KES 5,000!
             </span>
           </span>
         </noscript>
@@ -73,3 +74,4 @@ const AnnouncementBar: React.FC = () => {
 };
 
 export default AnnouncementBar;
+
