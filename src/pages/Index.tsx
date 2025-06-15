@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import AgeVerification from '@/components/AgeVerification';
@@ -26,18 +27,19 @@ const Index = () => {
         
         {/* Quick Navigation Section: Explore Our Collection */}
         <section className="py-24 bg-gradient-to-b from-barrush-slate to-barrush-midnight relative w-full">
+          {/* Remove centralization; text should line up flush with padding */}
           <div className="w-full px-0 md:px-0 lg:px-0 relative z-10">
-            <div className="w-full max-w-none mb-20 px-4 md:px-10 lg:px-28">
-              {/* Adjust heading and paragraph to fill width and align wider on desktop */}
-              <h2 className="text-4xl md:text-6xl font-bold mb-6 font-serif text-rose-600 w-full text-left md:text-center lg:text-left">
+            <div className="w-full mb-20 px-4 md:px-10 lg:px-28">
+              {/* Heading and content always left-aligned */}
+              <h2 className="text-4xl md:text-6xl font-bold mb-6 font-serif text-rose-600 w-full text-left">
                 Explore Our Collection
               </h2>
-              <div className="w-24 h-px bg-barrush-copper my-8 lg:mx-0 md:mx-auto"></div>
-              <p className="text-lg md:text-xl text-barrush-platinum/90 leading-relaxed w-full max-w-6xl text-left md:text-center lg:text-left">
+              <div className="w-24 h-px bg-barrush-copper my-8 lg:mx-0"></div>
+              <p className="text-lg md:text-xl text-barrush-platinum/90 leading-relaxed w-full max-w-none text-left">
                 Discover premium spirits and master classic cocktails
               </p>
             </div>
-            {/* Cards grid: keep full width but add left/right padding for desktop, less on large screens */}
+            {/* Cards grid: left-aligned, full width with padding */}
             <div className="grid md:grid-cols-2 gap-10 w-full px-4 md:px-10 lg:px-28">
               <Card className="bg-glass-effect border-barrush-steel/30 border hover:border-barrush-copper/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden w-full">
                 <div 
@@ -48,7 +50,7 @@ const Index = () => {
                 >
                   <div className="absolute inset-0 bg-gradient-to-t from-barrush-midnight/60 to-transparent group-hover:from-barrush-midnight/40 transition-all duration-300"></div>
                 </div>
-                <CardContent className="p-8 text-left md:text-center lg:text-left">
+                <CardContent className="p-8 text-left">
                   <h3 className="text-2xl font-bold mb-4 font-serif text-red-200">
                     Premium Products
                   </h3>
@@ -70,7 +72,7 @@ const Index = () => {
                 >
                   <div className="absolute inset-0 bg-gradient-to-t from-barrush-midnight/60 to-transparent group-hover:from-barrush-midnight/40 transition-all duration-300"></div>
                 </div>
-                <CardContent className="p-8 text-left md:text-center lg:text-left">
+                <CardContent className="p-8 text-left">
                   <h3 className="text-2xl font-bold mb-4 font-serif text-green-200">
                     Cocktail Recipes
                   </h3>
@@ -92,3 +94,4 @@ const Index = () => {
 };
 
 export default Index;
+
