@@ -21,10 +21,11 @@ function* generateNameVariants(productName: string) {
 }
 
 /**
- * Gets a public URL for a given product image in Supabase storage (bucket "productimage").
+ * Gets a public URL for a given product image in Supabase storage (bucket "pictures").
  * Tries a wide range of file name/extension variations and logs each step.
  */
 export async function getSupabaseProductImageUrl(productName: string): Promise<string | null> {
+  const bucketName = "pictures"; // <-- updated from "productimage"
   const extensions = [
     ".jpg", ".jpeg", ".png", ".webp",
     ".JPG", ".JPEG", ".PNG", ".WEBP"
@@ -34,7 +35,7 @@ export async function getSupabaseProductImageUrl(productName: string): Promise<s
       const filePath = `${nameVariant}${ext}`;
       // Log what is being checked for debug purposes
       console.log(`[SUPABASE IMAGE LOOKUP] Trying file:`, filePath);
-      const { data } = supabase.storage.from("productimage").getPublicUrl(filePath);
+      const { data } = supabase.storage.from(bucketName).getPublicUrl(filePath);
       if (data && data.publicUrl) {
         try {
           // HEAD request to confirm file actually exists at public URL
@@ -50,6 +51,6 @@ export async function getSupabaseProductImageUrl(productName: string): Promise<s
       }
     }
   }
-  console.log(`[SUPABASE IMAGE LOOKUP] No match found for "${productName}" in bucket "productimage".`);
+  console.log(`[SUPABASE IMAGE LOOKUP] No match found for "${productName}" in bucket "${bucketName}".`);
   return null;
 }
