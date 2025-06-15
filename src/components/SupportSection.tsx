@@ -5,7 +5,7 @@ const SupportSection: React.FC = () => {
   const handleWhatsAppClick = () => {
     window.open('https://wa.me/254117808024', '_blank');
   };
-  return <section className="py-20 bg-barrush-burgundy/20">
+  return <section className="py-20 bg-slate-950">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-barrush-gold mb-6 text-zinc-50">
@@ -18,7 +18,7 @@ const SupportSection: React.FC = () => {
         
         <div className="max-w-2xl mx-auto">
           <Card className="bg-barrush-charcoal/80 border-barrush-gold border-2">
-            <CardContent className="p-8 text-center">
+            <CardContent className="p-8 text-center bg-slate-950">
               <div className="text-6xl mb-6">💬</div>
               <h3 className="text-2xl font-bold text-barrush-gold mb-4 text-zinc-50">
                 Get Support on WhatsApp
@@ -32,7 +32,7 @@ const SupportSection: React.FC = () => {
               </Button>
               
               <div className="text-barrush-cream/80 space-y-2">
-                <p className="text-zinc-100"><strong className="text-barrush-gold">Support Number:</strong> 0117808024</p>
+                <p className="bg-lime-600 text-zinc-50"><strong className="text-barrush-gold">Support Number:</strong> 0117808024</p>
                 <p className="text-sm text-zinc-100">
                   <em>Support only. Please place orders through the website.</em>
                 </p>
@@ -42,7 +42,7 @@ const SupportSection: React.FC = () => {
           
           <div className="mt-8 grid md:grid-cols-2 gap-6">
             <Card className="bg-barrush-burgundy/20 border-barrush-burgundy border">
-              <CardContent className="p-6 text-center">
+              <CardContent className="p-6 text-center bg-slate-950">
                 <div className="text-3xl mb-3">📧</div>
                 <h4 className="text-lg font-bold text-barrush-gold mb-2 text-zinc-50">Email Support</h4>
                 <p className="text-barrush-cream text-zinc-50">barrushdelivery@gmail.com</p>
@@ -50,7 +50,7 @@ const SupportSection: React.FC = () => {
             </Card>
             
             <Card className="bg-barrush-burgundy/20 border-barrush-burgundy border">
-              <CardContent className="p-6 text-center">
+              <CardContent className="p-6 text-center bg-gray-950">
                 <div className="text-3xl mb-3">⏰</div>
                 <h4 className="text-lg font-bold text-barrush-gold mb-2 text-zinc-50">Response Time</h4>
                 <p className="text-barrush-cream text-zinc-50">Within 6 minutes</p>
