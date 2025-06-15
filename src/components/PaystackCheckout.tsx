@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 import { Button } from '@/components/ui/button';
@@ -45,7 +44,6 @@ const generateOrderEmailHtml = (reference: string, amount: number, cartItems: Ca
     <tr style="border-bottom: 1px solid #eee;">
       <td style="padding: 10px;">${item.name} (${item.size})</td>
       <td style="padding: 10px; text-align: center;">${item.quantity}</td>
-      <td style="padding: 10px;">${item.priceFormatted}</td>
       <td style="padding: 10px; text-align: right;">KES ${(item.price * item.quantity).toLocaleString()}</td>
     </tr>
   `).join('');
@@ -62,16 +60,16 @@ const generateOrderEmailHtml = (reference: string, amount: number, cartItems: Ca
 
   return `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 40px auto; border: 1px solid #ddd; border-radius: 8px; padding: 20px; color: #333;">
-      <h1 style="color: #d946ef; font-size: 24px; text-align: center;">Thank You For Your Order!</h1>
-      <p style="text-align: center;">Your order #${reference} has been successfully placed.</p>
+      <h1 style="color: #10b981; font-size: 32px; text-align: center;">Order Confirmed! 🎉</h1>
+      <p style="text-align: center; font-size: 20px; color: #d946ef;"><strong>Your order has been received and is being processed.</strong></p>
+      <p style="text-align: center;">Order Reference: <b>${reference}</b></p>
       
-      <h2 style="font-size: 20px; color: #6b21a8; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 30px;">Order Summary</h2>
-      <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+      <h2 style="font-size: 20px; color: #6b21a8; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 30px;">Order Details</h2>
+      <table style="width: 100%; border-collapse: collapse; margin-top: 18px;">
         <thead>
           <tr>
             <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Product</th>
             <th style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">Qty</th>
-            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Price</th>
             <th style="padding: 10px; text-align: right; border-bottom: 1px solid #ddd;">Total</th>
           </tr>
         </thead>
@@ -94,8 +92,8 @@ const generateOrderEmailHtml = (reference: string, amount: number, cartItems: Ca
         <strong>Instructions:</strong> ${shippingDetails.instructions || 'None'}
       </div>
 
-      <p style="margin-top: 40px; font-size: 0.9em; color: #777; text-align: center;">
-        If you have any questions, feel free to contact our support team.
+      <p style="margin-top: 35px; font-size: 0.95em; color: #777; text-align: center;">
+        Thank you for your order with Barrush Delivery!<br/>If you have questions or want to make changes, please reply to this email or contact our support.
       </p>
     </div>
   `;
@@ -160,7 +158,7 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
           const { error: functionError } = await supabase.functions.invoke('send-order-confirmation', {
             body: {
               to: recipients,
-              subject: `Your Barrush Order Confirmation: #${response.reference}`,
+              subject: `Order Confirmed! #${response.reference}`,
               html: emailHtml,
             }
           });

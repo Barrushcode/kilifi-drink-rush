@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useCart } from '@/contexts/CartContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -117,14 +116,18 @@ const CheckoutSection: React.FC = () => {
       } = await supabase.functions.invoke('send-order-confirmation', {
         body: {
           to: recipients, // send to both addresses
-          subject: `Your Barrush Order Confirmation (Simulated): #${reference}`,
+          subject: `Order Confirmed! (Simulated): #${reference}`,
           html: `
-            <p style="font-size: 18px; color: #d946ef;"><strong>This is a simulated confirmation for testing purposes.</strong></p>
-            <p>Reference: ${reference}</p>
-            <hr />
-            <p>Order for <strong>${shippingDetails.firstName} ${shippingDetails.lastName}</strong></p>
-            <p>Delivery: ${zoneObject?.name} (KES ${deliveryFee})</p>
-            <p>Total simulated: KES ${totalAmount.toLocaleString()}</p>
+            <div style="font-family: Arial, sans-serif;">
+              <h1 style="color: #10b981">Order Confirmed! (Simulated)</h1>
+              <p><b>This is only a demo confirmation to show what a real customer email would look like.</b></p>
+              <ul>
+                <li><b>Name:</b> ${shippingDetails.firstName} ${shippingDetails.lastName}</li>
+                <li><b>Reference:</b> ${reference}</li>
+                <li><b>Delivery:</b> ${zoneObject?.name} (KES ${deliveryFee})</li>
+                <li><b>Total:</b> KES ${totalAmount.toLocaleString()}</li>
+              </ul>
+            </div>
           `
         }
       });
