@@ -1,4 +1,3 @@
-
 import { useMemo } from 'react';
 import { GroupedProduct } from '@/utils/productGroupingUtils';
 
@@ -15,6 +14,7 @@ const FIXED_CATEGORIES = [
   'Brandy',
   'Rum',
   'Vodka',
+  'Juices', // Added Juices here
 ];
 
 export const useProductFilters = (products: GroupedProduct[], searchTerm: string, selectedCategory: string) => {
