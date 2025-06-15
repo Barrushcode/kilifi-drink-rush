@@ -7,14 +7,15 @@ import ProductCatalog from '@/components/ProductCatalog';
 const Products = () => {
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-barrush-midnight to-barrush-slate flex flex-col items-center">
-      <div className="w-full max-w-7xl flex flex-col flex-1 min-h-screen">
+      <div className="w-full flex flex-col flex-1 min-h-screen">
         {/* AnnouncementBar on product page only */}
         <AnnouncementBar />
-        <ProductCatalog />
+        <main className="w-full max-w-[1600px] flex flex-col flex-1 mx-auto px-2 sm:px-6 lg:px-10 xl:px-20">
+          <ProductCatalog />
+        </main>
       </div>
     </div>
   );
 };
 
 export default Products;
-
