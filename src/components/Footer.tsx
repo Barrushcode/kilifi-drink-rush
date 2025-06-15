@@ -2,77 +2,94 @@ import React from 'react';
 import { Instagram, Twitter, Youtube, Facebook, Linkedin } from 'lucide-react';
 
 const paymentLogos = [
-  // Mastercard (2 overlapping circles, no text)
+  // Mastercard
   {
     name: "Mastercard",
     svg: (
       <svg
-        width="70"
-        height="44"
-        viewBox="0 0 70 44"
+        width="64"
+        height="40"
+        viewBox="0 0 64 40"
         aria-label="Mastercard"
-        className="m-1"
+        className="m-1 drop-shadow-card"
+        style={{ borderRadius: 12, background: "#fff" }}
       >
-        <rect x="0" y="0" width="70" height="44" rx="10" fill="#F5F5F5" />
-        <circle cx="30" cy="22" r="11" fill="#EB001B" />
-        <circle cx="40" cy="22" r="11" fill="#F79E1B" fillOpacity="0.9" />
-        <circle cx="35" cy="22" r="11" fill="#FF5F00" fillOpacity="0.58" />
-        {/* Optional: replace with gradient at intersection if desired */}
+        <rect x="0" y="0" width="64" height="40" rx="12" fill="#fff" filter="url(#shadow1)" />
+        <defs>
+          <filter id="shadow1" x="-8" y="-8" width="80" height="56" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+            <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#000" floodOpacity="0.10" />
+          </filter>
+        </defs>
+        <circle cx="27" cy="20" r="10" fill="#EA001B" />
+        <circle cx="37" cy="20" r="10" fill="#FF5F00" />
+        <circle cx="32" cy="20" r="10" fill="#F79E1B" fillOpacity="0.7" />
       </svg>
     ),
   },
-  // Visa (blue slanted V and logotype)
+  // Visa
   {
     name: "Visa",
     svg: (
       <svg
-        width="70"
-        height="44"
-        viewBox="0 0 70 44"
+        width="64"
+        height="40"
+        viewBox="0 0 64 40"
         aria-label="Visa"
-        className="m-1"
+        className="m-1 drop-shadow-card"
+        style={{ borderRadius: 12, background: "#fff" }}
       >
-        <rect x="0" y="0" width="70" height="44" rx="10" fill="#F5F5F5" />
+        <rect x="0" y="0" width="64" height="40" rx="12" fill="#fff" filter="url(#shadow2)" />
+        <defs>
+          <filter id="shadow2" x="-8" y="-8" width="80" height="56" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+            <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#000" floodOpacity="0.10" />
+          </filter>
+        </defs>
         <text
-          x="35"
-          y="30"
-          textAnchor="middle"
-          fontWeight="900"
-          fontStyle="italic"
-          fontSize="22"
-          fontFamily="'Arial Narrow', Arial, sans-serif"
+          x="32"
+          y="26"
+          fontWeight="bold"
+          fontFamily="'Arial Black', Arial, sans-serif"
+          fontSize="21"
           fill="#1A1F71"
-          letterSpacing="3"
+          letterSpacing="5"
+          textAnchor="middle"
         >
           VISA
         </text>
       </svg>
     ),
   },
-  // Apple Pay (Apple logo + Pay)
+  // Apple Pay
   {
     name: "Apple Pay",
     svg: (
       <svg
-        width="70"
-        height="44"
-        viewBox="0 0 70 44"
+        width="64"
+        height="40"
+        viewBox="0 0 64 40"
         aria-label="Apple Pay"
-        className="m-1"
+        className="m-1 drop-shadow-card"
+        style={{ borderRadius: 12, background: "#fff" }}
       >
-        <rect x="0" y="0" width="70" height="44" rx="10" fill="#F5F5F5" />
-        {/* Apple logo (vector for compatibility) */}
-        <g transform="translate(16,14) scale(1.15)">
+        <rect x="0" y="0" width="64" height="40" rx="12" fill="#fff" filter="url(#shadow3)" />
+        <defs>
+          <filter id="shadow3" x="-8" y="-8" width="80" height="56" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+            <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#000" floodOpacity="0.10" />
+          </filter>
+        </defs>
+        {/* Apple logo */}
+        <g transform="translate(15,11) scale(0.85)">
           <path
-            d="M6.8 5.39c-.01-1.11.91-1.64.95-1.66-.52-.75-1.33-.85-1.62-.86-.69-.07-1.34.4-1.7.4-.36 0-.91-.39-1.5-.38-.77.01-1.5.45-1.9 1.15-.81 1.41-.21 3.49.57 4.63.38.55.83 1.16 1.42 1.14.57-.02.79-.37 1.48-.37.69 0 .88.37 1.49.36.62-.01 1-.56 1.37-1.11.43-.62.61-1.21.62-1.24-.01-.01-1.2-.46-1.21-1.81ZM5.24 2.27c.32-.38.54-.92.48-1.46-.47.02-1.04.32-1.38.7-.3.34-.56.88-.46 1.4.49.04 1.01-.25 1.36-.64Z"
+            d="M12.32 6.79c-0.041-2.115 1.736-3.131 1.817-3.174-1-1.458-2.558-1.663-3.112-1.684-1.33-0.141-2.586 0.775-3.274 0.764-0.693-0.013-1.767-0.742-2.911-0.723-1.488 0.02-2.872 0.871-3.649 2.173-1.548 2.688-0.403 6.627 1.17 8.78 0.772 1.092 1.666 2.322 2.852 2.282 1.147-0.036 1.598-0.738 2.989-0.747 1.388-0.009 1.779 0.75 3.001 0.735 1.243-0.015 2.026-1.108 2.789-2.204 0.868-1.257 1.232-2.453 1.241-2.516-0.028-0.012-2.363-0.905-2.386-3.479zM9.5 2.31c0.616-0.747 1.039-1.792 0.922-2.832-0.921 0.034-2.048 0.627-2.712 1.367-0.59 0.668-1.124 1.742-0.926 2.776 0.983 0.078 2.001-0.503 2.716-1.311z"
             fill="#111"
           />
         </g>
+        {/* "Pay" text */}
         <text
-          x="40"
-          y="28"
-          fontFamily="Arial,sans-serif"
-          fontWeight="bold"
+          x="38"
+          y="27"
+          fontFamily="'SF Pro Text', 'Arial', sans-serif"
+          fontWeight="700"
           fontSize="17"
           fill="#111"
         >
@@ -81,31 +98,41 @@ const paymentLogos = [
       </svg>
     ),
   },
-  // M-PESA (text, but card style)
+  // M-PESA
   {
     name: "M-PESA",
     svg: (
       <svg
-        width="70"
-        height="44"
-        viewBox="0 0 70 44"
+        width="64"
+        height="40"
+        viewBox="0 0 64 40"
         aria-label="M-PESA"
-        className="m-1"
+        className="m-1 drop-shadow-card"
+        style={{ borderRadius: 12, background: "#fff" }}
       >
-        <rect x="0" y="0" width="70" height="44" rx="10" fill="#F5F5F5" />
+        <rect x="0" y="0" width="64" height="40" rx="12" fill="#fff" filter="url(#shadow4)" />
+        <defs>
+          <filter id="shadow4" x="-8" y="-8" width="80" height="56" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+            <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#000" floodOpacity="0.09" />
+          </filter>
+        </defs>
+        {/* M-PESA text */}
         <text
-          x="35"
-          y="28"
-          textAnchor="middle"
+          x="28"
+          y="25"
+          fontFamily="'Arial Black', Arial, sans-serif"
           fontWeight="bold"
-          fontSize="17"
-          fontFamily="Arial,sans-serif"
+          fontSize="18"
           fill="#009A49"
+          textAnchor="end"
         >
           M-PESA
         </text>
-        {/* optional SIM icon */}
-        <rect x="56" y="13" width="7" height="18" rx="2" fill="#FFD600" />
+        {/* SIM card icon */}
+        <rect x="34" y="15" width="10" height="14" rx="2" fill="#FFD600" stroke="#bbb" strokeWidth="0.8"/>
+        <rect x="38.5" y="19" width="1" height="3.5" rx="0.5" fill="#94ca4b" />
+        <rect x="41" y="19" width="1" height="3.5" rx="0.5" fill="#94ca4b" />
+        <rect x="43.5" y="19" width="1" height="3.5" rx="0.5" fill="#94ca4b" />
       </svg>
     ),
   },
