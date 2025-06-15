@@ -129,6 +129,66 @@ export type Database = {
         }
         Relationships: []
       }
+      orders: {
+        Row: {
+          building: string | null
+          buyer_email: string
+          buyer_gender: string | null
+          buyer_name: string
+          buyer_phone: string | null
+          city: string | null
+          created_at: string
+          delivery_fee: number
+          id: string
+          instructions: string | null
+          items: Json
+          order_reference: string
+          order_source: string | null
+          region: string
+          street: string | null
+          subtotal: number
+          total_amount: number
+        }
+        Insert: {
+          building?: string | null
+          buyer_email: string
+          buyer_gender?: string | null
+          buyer_name: string
+          buyer_phone?: string | null
+          city?: string | null
+          created_at?: string
+          delivery_fee: number
+          id?: string
+          instructions?: string | null
+          items: Json
+          order_reference: string
+          order_source?: string | null
+          region: string
+          street?: string | null
+          subtotal: number
+          total_amount: number
+        }
+        Update: {
+          building?: string | null
+          buyer_email?: string
+          buyer_gender?: string | null
+          buyer_name?: string
+          buyer_phone?: string | null
+          city?: string | null
+          created_at?: string
+          delivery_fee?: number
+          id?: string
+          instructions?: string | null
+          items?: Json
+          order_reference?: string
+          order_source?: string | null
+          region?: string
+          street?: string | null
+          subtotal?: number
+          total_amount?: number
+        }
+        Relationships: []
+      }
       refinedproductimages: {
         Row: {
           "Final Image URL": string

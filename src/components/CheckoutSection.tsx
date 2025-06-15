@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useCart } from '@/contexts/CartContext';
 import { supabase } from '@/integrations/supabase/client';
 import { postToZapierWebhook } from "@/utils/zapierWebhook";
+import { logOrderToSupabase } from "@/utils/logOrderToSupabase";
 import ShippingInfoForm from './ShippingInfoForm';
 import ZapierWebhookInput from './ZapierWebhookInput';
 import OrderSummaryCard from './OrderSummaryCard';
@@ -144,6 +145,24 @@ const CheckoutSection: React.FC = () => {
           variant: "destructive"
         });
       }
+      // On success, log order to Supabase:
+      await logOrderToSupabase({
+        buyerName: shippingDetails.firstName + " " + shippingDetails.lastName,
+        buyerEmail: shippingDetails.email,
+        buyerGender: shippingDetails.gender || undefined,
+        buyerPhone: shippingDetails.phone,
+        region: zoneObject?.name || "",
+        city: shippingDetails.city,
+        street: shippingDetails.street,
+        building: shippingDetails.building,
+        instructions: shippingDetails.instructions,
+        items,
+        subtotal,
+        deliveryFee,
+        totalAmount,
+        orderReference: reference,
+        orderSource: "simulated"
+      });
       // ✴️ POST TO ZAPIER WEBHOOK (if URL is present)
       if (zapierWebhookUrl) {
         await postToZapierWebhook(zapierWebhookUrl, {

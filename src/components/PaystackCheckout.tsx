@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { useCart, CartItem } from '@/contexts/CartContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
+import { logOrderToSupabase } from "@/utils/logOrderToSupabase";
 
 // Declare Paystack global type
 declare global {
@@ -174,6 +175,24 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
             className: "bg-green-500 text-white"
           });
           clearCart();
+          // Log to Supabase on payment success:
+          await logOrderToSupabase({
+            buyerName: shippingDetails.firstName + " " + shippingDetails.lastName,
+            buyerEmail: shippingDetails.email,
+            buyerGender: shippingDetails.gender || undefined,
+            buyerPhone: shippingDetails.phone,
+            region: shippingDetails.area,
+            city: shippingDetails.city,
+            street: shippingDetails.street,
+            building: shippingDetails.building,
+            instructions: shippingDetails.instructions,
+            items: cartItems,
+            subtotal: cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0),
+            deliveryFee: amount - cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0),
+            totalAmount: amount,
+            orderReference: response.reference,
+            orderSource: "paystack"
+          });
           // After success, redirect to order placed
           setTimeout(() => {
             navigate("/order-placed");
