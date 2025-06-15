@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getCategoryFromName } from '@/utils/categoryUtils';
@@ -35,7 +34,7 @@ export const useProducts = () => {
     while (hasMore) {
       const { data, error } = await supabase
         .from('allthealcoholicproducts')
-        .select('Title, Description, Price')
+        .select('Title, Description, Price, "Product image URL"')
         .order('Title', { ascending: true })
         .range(offset, offset + batchSize - 1);
 
@@ -100,14 +99,21 @@ export const useProducts = () => {
           }
 
           const description = product.Description || '';
+          // First, IMAGE: Choose from "Product image URL" (Spoonacular), fall back to refined images
+          let productImage: string | null = null;
+          if (product["Product image URL"] && typeof product["Product image URL"] === "string" && product["Product image URL"].trim().length > 0) {
+            productImage = product["Product image URL"];
+          } else {
+            // Use the refined images for matching
+            const { url } = await findMatchingImage(product.Title || 'Unknown Product', refinedImages);
+            productImage = url;
+          }
+
           let category = getCategoryFromName(product.Title || 'Unknown Product', productPrice);
 
           if (description.toLowerCase().includes('beer')) {
             category = 'Beer';
           }
-
-          // Use the refined images for matching
-          const { url: productImage } = await findMatchingImage(product.Title || 'Unknown Product', refinedImages);
 
           return {
             id: globalIndex + 1,
@@ -126,7 +132,7 @@ export const useProducts = () => {
       const groupedProducts = groupProductsByBaseName(transformedProducts);
       const groupedProductsOrdered = groupProductsByBaseName(transformedProducts, true);
 
-      console.log(`✨ Successfully processed ${transformedProducts.length} products using refined images`);
+      console.log(`✨ Successfully processed ${transformedProducts.length} products using images from Product image URL and refined images`);
       console.log('🎯 Sample grouped products:', groupedProducts.slice(0, 3));
 
       setProducts(groupedProducts);
