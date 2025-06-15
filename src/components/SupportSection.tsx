@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -56,7 +55,7 @@ const SupportSection: React.FC = () => {
               </Button>
 
               <div className="text-barrush-cream/80 space-y-2">
-                <p className="bg-lime-600 text-zinc-50">
+                <p className="text-zinc-50">
                   <strong className="text-barrush-gold">Support Number:</strong> 0117808024
                 </p>
                 <p className="text-sm text-zinc-100">
@@ -97,7 +96,7 @@ const SupportSection: React.FC = () => {
                 <h4 className="text-lg font-bold text-barrush-gold mb-2 text-zinc-50">
                   Response Time
                 </h4>
-                <p className="text-barrush-cream text-zinc-50">Within 6 minutes</p>
+                <p className="text-barrush-cream text-zinc-50">Within 2 minutes</p>
               </CardContent>
             </Card>
           </div>
