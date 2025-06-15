@@ -19,7 +19,6 @@ declare global {
     };
   }
 }
-
 interface PaystackConfig {
   key: string;
   email: string;
@@ -32,14 +31,12 @@ interface PaystackConfig {
   }) => void;
   onClose: () => void;
 }
-
 interface PaystackCheckoutProps {
   amount: number;
   onValidationRequired?: () => boolean;
   shippingDetails?: any;
   cartItems?: CartItem[];
 }
-
 const generateOrderEmailHtml = (reference: string, amount: number, cartItems: CartItem[], shippingDetails: any) => {
   const itemsHtml = cartItems.map(item => `
     <tr style="border-bottom: 1px solid #eee;">
@@ -48,17 +45,9 @@ const generateOrderEmailHtml = (reference: string, amount: number, cartItems: Ca
       <td style="padding: 10px; text-align: right;">KES ${(item.price * item.quantity).toLocaleString()}</td>
     </tr>
   `).join('');
-
-  const fullAddress = [
-      shippingDetails.street,
-      shippingDetails.building,
-      shippingDetails.area,
-      shippingDetails.city
-  ].filter(Boolean).join(', ');
-
+  const fullAddress = [shippingDetails.street, shippingDetails.building, shippingDetails.area, shippingDetails.city].filter(Boolean).join(', ');
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const deliveryFee = amount - subtotal;
-
   return `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 40px auto; border: 1px solid #ddd; border-radius: 8px; padding: 20px; color: #333;">
       <h1 style="color: #10b981; font-size: 32px; text-align: center;">Order Confirmed! 🎉</h1>
@@ -99,7 +88,6 @@ const generateOrderEmailHtml = (reference: string, amount: number, cartItems: Ca
     </div>
   `;
 };
-
 const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
   amount,
   onValidationRequired,
@@ -111,63 +99,62 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
   const [succeeded, setSucceeded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
-  const { clearCart } = useCart();
+  const {
+    clearCart
+  } = useCart();
   const navigate = useNavigate();
-
   useEffect(() => {
-    cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    cardRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center'
+    });
   }, []);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (onValidationRequired && !onValidationRequired()) {
       setError('Please fill in all required shipping details before proceeding with payment');
       return;
     }
-
     const emailToUse = email || shippingDetails?.email;
     if (!emailToUse) {
       setError('Please enter your email address');
       return;
     }
-
     if (!window.PaystackPop) {
       setError('Paystack not loaded. Please refresh the page and try again.');
       return;
     }
-
     setProcessing(true);
     setError(null);
-
     const handler = window.PaystackPop.setup({
       key: 'pk_live_4f87a6d250476cc70ba40b40e9262c78fd37e06b',
       email: emailToUse,
-      amount: amount * 100, // Convert to kobo (smallest currency unit)
+      amount: amount * 100,
+      // Convert to kobo (smallest currency unit)
       currency: 'KES',
       ref: '' + Math.floor(Math.random() * 1000000000 + 1),
-      channels: ['card', 'mobile_money', 'apple_pay'], // M-PESA is included in mobile_money
+      channels: ['card', 'mobile_money', 'apple_pay'],
+      // M-PESA is included in mobile_money
       callback: async function (response) {
         setProcessing(false);
         setSucceeded(true);
         console.log('Payment complete! Reference: ' + response.reference);
-
         try {
           const emailHtml = generateOrderEmailHtml(response.reference, amount, cartItems, shippingDetails);
           // Always send to both customer and barrushdelivery@gmail.com
           const recipients = [shippingDetails.email, "barrushdelivery@gmail.com"];
-          const { error: functionError } = await supabase.functions.invoke('send-order-confirmation', {
+          const {
+            error: functionError
+          } = await supabase.functions.invoke('send-order-confirmation', {
             body: {
               to: recipients,
               subject: `Order Confirmed! #${response.reference}`,
-              html: emailHtml,
+              html: emailHtml
             }
           });
-
           if (functionError) {
             throw functionError;
           }
-
           console.log('Order confirmation email sent successfully.');
           toast({
             title: "Order Confirmed!",
@@ -197,13 +184,12 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
           setTimeout(() => {
             navigate("/order-placed");
           }, 1200);
-
         } catch (emailError) {
           console.error('Failed to send confirmation email:', emailError);
           toast({
             title: "Email Sending Failed",
             description: "Your order was processed, but we couldn't send the confirmation email. Please contact support.",
-            variant: "destructive",
+            variant: "destructive"
           });
         }
       },
@@ -212,13 +198,10 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
         setError('Transaction was cancelled');
       }
     });
-
     handler.openIframe();
   };
-
   if (succeeded) {
-    return (
-      <Card ref={cardRef} className="bg-barrush-charcoal/80 border-neon-pink border shadow-lg">
+    return <Card ref={cardRef} className="bg-barrush-charcoal/80 border-neon-pink border shadow-lg">
         <CardContent className="p-8 text-center animate-fade-in">
           <div className="text-6xl mb-4">🎉</div>
           <h3 className="text-2xl font-bold text-neon-pink mb-4">Payment Successful!</h3>
@@ -228,89 +211,21 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
           <div className="bg-neon-purple/20 p-4 rounded-lg mt-4">
             <h4 className="text-white font-semibold mb-2">Order Summary:</h4>
             <div className="text-left space-y-1 text-sm text-gray-300 max-h-32 overflow-y-auto">
-              {cartItems.map((item, index) => (
-                <div key={index} className="flex justify-between">
+              {cartItems.map((item, index) => <div key={index} className="flex justify-between">
                   <span>{item.name} ({item.size}) x{item.quantity}</span>
                   <span>{item.priceFormatted}</span>
-                </div>
-              ))}
+                </div>)}
             </div>
           </div>
           <p className="text-sm text-gray-300 mt-4">
             A confirmation email will be sent to your registered email address.
           </p>
         </CardContent>
-      </Card>
-    );
+      </Card>;
   }
-
-  return (
-    <Card ref={cardRef} className="bg-barrush-charcoal/80 border-neon-pink border shadow-lg">
-      <CardHeader>
-        <CardTitle className="text-neon-pink text-zinc-50">Paystack Payment</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {!shippingDetails?.email && (
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-white">Email Address</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                required
-                autoFocus
-                className="bg-neon-purple/40 border-neon-purple text-white placeholder:text-gray-400"
-              />
-            </div>
-          )}
-          
-          {error && (
-            <div className="text-red-400 text-base font-semibold bg-red-900/40 p-3 rounded border border-red-500 animate-pulse">
-              {error}
-            </div>
-          )}
-          
-          <div className="flex justify-between items-center text-white mb-4">
-            <span className="text-lg">Total Amount:</span>
-            <span className="text-xl font-bold text-neon-pink">KES {amount.toLocaleString()}</span>
-          </div>
-
-          <div className="bg-neon-purple/20 p-4 rounded-lg">
-            <h4 className="font-semibold text-white mb-3 text-sm">Supported Payment Methods:</h4>
-            <div className="flex items-center justify-around gap-2 md:gap-4 mb-3">
-              <div className="flex flex-col items-center gap-1 text-white text-xs md:text-sm">
-                <span>Visa</span>
-              </div>
-              <div className="flex flex-col items-center gap-1 text-white text-xs md:text-sm">
-                <span>Mastercard</span>
-              </div>
-              <div className="flex flex-col items-center gap-1 text-white text-xs md:text-sm">
-                <span>M-PESA</span>
-              </div>
-              <div className="flex flex-col items-center gap-1 text-white text-xs md:text-sm">
-                <span>Apple Pay</span>
-              </div>
-            </div>
-          </div>
-
-          <Button
-            type="submit"
-            disabled={processing || (!email && !shippingDetails?.email)}
-            className={`w-full bg-neon-pink hover:bg-neon-pink/90 text-white font-semibold py-6 text-lg transition-all duration-300 ${processing && 'opacity-60 cursor-not-allowed'}`}
-          >
-            {processing ? 'Processing Payment...' : `Pay KES ${amount.toLocaleString()} via Paystack`}
-          </Button>
-          
-          <p className="text-sm text-white/60 text-center">
-            Secure payment powered by Paystack
-          </p>
-        </form>
-      </CardContent>
-    </Card>
-  );
+  return <Card ref={cardRef} className="bg-barrush-charcoal/80 border-neon-pink border shadow-lg">
+      
+      
+    </Card>;
 };
-
 export default PaystackCheckout;
