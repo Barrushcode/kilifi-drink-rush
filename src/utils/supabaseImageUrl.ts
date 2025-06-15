@@ -2,7 +2,7 @@
 import { supabase } from "@/integrations/supabase/client";
 
 /**
- * Gets a public URL for a given product image in Supabase storage.
+ * Gets a public URL for a given product image in Supabase storage (bucket "productimage").
  * Checks a wide range of image extensions (all common cases).
  */
 export async function getSupabaseProductImageUrl(productName: string): Promise<string | null> {
@@ -13,7 +13,7 @@ export async function getSupabaseProductImageUrl(productName: string): Promise<s
   ];
   for (const ext of extensions) {
     const filePath = `${productName}${ext}`;
-    const { data } = supabase.storage.from("productimages").getPublicUrl(filePath);
+    const { data } = supabase.storage.from("productimage").getPublicUrl(filePath);
     if (data && data.publicUrl) {
       try {
         const response = await fetch(data.publicUrl, { method: "HEAD" });
