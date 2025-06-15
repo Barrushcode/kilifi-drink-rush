@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import ProductCatalogHeader from './ProductCatalogHeader';
 import ProductsDebugInfo from './ProductsDebugInfo';
@@ -9,6 +9,7 @@ import ProductLoadingSkeleton from './ProductLoadingSkeleton';
 import { useProducts } from '@/hooks/useProducts';
 import { useProductFilters } from '@/hooks/useProductFilters';
 import { usePagination } from '@/hooks/usePagination';
+import { Slider } from '@/components/ui/slider';
 
 const ProductCatalog: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -31,39 +32,84 @@ const ProductCatalog: React.FC = () => {
     ? allFilters.filteredProducts
     : categoryFilters.filteredProducts;
 
+  // Find product price range for current filtered set
+  const priceList = useMemo(() => {
+    return displayFilteredProducts
+      .map(product => {
+        // Try to use grouped minimal price for ranges
+        return product.lowestPrice
+          ? typeof product.lowestPrice === 'number'
+            ? product.lowestPrice
+            : Number(String(product.lowestPrice).replace(/[^\d]/g, ''))
+          : 0;
+      })
+      .filter(price => !isNaN(price) && price > 0)
+      .sort((a, b) => a - b);
+  }, [displayFilteredProducts]);
+
+  // defaults: min to smallest price, max to highest price
+  const minPriceAvailable = priceList.length > 0 ? priceList[0] : 0;
+  const maxPriceAvailable = priceList.length > 0 ? priceList[priceList.length - 1] : 100000;
+  const [priceRange, setPriceRange] = useState<[number, number]>([
+    minPriceAvailable,
+    maxPriceAvailable,
+  ]);
+
+  // Reset price filter range when category or search changes
+  useEffect(() => {
+    setPriceRange([
+      minPriceAvailable,
+      maxPriceAvailable
+    ]);
+  }, [minPriceAvailable, maxPriceAvailable, selectedCategory, searchTerm]);
+
+  // Price filtering: show only products in selected price range
+  const priceFilteredProducts = useMemo(() => {
+    return displayFilteredProducts.filter(prod => {
+      const priceNum = prod.lowestPrice
+        ? typeof prod.lowestPrice === 'number'
+          ? prod.lowestPrice
+          : Number(String(prod.lowestPrice).replace(/[^\d]/g, ''))
+        : 0;
+      return priceNum >= priceRange[0] && priceNum <= priceRange[1];
+    });
+  }, [displayFilteredProducts, priceRange]);
+
   // Pick correct products list (for debug only)
   const displayProducts = selectedCategory === "All"
     ? productsByOriginalOrder
     : products;
 
   const { totalPages, hasNextPage, hasPreviousPage, startIndex, endIndex } = usePagination({
-    totalItems: displayFilteredProducts.length,
+    totalItems: priceFilteredProducts.length,
     itemsPerPage,
     currentPage
   });
 
-  const paginatedProducts = displayFilteredProducts.slice(startIndex, endIndex);
+  const paginatedProducts = priceFilteredProducts.slice(startIndex, endIndex);
 
   useEffect(() => {
     console.log('🔍 ProductCatalog DEBUG:', {
       productsCount: products.length,
       filteredCount: displayFilteredProducts.length,
+      priceFilteredCount: priceFilteredProducts.length,
       paginatedCount: paginatedProducts.length,
       loading,
       error,
       selectedCategory,
       searchTerm,
+      priceRange,
       sampleProduct: products[0]
     });
 
     if (paginatedProducts.length > 0) {
       console.log('🎯 First 3 products to render:', paginatedProducts.slice(0, 3));
     }
-  }, [products, displayFilteredProducts, paginatedProducts, loading, error, selectedCategory, searchTerm]);
+  }, [products, displayFilteredProducts, paginatedProducts, priceFilteredProducts, loading, error, selectedCategory, searchTerm, priceRange]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, selectedCategory]);
+  }, [searchTerm, selectedCategory, priceRange]);
 
   useEffect(() => {
     if (categories.length > 0 && selectedCategory === 'Wine') {
@@ -73,6 +119,10 @@ const ProductCatalog: React.FC = () => {
       }
     }
   }, [categories, selectedCategory]);
+
+  // --- New: Price Filter UI ---
+  // Show price filter unless there is only one price, or if no products at all
+  const showPriceFilter = priceList.length > 1;
 
   if (loading) {
     return (
@@ -133,6 +183,35 @@ const ProductCatalog: React.FC = () => {
           setShowAuditReport={setShowAuditReport}
         />
 
+        {/* Price Filter */}
+        {showPriceFilter && (
+          <div className="max-w-2xl mx-auto mb-8">
+            <div className="mb-2 flex justify-between items-center">
+              <span className="text-barrush-platinum text-sm font-iphone">
+                Filter by price ({selectedCategory !== 'All' ? selectedCategory : 'All categories'})
+              </span>
+              <span className="text-barrush-platinum/80 text-xs">
+                {priceRange[0] === minPriceAvailable && priceRange[1] === maxPriceAvailable
+                  ? 'All Prices'
+                  : `KES ${priceRange[0].toLocaleString()} - KES ${priceRange[1].toLocaleString()}`}
+              </span>
+            </div>
+            <Slider
+              min={minPriceAvailable}
+              max={maxPriceAvailable}
+              step={100}
+              value={priceRange}
+              onValueChange={vals => setPriceRange([vals[0], vals[1]])}
+              className="w-full"
+              minStepsBetweenThumbs={1}
+            />
+            <div className="flex justify-between mt-1 text-xs text-barrush-platinum/70 font-iphone">
+              <span>KES {minPriceAvailable.toLocaleString()}</span>
+              <span>KES {maxPriceAvailable.toLocaleString()}</span>
+            </div>
+          </div>
+        )}
+
         <ProductsDebugInfo
           products={displayProducts}
           filteredProducts={displayFilteredProducts}
@@ -143,7 +222,7 @@ const ProductCatalog: React.FC = () => {
         
         <ProductGrid
           paginatedProducts={paginatedProducts}
-          filteredProducts={displayFilteredProducts}
+          filteredProducts={priceFilteredProducts}
           loading={loading}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
@@ -158,7 +237,7 @@ const ProductCatalog: React.FC = () => {
           hasPreviousPage={hasPreviousPage}
           startIndex={startIndex}
           endIndex={endIndex}
-          filteredProductsLength={displayFilteredProducts.length}
+          filteredProductsLength={priceFilteredProducts.length}
         />
       </div>
     </section>
