@@ -33,12 +33,12 @@ const ProductImageOrIcon: React.FC<ProductImageOrIconProps> = ({
 
   return (
     <div 
-      className={`relative flex items-center justify-center w-full h-full aspect-square bg-gray-900 overflow-hidden ${className}`}
+      className={`relative flex items-center justify-center w-full h-full aspect-square bg-white overflow-hidden ${className}`}
       aria-label={alt}
     >
       {/* Loader */}
       {!showIcon && !loaded && (
-        <Skeleton className="absolute inset-0 bg-barrush-steel/20" />
+        <Skeleton className="absolute inset-0 bg-white/40" />
       )}
       {/* Render category icon as fallback */}
       {showIcon ? (
@@ -62,3 +62,4 @@ const ProductImageOrIcon: React.FC<ProductImageOrIconProps> = ({
 };
 
 export default ProductImageOrIcon;
+
