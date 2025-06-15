@@ -2,10 +2,10 @@
 import React from 'react';
 import { Truck } from 'lucide-react';
 
-// AnnouncementBar: sits at the top, colored gradient left-to-right, animated marquee, always visible.
+// AnnouncementBar: sits directly below header, blue-to-pink gradient, animated marquee, always visible.
 const AnnouncementBar: React.FC = () => {
   return (
-    <div className="w-full z-50 fixed top-0 left-0 right-0 h-12 flex items-center bg-gradient-to-r from-blue-500 via-purple-400 to-pink-500 text-white overflow-hidden">
+    <div className="w-full h-12 flex items-center bg-gradient-to-r from-blue-500 via-purple-400 to-pink-500 text-white overflow-hidden">
       <div className="relative w-full h-full flex items-center">
         <div
           className="flex items-center animate-marquee whitespace-nowrap min-w-full h-full"
@@ -65,4 +65,3 @@ const AnnouncementBar: React.FC = () => {
 };
 
 export default AnnouncementBar;
-
