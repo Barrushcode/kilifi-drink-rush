@@ -2,49 +2,127 @@
 import React from 'react';
 import { Instagram, Twitter, Youtube, Facebook, Linkedin } from 'lucide-react';
 
+// Updated payment logos matching brand guidelines and site aesthetics
 const paymentLogos = [
   {
     name: "Visa",
     svg: (
-      <svg width="40" height="24" viewBox="0 0 50 32" fill="none" aria-label="Visa" className="m-1">
-        <rect rx="4" width="50" height="32" fill="#183ACB"/>
-        <text x="50%" y="58%" textAnchor="middle" fontWeight="bold" fontSize="15" fill="#fff" fontFamily="Arial">VISA</text>
+      <svg
+        width="48"
+        height="32"
+        viewBox="0 0 48 32"
+        aria-label="Visa"
+        className="m-1"
+      >
+        <rect
+          width="48"
+          height="32"
+          rx="8"
+          fill="#0061A8"
+          className="drop-shadow"
+        />
+        <text
+          x="24"
+          y="21.5"
+          textAnchor="middle"
+          fontWeight="bold"
+          fontSize="18"
+          fontFamily="Arial, sans-serif"
+          fill="#fff"
+          letterSpacing="1.5"
+        >
+          VISA
+        </text>
       </svg>
     ),
   },
   {
     name: "Mastercard",
     svg: (
-      <svg width="40" height="24" viewBox="0 0 50 32" fill="none" aria-label="Mastercard" className="m-1">
-        <rect rx="4" width="50" height="32" fill="#fff"/>
-        <circle cx="21" cy="16" r="10" fill="#EB001B"/>
-        <circle cx="29" cy="16" r="10" fill="#F79E1B" style={{mixBlendMode:'multiply', opacity:0.85}}/>
-        <text x="25" y="28" textAnchor="middle" fontSize="9" fill="#222" fontFamily="Arial">Mastercard</text>
+      <svg
+        width="48"
+        height="32"
+        viewBox="0 0 48 32"
+        aria-label="Mastercard"
+        className="m-1"
+      >
+        <rect width="48" height="32" rx="8" fill="#fff" className="drop-shadow"/>
+        <circle cx="20" cy="16" r="10" fill="#EB001B" />
+        <circle cx="28" cy="16" r="10" fill="#F79E1B" fillOpacity="0.8" />
+        {/* Subtle overlap */}
+        <circle cx="24" cy="16" r="10" fill="url(#mastercardBlend)" fillOpacity="0.45" />
+        <defs>
+          <radialGradient id="mastercardBlend" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+            <stop offset="0%" stopColor="#fff8" />
+            <stop offset="100%" stopColor="#F79E1B00" />
+          </radialGradient>
+        </defs>
       </svg>
     ),
   },
   {
     name: "M-PESA",
     svg: (
-      <svg width="40" height="24" viewBox="0 0 50 32" aria-label="M-PESA" className="m-1">
-        <rect rx="4" width="50" height="32" fill="#fff"/>
-        <text x="50%" y="57%" textAnchor="middle" fontWeight="bold" fontSize="14" fill="#009A49" fontFamily="Arial">&nbsp;M-PESA</text>
-        <rect x="14" y="8" width="6" height="16" rx="2" fill="#009A49" />
-        <rect x="30" y="8" width="6" height="16" rx="2" fill="#009A49" />
-        <circle cx="25" cy="16" r="4" fill="#fd0" stroke="#009A49" strokeWidth="1" />
+      <svg
+        width="48"
+        height="32"
+        viewBox="0 0 48 32"
+        aria-label="M-PESA"
+        className="m-1"
+      >
+        <rect width="48" height="32" rx="8" fill="#009A49" />
+        <text
+          x="24"
+          y="20.5"
+          textAnchor="middle"
+          fontWeight="bold"
+          fontSize="16"
+          fontFamily="Arial, sans-serif"
+          fill="#fff"
+          letterSpacing="1"
+        >
+          M-PESA
+        </text>
+        {/* Stylized sim card in yellow */}
+        <rect x="37" y="7" width="5" height="18" rx="2" fill="#FFD600" />
       </svg>
     ),
   },
   {
     name: "Apple Pay",
     svg: (
-      <svg width="40" height="24" viewBox="0 0 50 32" fill="none" aria-label="Apple Pay" className="m-1">
-        <rect rx="4" width="50" height="32" fill="#111" />
-        <text x="17" y="21" fontWeight="bold" fontSize="13" fill="#fff" fontFamily="Arial"></text>
-        <text x="32" y="21" fontWeight="bold" fontSize="14" fill="#fff" fontFamily="Arial">Pay</text>
+      <svg
+        width="48"
+        height="32"
+        viewBox="0 0 48 32"
+        aria-label="Apple Pay"
+        className="m-1"
+      >
+        <rect width="48" height="32" rx="8" fill="#111" />
+        {/* Apple logo: stylized simple apple glyph */}
+        <text
+          x="13"
+          y="21"
+          fontWeight="bold"
+          fontSize="18"
+          fontFamily="Arial, sans-serif"
+          fill="#fff"
+        >
+          
+        </text>
+        <text
+          x="28"
+          y="21"
+          fontWeight="bold"
+          fontSize="16"
+          fontFamily="Arial, sans-serif"
+          fill="#fff"
+        >
+          Pay
+        </text>
       </svg>
     ),
-  }
+  },
 ];
 
 const Footer: React.FC = () => {
