@@ -3,7 +3,6 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const SPOONACULAR_API_KEY = Deno.env.get("SPOONACULAR_API_KEY");
-const LCBO_API_KEY = Deno.env.get("LCBO_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
@@ -23,14 +22,12 @@ function isCleanAlcoholProductImage(imgUrl: string): boolean {
   return !badWords.some(w => lower.includes(w));
 }
 
-// Deep fuzzy match:  require all strong tokens (brand, main type, size if present)
+// Deep fuzzy match: require all strong tokens (brand, main type, size if present)
 function goodProductMatch(apiName: string, ourName: string): boolean {
-  // Take basic brand, main words, and number at least 2 strong matches
   const tokens = ourName.toLowerCase().replace(/[^a-z0-9\s]+/gi,"").split(/\s+/);
   let matchCount = 0;
   for(const t of tokens) {
     if (t.length > 2 && /\d/.test(t) === false && apiName.toLowerCase().includes(t)) matchCount++;
-    // Size tokens (e.g. "750ml", "500ml") must match if present
     if (/ml|l|lt|litre|liter/.test(t) && apiName.toLowerCase().includes(t)) matchCount++;
   }
   return matchCount >= Math.max(2, Math.round(tokens.length * 0.65));
@@ -38,10 +35,16 @@ function goodProductMatch(apiName: string, ourName: string): boolean {
 
 // Return exact Spoonacular product image url, if match
 async function fetchSpoonacularImage(name: string): Promise<string | null> {
-  if (!SPOONACULAR_API_KEY) return null;
+  if (!SPOONACULAR_API_KEY) {
+    console.error("No SPOONACULAR_API_KEY found.");
+    return null;
+  }
   const url = `https://api.spoonacular.com/food/products/search?query=${encodeURIComponent(name)}&apiKey=${SPOONACULAR_API_KEY}`;
   const res = await fetch(url);
-  if (!res.ok) return null;
+  if (!res.ok) {
+    console.error("Spoonacular fetch failed for name:", name);
+    return null;
+  }
   const data = await res.json();
   if (!data.products || !Array.isArray(data.products)) return null;
   const first = data.products[0];
@@ -56,44 +59,6 @@ async function fetchSpoonacularImage(name: string): Promise<string | null> {
     const imgUrl = `https://spoonacular.com/productImages/${first.id}-312x231.${first.imageType}`;
     if (isCleanAlcoholProductImage(imgUrl)) {
       return imgUrl;
-    }
-  }
-  return null;
-}
-
-async function fetchLcboImage(name: string): Promise<string | null> {
-  if (!LCBO_API_KEY) return null;
-  const url = `https://lcboapi.com/products?q=${encodeURIComponent(name)}`;
-  const res = await fetch(url, { headers: { Authorization: `Token ${LCBO_API_KEY}` } });
-  if (!res.ok) return null;
-  const data = await res.json();
-  if (!data.result || !Array.isArray(data.result)) return null;
-  for (const prod of data.result) {
-    if (
-      prod.image_url &&
-      isCleanAlcoholProductImage(prod.image_url) &&
-      goodProductMatch(prod.name||"", name)
-    ) {
-      return prod.image_url;
-    }
-  }
-  return null;
-}
-
-// Open Food Facts (same as before, strict match)
-async function fetchOffImage(name: string): Promise<string | null> {
-  const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(name)}&search_simple=1&json=1`;
-  const res = await fetch(url);
-  if (!res.ok) return null;
-  const data = await res.json();
-  if (!data.products || !Array.isArray(data.products)) return null;
-  for (const prod of data.products) {
-    if (
-      prod.image_front_url &&
-      isCleanAlcoholProductImage(prod.image_front_url) &&
-      goodProductMatch(prod.product_name||"", name)
-    ) {
-      return prod.image_front_url;
     }
   }
   return null;
@@ -153,9 +118,7 @@ serve(async (req) => {
       if (processed++ >= limit) break;
       let found: string | null = null;
       found = await fetchSpoonacularImage(prod.name);
-      if (!found) found = await fetchLcboImage(prod.name);
-      if (!found) found = await fetchOffImage(prod.name);
-      // Set image_url to null if not found (NO fallback!)
+      // Set image_url to null if not found (NO fallback, NO LCBO or OFF)
       const ok = await updateProductImage(prod.id, found || null);
       if (!ok) errors.push(`Failed to update id=${prod.id}`);
       else updated++;
