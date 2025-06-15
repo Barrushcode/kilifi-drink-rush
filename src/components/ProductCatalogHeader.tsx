@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import ImageScrapingInterface from './ImageScrapingInterface';
@@ -58,47 +57,9 @@ const ProductCatalogHeader: React.FC<ProductCatalogHeaderProps> = ({
           ))}
         </select>
       </div>
-
-      {/* Admin Controls */}
-      <div className="flex flex-wrap gap-2 justify-center">
-        <Button
-          onClick={() => setShowAuditReport(!showAuditReport)}
-          variant="outline"
-          size="sm"
-          className="text-xs"
-        >
-          {showAuditReport ? 'Hide' : 'Show'} Debug Info
-        </Button>
-        
-        <Button
-          onClick={() => setShowImageScraping(!showImageScraping)}
-          variant="outline"
-          size="sm"
-          className="text-xs bg-blue-600 hover:bg-blue-500 text-white"
-        >
-          {showImageScraping ? 'Hide' : 'Show'} Image Scraper
-        </Button>
-        
-        {/* Download CSV of missing product images */}
-        <Button
-          onClick={downloadMissingImagesCSV}
-          variant="outline"
-          size="sm"
-          className="text-xs bg-green-600 hover:bg-green-500 text-white"
-        >
-          Download Missing Images CSV
-        </Button>
-      </div>
-
-      {/* Image Scraping Interface */}
-      {showImageScraping && (
-        <div className="mt-6 mb-6">
-          <ImageScrapingInterface />
-        </div>
-      )}
+      {/* Removed admin controls for Debug Info, Image Scraper, Download CSV */}
     </div>
   );
 };
 
 export default ProductCatalogHeader;
-
