@@ -3,9 +3,13 @@ import { supabase } from "@/integrations/supabase/client";
 
 /**
  * Try multiple variants for a product name to improve storage image matching.
+ * Now also includes the exact original (untrimmed) input for cases with extra spaces.
  */
 function* generateNameVariants(productName: string) {
   const base = productName.trim();
+  const original = productName; // Untrimmed, may have trailing/leading spaces
+
+  // Variants with trimmed name
   const transformed = [
     base,
     base.toUpperCase(),
@@ -15,6 +19,15 @@ function* generateNameVariants(productName: string) {
     base.replace(/\s+/g, "_"),
     base.replace(/[^a-zA-Z0-9]/g, ""), // Remove non-alphanumeric
   ];
+
+  // If the original is different from base (thus has extra spaces etc), include it as a variant as well
+  if (original !== base) {
+    transformed.push(original);
+    transformed.push(original.replace(/\s+/g, "-"));
+    transformed.push(original.replace(/\s+/g, "_"));
+    transformed.push(original.replace(/[^a-zA-Z0-9]/g, ""));
+  }
+
   // Deduplicate
   const set = new Set(transformed);
   for (const v of set) yield v;
@@ -25,7 +38,7 @@ function* generateNameVariants(productName: string) {
  * Tries a wide range of file name/extension variations and logs each step.
  */
 export async function getSupabaseProductImageUrl(productName: string): Promise<string | null> {
-  const bucketName = "pictures"; // <-- updated from "productimage"
+  const bucketName = "pictures";
   const extensions = [
     ".jpg", ".jpeg", ".png", ".webp",
     ".JPG", ".JPEG", ".PNG", ".WEBP"
@@ -54,3 +67,4 @@ export async function getSupabaseProductImageUrl(productName: string): Promise<s
   console.log(`[SUPABASE IMAGE LOOKUP] No match found for "${productName}" in bucket "${bucketName}".`);
   return null;
 }
+
