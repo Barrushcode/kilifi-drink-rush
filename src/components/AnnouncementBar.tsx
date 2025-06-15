@@ -2,10 +2,19 @@
 import React from "react";
 import { Truck } from "lucide-react";
 
-// AnnouncementBar: Always sits below header, has a visible blue-to-pink gradient, moving message.
+// AnnouncementBar: Always sits below header, has strong blue-to-pink gradient, high z-index, visible content.
 const AnnouncementBar: React.FC = () => {
   return (
-    <div className="w-full h-12 flex items-center bg-gradient-to-r from-blue-500 via-purple-400 to-pink-500 overflow-hidden shadow">
+    <div
+      className="w-full min-h-12 h-12 flex items-center overflow-hidden shadow"
+      style={{
+        background:
+          "linear-gradient(90deg, #3b82f6 0%, #a78bfa 45%, #ec4899 100%)",
+        zIndex: 30,
+        position: "relative",
+        minHeight: "3rem",
+      }}
+    >
       <div className="relative w-full h-full flex items-center">
         <div
           className="flex items-center gap-8 animate-marquee whitespace-nowrap min-w-full h-full"
@@ -32,7 +41,6 @@ const AnnouncementBar: React.FC = () => {
             </span>
           </span>
         </div>
-        {/* Fallback static message for no-JS */}
         <noscript>
           <span className="flex items-center text-white text-base font-medium">
             <Truck className="h-5 w-5 flex-shrink-0 mr-2" />
@@ -42,7 +50,6 @@ const AnnouncementBar: React.FC = () => {
           </span>
         </noscript>
       </div>
-      {/* Ensure custom marquee animation is always present */}
       <style>{`
         @keyframes marquee-banner {
           0% {
