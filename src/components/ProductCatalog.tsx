@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import ProductCatalogHeader from './ProductCatalogHeader';
@@ -127,7 +126,7 @@ const ProductCatalog: React.FC = () => {
   if (loading) {
     return (
       <section id="products" className="pt-0 pb-0 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 lg:px-8 relative z-10 mt-0 mb-0">
+        <div className="max-w-7xl mx-auto px-6 lg:px-16 xl:px-20 2xl:px-0 relative z-10 mt-0 mb-0">
           <div className="text-center mb-8 mt-8">
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-0 font-serif text-rose-600">
               Our Collection
@@ -147,7 +146,7 @@ const ProductCatalog: React.FC = () => {
     console.error('❌ ProductCatalog error:', error);
     return (
       <section id="products" className="pt-0 pb-0 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 lg:px-8 relative z-10">
+        <div className="max-w-7xl mx-auto px-6 lg:px-16 xl:px-20 2xl:px-0 relative z-10">
           <div className="text-center py-16">
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 font-serif text-rose-600">
               Our Collection
@@ -167,12 +166,12 @@ const ProductCatalog: React.FC = () => {
   return (
     <section 
       id="products" 
-      className="pt-0 pb-0 relative overflow-hidden"
+      className="relative overflow-hidden pt-2 pb-4 sm:pt-6 sm:pb-8 md:pt-8 md:pb-12"
       style={{
         background: 'linear-gradient(to bottom, #0f1419 0%, #1a1a1a 100%)'
       }}
     >
-      <div className="max-w-7xl mx-auto px-4 lg:px-8 relative z-10">
+      <div className="max-w-7xl mx-auto px-6 lg:px-16 xl:px-20 2xl:px-0 relative z-10">
         <ProductCatalogHeader
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
@@ -220,14 +219,16 @@ const ProductCatalog: React.FC = () => {
           searchTerm={searchTerm}
         />
         
-        <ProductGrid
-          paginatedProducts={paginatedProducts}
-          filteredProducts={priceFilteredProducts}
-          loading={loading}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          setSelectedCategory={setSelectedCategory}
-        />
+        <div className="w-full">
+          <ProductGrid
+            paginatedProducts={paginatedProducts}
+            filteredProducts={priceFilteredProducts}
+            loading={loading}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            setSelectedCategory={setSelectedCategory}
+          />
+        </div>
 
         <ProductsPagination
           totalPages={totalPages}

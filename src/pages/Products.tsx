@@ -3,12 +3,14 @@ import React from 'react';
 import AnnouncementBar from '@/components/AnnouncementBar';
 import ProductCatalog from '@/components/ProductCatalog';
 
-// Tightly stack bar and catalog, remove all vertical space, bg only on mobile-friendly colors.
+// Desktop-optimized: background, layout, zero vertical gap; tight, wide content area for desktop.
 const Products = () => {
   return (
-    <div className="bg-barrush-midnight min-h-screen">
-      <AnnouncementBar />
-      <ProductCatalog />
+    <div className="min-h-screen w-full bg-gradient-to-b from-barrush-midnight to-barrush-slate flex flex-col items-center">
+      <div className="w-full max-w-7xl flex flex-col flex-1 min-h-screen">
+        <AnnouncementBar />
+        <ProductCatalog />
+      </div>
     </div>
   );
 };
