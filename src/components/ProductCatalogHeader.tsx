@@ -1,6 +1,8 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import ImageScrapingInterface from './ImageScrapingInterface';
+import { downloadMissingImagesCSV } from '@/utils/downloadMissingImagesCSV'; // <-- Add this import
 
 interface ProductCatalogHeaderProps {
   searchTerm: string;
@@ -76,6 +78,16 @@ const ProductCatalogHeader: React.FC<ProductCatalogHeaderProps> = ({
         >
           {showImageScraping ? 'Hide' : 'Show'} Image Scraper
         </Button>
+        
+        {/* Download CSV of missing product images */}
+        <Button
+          onClick={downloadMissingImagesCSV}
+          variant="outline"
+          size="sm"
+          className="text-xs bg-green-600 hover:bg-green-500 text-white"
+        >
+          Download Missing Images CSV
+        </Button>
       </div>
 
       {/* Image Scraping Interface */}
@@ -89,3 +101,4 @@ const ProductCatalogHeader: React.FC<ProductCatalogHeaderProps> = ({
 };
 
 export default ProductCatalogHeader;
+
