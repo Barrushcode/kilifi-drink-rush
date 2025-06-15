@@ -406,19 +406,6 @@ const CheckoutSection: React.FC = () => {
               />
             </div>
 
-            {/* Simulate button - keep for test */}
-            <div className="flex justify-end mt-4">
-              <Button
-                type="button"
-                variant="outline"
-                className="bg-yellow-400 text-black font-semibold px-6 py-2 border-yellow-600 hover:bg-yellow-300 transition-all"
-                onClick={handleSimulatePayment}
-                aria-label="Simulate order confirmation email (test only)"
-              >
-                Simulate Order Confirmation (Test)
-              </Button>
-            </div>
-
             {/* Alternative Payment Info */}
             <Card className="bg-neon-purple/20 border-neon-purple border w-full">
               <CardContent className="p-6">
