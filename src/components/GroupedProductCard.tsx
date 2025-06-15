@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -141,7 +140,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         product={product}
       />
       <Card
-        className="overflow-hidden h-full min-h-[220px] shadow-lg transition-all duration-300 group hover:scale-105 bg-barrush-slate border-barrush-steel/30 flex flex-col cursor-pointer"
+        className="overflow-hidden h-full min-h-[320px] shadow-lg transition-all duration-300 group hover:scale-105 bg-barrush-slate border-barrush-steel/30 flex flex-col cursor-pointer"
         onClick={handleCardClick}
         tabIndex={0}
         onKeyDown={e => {
@@ -153,12 +152,12 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         <CardContent className="p-2 md:p-4 lg:p-5 flex flex-col h-full">
           {/* Product main content */}
           <div className="flex flex-col flex-grow">
-            {/* Image */}
-            <div className="w-full h-24 md:h-32 lg:h-40 rounded-lg overflow-hidden mb-2 relative">
+            {/* Larger, less squished Image */}
+            <div className="w-full aspect-square rounded-lg overflow-hidden mb-2 relative flex items-center justify-center bg-barrush-midnight">
               <ProductImageLoader
                 src={displayImage}
                 alt={displayName}
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover"
                 priority={false}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-barrush-midnight/60 to-transparent group-hover:from-barrush-midnight/40 transition-all duration-300" />
