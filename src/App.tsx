@@ -27,7 +27,8 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Navigation />
-          <div className="pt-0">
+          {/* Flexible content wrapper for desktop */}
+          <div className="pt-0 min-h-screen bg-background flex flex-col">
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/products" element={<Products />} />
