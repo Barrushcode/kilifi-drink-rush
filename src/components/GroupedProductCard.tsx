@@ -12,6 +12,7 @@ import ProductQuickViewModal from './ProductQuickViewModal';
 import { normalizeString } from '@/utils/stringUtils';
 import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
 import ProductImageLoader from './ProductImageLoader';
+import { correctProductName } from '@/utils/nameCorrectionUtils';
 
 // Utility to determine if the product image is appropriate
 function isImageAppropriate(url?: string) {
@@ -129,7 +130,10 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
     return () => { ignore = true; };
   }, [product.baseName]);
 
-  const displayName = capitalizeWords(normalizeString(product.baseName));
+  // const displayName = capitalizeWords(normalizeString(product.baseName));
+  // Replace with correction utility
+  const displayName = correctProductName(product.baseName);
+
   let displayImage = supabaseImage || (isImageAppropriate(product.image) ? product.image : FALLBACK_IMAGE);
 
   return (
@@ -137,7 +141,10 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
       <ProductQuickViewModal
         open={modalOpen}
         onOpenChange={setModalOpen}
-        product={product}
+        product={{
+          ...product,
+          baseName: correctProductName(product.baseName)
+        }}
       />
       <Card
         className="overflow-hidden h-full min-h-[320px] shadow-lg transition-all duration-300 group hover:scale-105 bg-barrush-slate border-barrush-steel/30 flex flex-col cursor-pointer"

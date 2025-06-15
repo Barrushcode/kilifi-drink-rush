@@ -1,9 +1,9 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import ProductImageLoader from './ProductImageLoader';
+import { correctProductName } from '@/utils/nameCorrectionUtils';
 
 interface Product {
   id: number;
@@ -28,12 +28,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     <Card className="bg-glass-effect border-barrush-steel/30 border hover:border-barrush-copper/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden">
       <ProductImageLoader
         src={product.image}
-        alt={`${product.name} - ${product.category}`}
+        alt={`${correctProductName(product.name)} - ${product.category}`}
         className="h-64 object-contain"
       />
       <CardContent className="p-8">
         <h3 className="text-2xl font-bold mb-3 font-serif text-red-200">
-          {product.name}
+          {correctProductName(product.name)}
         </h3>
         <Badge className="bg-barrush-steel/60 text-barrush-platinum mb-4 px-3 py-1">
           {product.category}
