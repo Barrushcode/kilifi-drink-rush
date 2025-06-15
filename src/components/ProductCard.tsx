@@ -29,7 +29,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       <ProductImageLoader
         src={product.image}
         alt={`${product.name} - ${product.category}`}
-        className="h-64"
+        className="h-64 object-contain"
       />
       <CardContent className="p-8">
         <h3 className="text-2xl font-bold mb-3 font-serif text-red-200">

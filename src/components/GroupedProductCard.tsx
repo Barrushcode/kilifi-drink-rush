@@ -159,7 +159,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
             <ProductImageLoader
               src={displayImage}
               alt={displayName}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
               priority={false}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-barrush-midnight/60 to-transparent group-hover:from-barrush-midnight/40 transition-all duration-300" />

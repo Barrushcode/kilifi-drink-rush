@@ -57,7 +57,7 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({ open, onO
           <OptimizedImage
             src={product.image}
             alt={product.baseName}
-            className="w-52 h-52 object-cover rounded-md"
+            className="w-52 h-52 object-contain rounded-md"
             priority={false}
           />
           <Badge className="bg-gray-700 text-gray-100 px-2 py-0.5 text-xs">{product.category}</Badge>
