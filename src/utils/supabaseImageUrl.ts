@@ -3,15 +3,18 @@ import { supabase } from "@/integrations/supabase/client";
 
 /**
  * Gets a public URL for a given product image in Supabase storage.
- * Checks for .jpg, .png, .webp extensions in order.
+ * Checks a wide range of image extensions (all common cases).
  */
 export async function getSupabaseProductImageUrl(productName: string): Promise<string | null> {
-  const extensions = [".jpg", ".png", ".webp"];
+  // Support more variations (case insensitive)
+  const extensions = [
+    ".jpg", ".jpeg", ".png", ".webp",
+    ".JPG", ".JPEG", ".PNG", ".WEBP"
+  ];
   for (const ext of extensions) {
     const filePath = `${productName}${ext}`;
     const { data } = supabase.storage.from("productimages").getPublicUrl(filePath);
     if (data && data.publicUrl) {
-      // This does not check if file exists, just generates URL. Let's try HEAD request to see if it exists.
       try {
         const response = await fetch(data.publicUrl, { method: "HEAD" });
         if (response.ok) {
@@ -22,3 +25,4 @@ export async function getSupabaseProductImageUrl(productName: string): Promise<s
   }
   return null;
 }
+
