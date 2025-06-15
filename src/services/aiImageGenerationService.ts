@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 interface AIImageRequest {
@@ -111,7 +110,7 @@ export class AIImageGenerationService {
   static clearBrowserImageCache(): void {
     // Force browser to reload images by clearing cache
     if ('caches' in window) {
-      caches.names().then(names => {
+      caches.keys().then(names => {
         names.forEach(name => {
           caches.delete(name);
         });
