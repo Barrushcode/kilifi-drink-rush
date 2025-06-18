@@ -1,4 +1,3 @@
-
 /**
  * Map of known product name typos to corrections.
  * Comprehensive list based on actual database analysis.
@@ -114,7 +113,6 @@ const PRODUCT_NAME_CORRECTIONS: Record<string, string> = {
   "hennesey": "Hennessy",
   "hennesy": "Hennessy",
   "moet": "Moët & Chandon",
-  "moet chandon": "Moët & Chandon",
   "moet and chandon": "Moët & Chandon",
   "smirnof": "Smirnoff",
   "smirnoff vodka": "Smirnoff",
