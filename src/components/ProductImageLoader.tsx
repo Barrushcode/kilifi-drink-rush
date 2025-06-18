@@ -1,6 +1,6 @@
 
 import React from 'react';
-import OptimizedImage from './OptimizedImage';
+import LazyProductImage from './LazyProductImage';
 
 interface ProductImageLoaderProps {
   src: string;
@@ -19,7 +19,7 @@ const ProductImageLoader: React.FC<ProductImageLoaderProps> = ({
   const shouldBustCache = src.includes('drinksvine') || src.includes('Product image URL');
   
   return (
-    <OptimizedImage
+    <LazyProductImage
       src={src}
       alt={alt}
       className={className}

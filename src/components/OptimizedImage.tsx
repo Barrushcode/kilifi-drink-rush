@@ -9,6 +9,7 @@ interface OptimizedImageProps {
   priority?: boolean;
   fallbackSrc?: string;
   bustCache?: boolean;
+  onLoad?: () => void;
 }
 
 const OptimizedImage: React.FC<OptimizedImageProps> = ({ 
@@ -17,14 +18,13 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   className = "",
   priority = false,
   fallbackSrc = "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-  bustCache = false
+  bustCache = false,
+  onLoad
 }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [imageSrc, setImageSrc] = useState(src);
   const [retryCount, setRetryCount] = useState(0);
-
-  console.log('🖼️ OptimizedImage rendering:', { src, alt, loading, error });
 
   useEffect(() => {
     // Add cache busting parameter if requested
@@ -39,6 +39,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     console.log('✅ Image loaded successfully:', imageSrc);
     setLoading(false);
     setError(false);
+    onLoad?.();
   };
 
   const handleImageError = () => {

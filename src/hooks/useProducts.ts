@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { getCategoryFromName } from '@/utils/categoryUtils';
 import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
 import { groupProductsByBaseName, GroupedProduct } from '@/utils/productGroupingUtils';
+import { useProductCache } from './useProductCache';
 
 interface Product {
   id: number;
@@ -19,6 +20,8 @@ export const useProducts = () => {
   const [productsByOriginalOrder, setProductsByOriginalOrder] = useState<GroupedProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  const { cachedData, saveToCache, clearCache } = useProductCache();
 
   const fetchAllProducts = async () => {
     const allProducts = [];
@@ -61,12 +64,13 @@ export const useProducts = () => {
       const allProductsData = await fetchAllProducts();
       const transformedProducts: Product[] = [];
       
-      // Process products in batches
-      const batchSize = 100;
+      // Optimized batch processing - smaller batches for better UX
+      const batchSize = 50; // Reduced from 100
       for (let i = 0; i < allProductsData.length; i += batchSize) {
         const batch = allProductsData.slice(i, i + batchSize);
         console.log(`📦 Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(allProductsData.length / batchSize)}`);
         
+        // Process batch with optimized image checking
         const batchPromises = batch.map(async (product, batchIndex) => {
           const globalIndex = i + batchIndex;
           
@@ -83,18 +87,16 @@ export const useProducts = () => {
 
           const description = product.Description || '';
           
-          // Image logic: First check storage bucket, then database URL, exclude if no image
+          // Optimized image logic: Check storage first, fallback to database URL
           let productImage: string | null = null;
           
-          // First: Try storage bucket
+          // First: Try storage bucket (with caching consideration)
           const storageImage = await getSupabaseProductImageUrl(product.Title || 'Unknown Product');
           if (storageImage) {
             productImage = storageImage;
-            console.log(`📸 Using storage image for ${product.Title}:`, storageImage);
           } else if (product["Product image URL"] && typeof product["Product image URL"] === "string" && product["Product image URL"].trim().length > 0) {
             // Second: Use database URL
             productImage = product["Product image URL"];
-            console.log(`📸 Using database image for ${product.Title}:`, productImage);
           }
 
           // Skip products without any image
@@ -121,13 +123,21 @@ export const useProducts = () => {
 
         const batchResults = await Promise.all(batchPromises);
         transformedProducts.push(...batchResults.filter(Boolean));
+        
+        // Add small delay between batches to prevent UI freezing
+        if (i + batchSize < allProductsData.length) {
+          await new Promise(resolve => setTimeout(resolve, 10));
+        }
       }
 
       const groupedProducts = groupProductsByBaseName(transformedProducts);
       const groupedProductsOrdered = groupProductsByBaseName(transformedProducts, true);
 
-      console.log(`✨ Successfully processed ${transformedProducts.length} products with images from storage bucket and database`);
+      console.log(`✨ Successfully processed ${transformedProducts.length} products with images`);
       console.log('🎯 Sample grouped products:', groupedProducts.slice(0, 3));
+
+      // Save to cache for faster subsequent loads
+      saveToCache(groupedProducts, groupedProductsOrdered);
 
       setProducts(groupedProducts);
       setProductsByOriginalOrder(groupedProductsOrdered);
@@ -140,14 +150,28 @@ export const useProducts = () => {
   };
 
   useEffect(() => {
+    // Check if we have valid cached data
+    if (cachedData && cachedData.products.length > 0) {
+      console.log('🚀 Using cached products data');
+      setProducts(cachedData.products);
+      setProductsByOriginalOrder(cachedData.productsByOriginalOrder);
+      setLoading(false);
+    } else {
+      // No cache or invalid cache, fetch fresh data
+      fetchProducts();
+    }
+  }, [cachedData]);
+
+  const refetch = () => {
+    clearCache(); // Clear cache to force fresh fetch
     fetchProducts();
-  }, []);
+  };
 
   return {
     products,
     productsByOriginalOrder,
     loading,
     error,
-    refetch: fetchProducts
+    refetch
   };
 };
