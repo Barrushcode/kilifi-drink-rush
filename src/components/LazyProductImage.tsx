@@ -8,13 +8,15 @@ interface LazyProductImageProps {
   alt: string;
   className?: string;
   priority?: boolean;
+  bustCache?: boolean;
 }
 
 const LazyProductImage: React.FC<LazyProductImageProps> = ({
   src,
   alt,
   className = "",
-  priority = false
+  priority = false,
+  bustCache = false
 }) => {
   const [isInView, setIsInView] = useState(priority);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -64,6 +66,7 @@ const LazyProductImage: React.FC<LazyProductImageProps> = ({
             isLoaded ? 'opacity-100' : 'opacity-0'
           } ${className}`}
           priority={priority}
+          bustCache={bustCache}
           onLoad={handleImageLoad}
         />
       )}

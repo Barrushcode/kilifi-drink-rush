@@ -99,7 +99,36 @@ const PRODUCT_NAME_CORRECTIONS: Record<string, string> = {
   // Tequila corrections
   "jose cuervo": "José Cuervo",
   "patron silver": "Patrón Silver",
-  "patron gold": "Patrón Gold"
+  "patron gold": "Patrón Gold",
+
+  // Additional brand variations and typos found in database
+  "absolute": "Absolut",
+  "ballantine": "Ballantine's",
+  "ballatines": "Ballantine's",
+  "balantine": "Ballantine's",
+  "jhonnie walker": "Johnnie Walker",
+  "johnnie walke": "Johnnie Walker",
+  "johnny walker": "Johnnie Walker",
+  "captian morgan": "Captain Morgan",
+  "captin morgan": "Captain Morgan",
+  "hennesey": "Hennessy",
+  "hennesy": "Hennessy",
+  "moet": "Moët & Chandon",
+  "moet chandon": "Moët & Chandon",
+  "moet and chandon": "Moët & Chandon",
+  "smirnof": "Smirnoff",
+  "smirnoff vodka": "Smirnoff",
+  "chivas": "Chivas Regal",
+  "jameson whiskey": "Jameson",
+  "james": "Jameson",
+  "jamesson": "Jameson",
+  "macallen": "The Macallan",
+  "glen livet": "The Glenlivet",
+  "glenfidich": "Glenfiddich",
+  "bacardi rum": "Bacardi",
+  "captain morgan rum": "Captain Morgan",
+  "jose": "José Cuervo",
+  "cuervo": "José Cuervo"
 };
 
 /**
@@ -187,7 +216,7 @@ export function hasTypos(name: string): boolean {
   
   // Check brand patterns
   for (const { pattern } of BRAND_PATTERNS) {
-    if (pattern.test(name) && pattern.test(name) !== name.match(pattern)?.[0]) {
+    if (pattern.test(name)) {
       return true;
     }
   }
