@@ -1,7 +1,8 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getCategoryFromName } from '@/utils/categoryUtils';
-import { findMatchingImage } from '@/services/imageMatchingService';
+import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
 import { groupProductsByBaseName, GroupedProduct } from '@/utils/productGroupingUtils';
 
 interface Product {
@@ -11,12 +12,6 @@ interface Product {
   description: string;
   image: string;
   category: string;
-}
-
-interface RefinedImage {
-  id: number;
-  'Product Name': string | null;
-  'Final Image URL': string;
 }
 
 export const useProducts = () => {
@@ -62,20 +57,8 @@ export const useProducts = () => {
       setLoading(true);
       setError(null);
       console.log('🚀 Starting to fetch products...');
-      const [allProductsData, imagesResponse] = await Promise.all([
-        fetchAllProducts(),
-        supabase
-          .from('refinedproductimages')
-          .select('id, "Product Name", "Final Image URL"')
-      ]);
-
-      if (imagesResponse.error) {
-        console.error('❌ Refined images fetch error:', imagesResponse.error);
-        throw imagesResponse.error;
-      }
-
-      const refinedImages = imagesResponse.data || [];
-
+      
+      const allProductsData = await fetchAllProducts();
       const transformedProducts: Product[] = [];
       
       // Process products in batches
@@ -99,14 +82,25 @@ export const useProducts = () => {
           }
 
           const description = product.Description || '';
-          // First, IMAGE: Choose from "Product image URL" (Spoonacular), fall back to refined images
+          
+          // Image logic: First check storage bucket, then database URL, exclude if no image
           let productImage: string | null = null;
-          if (product["Product image URL"] && typeof product["Product image URL"] === "string" && product["Product image URL"].trim().length > 0) {
+          
+          // First: Try storage bucket
+          const storageImage = await getSupabaseProductImageUrl(product.Title || 'Unknown Product');
+          if (storageImage) {
+            productImage = storageImage;
+            console.log(`📸 Using storage image for ${product.Title}:`, storageImage);
+          } else if (product["Product image URL"] && typeof product["Product image URL"] === "string" && product["Product image URL"].trim().length > 0) {
+            // Second: Use database URL
             productImage = product["Product image URL"];
-          } else {
-            // Use the refined images for matching
-            const { url } = await findMatchingImage(product.Title || 'Unknown Product', refinedImages);
-            productImage = url;
+            console.log(`📸 Using database image for ${product.Title}:`, productImage);
+          }
+
+          // Skip products without any image
+          if (!productImage) {
+            console.log(`❌ Skipping ${product.Title} - no image available`);
+            return null;
           }
 
           let category = getCategoryFromName(product.Title || 'Unknown Product', productPrice);
@@ -132,7 +126,7 @@ export const useProducts = () => {
       const groupedProducts = groupProductsByBaseName(transformedProducts);
       const groupedProductsOrdered = groupProductsByBaseName(transformedProducts, true);
 
-      console.log(`✨ Successfully processed ${transformedProducts.length} products using images from Product image URL and refined images`);
+      console.log(`✨ Successfully processed ${transformedProducts.length} products with images from storage bucket and database`);
       console.log('🎯 Sample grouped products:', groupedProducts.slice(0, 3));
 
       setProducts(groupedProducts);
