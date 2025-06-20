@@ -28,15 +28,15 @@ const FIXED_CATEGORIES = [
   'Juices'
 ];
 
-const ProductCatalog: React.FC = () => {
+const ProductCatalog: React.FC = React.memo(() => {
   const [searchInput, setSearchInput] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
   const [showAuditReport, setShowAuditReport] = useState(false);
   const itemsPerPage = 12;
 
-  // Debounce search to avoid excessive API calls
-  const debouncedSearchTerm = useDebouncedSearch(searchInput, 300);
+  // Faster debounce for better UX
+  const debouncedSearchTerm = useDebouncedSearch(searchInput, 150);
 
   // Use the optimized products hook
   const { 
@@ -95,13 +95,6 @@ const ProductCatalog: React.FC = () => {
   useEffect(() => {
     setCurrentPage(1);
   }, [debouncedSearchTerm, selectedCategory, priceRange]);
-
-  // Pagination info
-  const { hasNextPage, hasPreviousPage, startIndex, endIndex } = usePagination({
-    totalItems: priceFilteredProducts.length,
-    itemsPerPage: priceFilteredProducts.length, // Since we're showing all filtered products
-    currentPage: 1 // Always 1 since we're not paginating filtered results
-  });
 
   const showPriceFilter = priceList.length > 1;
 
@@ -246,6 +239,8 @@ const ProductCatalog: React.FC = () => {
       </div>
     </section>
   );
-};
+});
+
+ProductCatalog.displayName = 'ProductCatalog';
 
 export default ProductCatalog;

@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 
-export const useDebouncedSearch = (value: string, delay: number = 500) => {
+export const useDebouncedSearch = (value: string, delay: number = 150) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
 
   useEffect(() => {
