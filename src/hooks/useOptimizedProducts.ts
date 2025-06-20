@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getCategoryFromName } from '@/utils/categoryUtils';
 import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
@@ -41,7 +41,8 @@ export const useOptimizedProducts = ({
   const [error, setError] = useState<string | null>(null);
   const [totalCount, setTotalCount] = useState(0);
 
-  const fetchProducts = useCallback(async () => {
+  // Separate the fetch logic to avoid callback complexity
+  const fetchProducts = async () => {
     try {
       setLoading(true);
       setError(null);
@@ -60,12 +61,6 @@ export const useOptimizedProducts = ({
       // Add search filter if provided
       if (searchTerm.trim()) {
         query = query.ilike('Title', `%${searchTerm.trim()}%`);
-      }
-
-      // Add category filter if not "All"
-      if (selectedCategory !== 'All') {
-        // For category filtering, we'll filter after fetching since category is derived
-        // This is a limitation we'll need to work with for now
       }
 
       // Get total count first
@@ -160,17 +155,18 @@ export const useOptimizedProducts = ({
     } finally {
       setLoading(false);
     }
-  }, [searchTerm, selectedCategory, currentPage, itemsPerPage]);
+  };
 
+  // Use simple effect with dependency array
   useEffect(() => {
     fetchProducts();
-  }, [fetchProducts]);
+  }, [searchTerm, selectedCategory, currentPage, itemsPerPage]);
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
-  const refetch = useCallback(() => {
+  const refetch = () => {
     fetchProducts();
-  }, [fetchProducts]);
+  };
 
   return {
     products,
