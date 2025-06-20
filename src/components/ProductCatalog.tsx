@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import ProductCatalogHeader from './ProductCatalogHeader';
@@ -28,7 +27,7 @@ const FIXED_CATEGORIES = [
   'Juices'
 ];
 
-const ProductCatalog: React.FC = React.memo(() => {
+const ProductCatalog: React.FC = () => {
   const [searchInput, setSearchInput] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
@@ -36,7 +35,7 @@ const ProductCatalog: React.FC = React.memo(() => {
   const itemsPerPage = 12;
 
   // Faster debounce for better UX
-  const debouncedSearchTerm = useDebouncedSearch(searchInput, 150);
+  const debouncedSearchTerm = useDebouncedSearch(searchInput, 100);
 
   // Use the optimized products hook
   const { 
@@ -239,7 +238,7 @@ const ProductCatalog: React.FC = React.memo(() => {
       </div>
     </section>
   );
-});
+};
 
 ProductCatalog.displayName = 'ProductCatalog';
 
