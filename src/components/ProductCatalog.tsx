@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import ProductCatalogHeader from './ProductCatalogHeader';
@@ -5,37 +6,57 @@ import ProductsDebugInfo from './ProductsDebugInfo';
 import ProductGrid from './ProductGrid';
 import ProductsPagination from './ProductsPagination';
 import ProductLoadingSkeleton from './ProductLoadingSkeleton';
-import { useProducts } from '@/hooks/useProducts';
-import { useProductFilters } from '@/hooks/useProductFilters';
+import { useOptimizedProducts } from '@/hooks/useOptimizedProducts';
+import { useDebouncedSearch } from '@/hooks/useDebouncedSearch';
 import { usePagination } from '@/hooks/usePagination';
 import { Slider } from '@/components/ui/slider';
 
+// Fixed categories for filtering
+const FIXED_CATEGORIES = [
+  'All',
+  'Whisky',
+  'Wine',
+  'Beers',
+  'Champagne',
+  'Liqueur',
+  'Tequila',
+  'Gin',
+  'Cognac',
+  'Brandy',
+  'Rum',
+  'Vodka',
+  'Juices'
+];
+
 const ProductCatalog: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('Wine');
+  const [searchInput, setSearchInput] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
   const [showAuditReport, setShowAuditReport] = useState(false);
   const itemsPerPage = 12;
 
-  const { products = [], productsByOriginalOrder = [], loading, error, refetch } = useProducts();
+  // Debounce search to avoid excessive API calls
+  const debouncedSearchTerm = useDebouncedSearch(searchInput, 300);
 
-  // Call hooks unconditionally and safely with empty array fallback.
-  const allFilters = useProductFilters(productsByOriginalOrder || [], searchTerm, "All");
-  const categoryFilters = useProductFilters(products || [], searchTerm, selectedCategory);
+  // Use the optimized products hook
+  const { 
+    products, 
+    loading, 
+    error, 
+    totalCount, 
+    totalPages,
+    refetch 
+  } = useOptimizedProducts({
+    searchTerm: debouncedSearchTerm,
+    selectedCategory,
+    currentPage,
+    itemsPerPage
+  });
 
-  // Categories always from filter of products array (should be stable)
-  const categories = categoryFilters.categories;
-
-  // Pick correct data for filtered products
-  const displayFilteredProducts = selectedCategory === "All"
-    ? allFilters.filteredProducts
-    : categoryFilters.filteredProducts;
-
-  // Find product price range for current filtered set
+  // Price filtering (client-side for now since we have limited data per page)
   const priceList = useMemo(() => {
-    return displayFilteredProducts
+    return products
       .map(product => {
-        // Try to use grouped minimal price for ranges
         return product.lowestPrice
           ? typeof product.lowestPrice === 'number'
             ? product.lowestPrice
@@ -44,9 +65,8 @@ const ProductCatalog: React.FC = () => {
       })
       .filter(price => !isNaN(price) && price > 0)
       .sort((a, b) => a - b);
-  }, [displayFilteredProducts]);
+  }, [products]);
 
-  // defaults: min to smallest price, max to highest price
   const minPriceAvailable = priceList.length > 0 ? priceList[0] : 0;
   const maxPriceAvailable = priceList.length > 0 ? priceList[priceList.length - 1] : 100000;
   const [priceRange, setPriceRange] = useState<[number, number]>([
@@ -56,15 +76,12 @@ const ProductCatalog: React.FC = () => {
 
   // Reset price filter range when category or search changes
   useEffect(() => {
-    setPriceRange([
-      minPriceAvailable,
-      maxPriceAvailable
-    ]);
-  }, [minPriceAvailable, maxPriceAvailable, selectedCategory, searchTerm]);
+    setPriceRange([minPriceAvailable, maxPriceAvailable]);
+  }, [minPriceAvailable, maxPriceAvailable, selectedCategory, debouncedSearchTerm]);
 
-  // Price filtering: show only products in selected price range
+  // Price filtering
   const priceFilteredProducts = useMemo(() => {
-    return displayFilteredProducts.filter(prod => {
+    return products.filter(prod => {
       const priceNum = prod.lowestPrice
         ? typeof prod.lowestPrice === 'number'
           ? prod.lowestPrice
@@ -72,56 +89,34 @@ const ProductCatalog: React.FC = () => {
         : 0;
       return priceNum >= priceRange[0] && priceNum <= priceRange[1];
     });
-  }, [displayFilteredProducts, priceRange]);
+  }, [products, priceRange]);
 
-  // Pick correct products list (for debug only)
-  const displayProducts = selectedCategory === "All"
-    ? productsByOriginalOrder
-    : products;
-
-  const { totalPages, hasNextPage, hasPreviousPage, startIndex, endIndex } = usePagination({
-    totalItems: priceFilteredProducts.length,
-    itemsPerPage,
-    currentPage
-  });
-
-  const paginatedProducts = priceFilteredProducts.slice(startIndex, endIndex);
-
-  useEffect(() => {
-    console.log('🔍 ProductCatalog DEBUG:', {
-      productsCount: products.length,
-      filteredCount: displayFilteredProducts.length,
-      priceFilteredCount: priceFilteredProducts.length,
-      paginatedCount: paginatedProducts.length,
-      loading,
-      error,
-      selectedCategory,
-      searchTerm,
-      priceRange,
-      sampleProduct: products[0]
-    });
-
-    if (paginatedProducts.length > 0) {
-      console.log('🎯 First 3 products to render:', paginatedProducts.slice(0, 3));
-    }
-  }, [products, displayFilteredProducts, paginatedProducts, priceFilteredProducts, loading, error, selectedCategory, searchTerm, priceRange]);
-
+  // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, selectedCategory, priceRange]);
+  }, [debouncedSearchTerm, selectedCategory, priceRange]);
 
-  useEffect(() => {
-    if (categories.length > 0 && selectedCategory === 'Wine') {
-      const hasWine = categories.some(cat => cat.toLowerCase().includes('wine'));
-      if (!hasWine) {
-        setSelectedCategory('All');
-      }
-    }
-  }, [categories, selectedCategory]);
+  // Pagination info
+  const { hasNextPage, hasPreviousPage, startIndex, endIndex } = usePagination({
+    totalItems: priceFilteredProducts.length,
+    itemsPerPage: priceFilteredProducts.length, // Since we're showing all filtered products
+    currentPage: 1 // Always 1 since we're not paginating filtered results
+  });
 
-  // --- New: Price Filter UI ---
-  // Show price filter unless there is only one price, or if no products at all
   const showPriceFilter = priceList.length > 1;
+
+  console.log('🔍 ProductCatalog OPTIMIZED:', {
+    productsCount: products.length,
+    priceFilteredCount: priceFilteredProducts.length,
+    loading,
+    error,
+    selectedCategory,
+    searchInput,
+    debouncedSearchTerm,
+    currentPage,
+    totalCount,
+    totalPages
+  });
 
   if (loading) {
     return (
@@ -143,7 +138,6 @@ const ProductCatalog: React.FC = () => {
   }
 
   if (error) {
-    console.error('❌ ProductCatalog error:', error);
     return (
       <section id="products" className="pt-0 pb-0 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 lg:px-16 xl:px-20 2xl:px-0 relative z-10">
@@ -161,8 +155,6 @@ const ProductCatalog: React.FC = () => {
     );
   }
 
-  console.log('🎯 Rendering ProductCatalog with', paginatedProducts.length, 'products');
-
   return (
     <section 
       id="products" 
@@ -173,11 +165,11 @@ const ProductCatalog: React.FC = () => {
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-16 xl:px-20 2xl:px-0 relative z-10">
         <ProductCatalogHeader
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
+          searchTerm={searchInput}
+          setSearchTerm={setSearchInput}
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
-          categories={categories}
+          categories={FIXED_CATEGORIES}
           showAuditReport={showAuditReport}
           setShowAuditReport={setShowAuditReport}
         />
@@ -212,34 +204,45 @@ const ProductCatalog: React.FC = () => {
         )}
 
         <ProductsDebugInfo
-          products={displayProducts}
-          filteredProducts={displayFilteredProducts}
-          paginatedProducts={paginatedProducts}
+          products={products}
+          filteredProducts={priceFilteredProducts}
+          paginatedProducts={priceFilteredProducts}
           selectedCategory={selectedCategory}
-          searchTerm={searchTerm}
+          searchTerm={debouncedSearchTerm}
         />
         
         <div className="w-full">
           <ProductGrid
-            paginatedProducts={paginatedProducts}
+            paginatedProducts={priceFilteredProducts}
             filteredProducts={priceFilteredProducts}
             loading={loading}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
+            searchTerm={searchInput}
+            setSearchTerm={setSearchInput}
             setSelectedCategory={setSelectedCategory}
           />
         </div>
 
-        <ProductsPagination
-          totalPages={totalPages}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          hasNextPage={hasNextPage}
-          hasPreviousPage={hasPreviousPage}
-          startIndex={startIndex}
-          endIndex={endIndex}
-          filteredProductsLength={priceFilteredProducts.length}
-        />
+        {totalPages > 1 && (
+          <ProductsPagination
+            totalPages={totalPages}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            hasNextPage={currentPage < totalPages}
+            hasPreviousPage={currentPage > 1}
+            startIndex={(currentPage - 1) * itemsPerPage}
+            endIndex={Math.min(currentPage * itemsPerPage, totalCount)}
+            filteredProductsLength={totalCount}
+          />
+        )}
+
+        {/* Show total results info */}
+        <div className="text-center mt-8">
+          <p className="text-barrush-platinum/70 font-iphone">
+            Showing {priceFilteredProducts.length} of {totalCount} products
+            {debouncedSearchTerm && ` matching "${debouncedSearchTerm}"`}
+            {selectedCategory !== 'All' && ` in ${selectedCategory}`}
+          </p>
+        </div>
       </div>
     </section>
   );

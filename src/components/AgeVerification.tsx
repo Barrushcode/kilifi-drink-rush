@@ -8,13 +8,13 @@ interface AgeVerificationProps {
 }
 
 const AgeVerification: React.FC<AgeVerificationProps> = ({ onVerified }) => {
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(true); // Default to true to show immediately
 
   useEffect(() => {
+    // Check if user has already verified their age
     const hasVerified = localStorage.getItem('barrush-age-verified');
-    if (!hasVerified) {
-      setShow(true);
-    } else {
+    if (hasVerified === 'true') {
+      setShow(false);
       onVerified();
     }
   }, [onVerified]);
