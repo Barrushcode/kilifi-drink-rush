@@ -15,7 +15,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
   const menuItems = [
     { name: 'Home', path: '/' },
     { name: 'Products', path: '/products' },
-    { name: 'Recipes', path: '/recipes' },
+    { name: 'Cocktail Recipes', path: '/recipes' },
     { name: 'Help', path: '/help' },
     { name: 'Cart', path: '/cart' },
   ];
