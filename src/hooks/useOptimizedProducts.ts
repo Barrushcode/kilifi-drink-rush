@@ -143,12 +143,14 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
     }
   }, [searchTerm, selectedCategory, currentPage, itemsPerPage]);
 
+  // Simple useEffect without complex dependencies
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
+  // Simple refetch function without dependencies
   const refetch = useCallback(() => {
     setLoading(true);
     fetchProducts();
