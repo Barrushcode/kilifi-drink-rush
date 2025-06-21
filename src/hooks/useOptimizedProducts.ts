@@ -143,7 +143,7 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
     }
   };
 
-  // Use effect with minimal dependencies
+  // Use effect with individual primitive dependencies to avoid type resolution issues
   useEffect(() => {
     fetchProducts();
   }, [searchTerm, selectedCategory, currentPage, itemsPerPage]);
