@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { downloadRecipeAsText } from '@/utils/recipeDownloadUtils';
+import OptimizedImage from '@/components/OptimizedImage';
 
 const CocktailRecipesSection: React.FC = () => {
   const classicRecipes = [{
@@ -102,14 +103,14 @@ const CocktailRecipesSection: React.FC = () => {
     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
       {recipes.map((recipe, index) => (
         <Card key={index} className="bg-glass-effect border-barrush-steel/30 border hover:border-neon-pink/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden">
-          <div className="h-64 relative overflow-hidden" style={{
-            backgroundImage: `url(${recipe.image})`,
-            backgroundSize: 'contain',
-            backgroundPosition: 'center center',
-            backgroundRepeat: 'no-repeat',
-            backgroundColor: '#1a1a1a'
-          }}>
-            <div className="absolute inset-0 bg-black/10 group-hover:bg-black/5 transition-all duration-300"></div>
+          <div className="h-64 relative overflow-hidden bg-barrush-midnight">
+            <OptimizedImage
+              src={recipe.image}
+              alt={`${recipe.name} cocktail`}
+              className="w-full h-full"
+              fallbackSrc="https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+              priority={index < 3}
+            />
             <div className="absolute top-4 right-4 flex gap-2">
               <span className="bg-barrush-midnight/80 text-barrush-platinum text-xs px-2 py-1 rounded-full backdrop-blur-sm">
                 {recipe.difficulty}

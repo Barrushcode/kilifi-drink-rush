@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getCategoryFromName } from '@/utils/categoryUtils';
 import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
@@ -102,7 +102,7 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           }
 
           // Enhanced category detection using both name and description
-          let category = getCategoryFromName(product.Title || 'Unknown Product', productPrice, description);
+          const category = getCategoryFromName(product.Title || 'Unknown Product', productPrice, description);
 
           return {
             id: startIndex + index + 1,
