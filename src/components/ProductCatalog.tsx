@@ -105,17 +105,18 @@ const ProductCatalog: React.FC = () => {
 
   const showPriceFilter = priceList.length > 1;
 
-  console.log('🔍 ProductCatalog ENHANCED:', {
-    productsCount: products.length,
-    priceFilteredCount: priceFilteredProducts.length,
-    loading,
-    error,
-    selectedCategory,
+  // Enhanced debug logging for search functionality
+  console.log('🔍 ProductCatalog Search Debug:', {
     searchInput,
     debouncedSearchTerm,
+    selectedCategory,
     currentPage,
+    productsCount: products.length,
+    priceFilteredCount: priceFilteredProducts.length,
     totalCount,
-    totalPages
+    totalPages,
+    loading,
+    error
   });
 
   if (loading) {
@@ -173,6 +174,18 @@ const ProductCatalog: React.FC = () => {
           showAuditReport={showAuditReport}
           setShowAuditReport={setShowAuditReport}
         />
+
+        {/* Enhanced search feedback */}
+        {debouncedSearchTerm && (
+          <div className="text-center mb-4">
+            <p className="text-barrush-platinum/80 font-iphone text-sm">
+              {loading ? 
+                `🔍 Searching for "${debouncedSearchTerm}"...` : 
+                `Found ${totalCount} results for "${debouncedSearchTerm}"`
+              }
+            </p>
+          </div>
+        )}
 
         {/* Enhanced Price Filter with Category Context */}
         {showPriceFilter && (
@@ -235,7 +248,7 @@ const ProductCatalog: React.FC = () => {
           />
         )}
 
-        {/* Enhanced Results Info */}
+        {/* Enhanced Results Info with Search Context */}
         <div className="text-center mt-8">
           <p className="text-barrush-platinum/70 font-iphone">
             Showing {priceFilteredProducts.length} of {totalCount} products
@@ -244,7 +257,7 @@ const ProductCatalog: React.FC = () => {
           </p>
           {selectedCategory !== 'All' && (
             <p className="text-barrush-platinum/50 text-sm font-iphone mt-1">
-              Categories are now enhanced with description analysis for better accuracy
+              Search includes both product names and descriptions for better results
             </p>
           )}
         </div>

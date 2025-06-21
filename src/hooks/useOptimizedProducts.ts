@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getCategoryFromName } from '@/utils/categoryUtils';
 import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
@@ -37,11 +37,11 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
   const [error, setError] = useState<string | null>(null);
   const [totalCount, setTotalCount] = useState(0);
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      console.log('🚀 Fetching optimized products...', { searchTerm, selectedCategory, currentPage });
+      console.log('🔍 Fetching optimized products with search:', { searchTerm, selectedCategory, currentPage });
 
       // Build the query with pre-filtering at database level
       let query = supabase
@@ -53,9 +53,11 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
         .not('"Product image URL"', 'is', null)
         .neq('"Product image URL"', '');
 
-      // Add search filter at database level
-      if (searchTerm.trim()) {
-        query = query.ilike('Title', `%${searchTerm.trim()}%`);
+      // Enhanced search filter - search in both Title and Description
+      if (searchTerm && searchTerm.trim()) {
+        const trimmedSearch = searchTerm.trim();
+        console.log('🔍 Applying search filter for:', trimmedSearch);
+        query = query.or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
       }
 
       // Get paginated data directly
@@ -66,10 +68,11 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
 
       if (fetchError) throw fetchError;
 
-      console.log(`📦 Fetched ${data?.length || 0} products for page ${currentPage}`);
+      console.log(`📦 Fetched ${data?.length || 0} products for page ${currentPage} (total: ${count})`);
       setTotalCount(count || 0);
 
       if (!data || data.length === 0) {
+        console.log('📭 No products found for current search/filter criteria');
         setProducts([]);
         return;
       }
@@ -131,7 +134,11 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
 
       const groupedProducts = groupProductsByBaseName(filteredProducts);
       
-      console.log(`✨ Successfully processed ${groupedProducts.length} grouped products`);
+      console.log(`✨ Search results: ${groupedProducts.length} grouped products found`);
+      if (searchTerm) {
+        console.log(`🎯 Search term "${searchTerm}" matched ${groupedProducts.length} results`);
+      }
+      
       setProducts(groupedProducts);
 
     } catch (error) {
@@ -141,12 +148,12 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchTerm, selectedCategory, currentPage, itemsPerPage]);
 
-  // Use effect with individual primitive dependencies to avoid type resolution issues
+  // Simple useEffect with callback dependency to avoid type issues
   useEffect(() => {
     fetchProducts();
-  }, [searchTerm, selectedCategory, currentPage, itemsPerPage]);
+  }, [fetchProducts]);
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
