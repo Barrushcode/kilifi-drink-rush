@@ -1,13 +1,27 @@
 
-// Enhanced category detection with mini-category support
-export const getCategoryFromName = (name: string, price: number): string => {
+import { analyzeProductDescription } from './enhancedCategoryUtils';
+
+// Enhanced category detection with description support
+export const getCategoryFromName = (name: string, price: number, description?: string): string => {
   if (!name) return 'Other';
+  
+  // Use enhanced analysis if description is available
+  if (description) {
+    const analysis = analyzeProductDescription(name, description, price);
+    
+    // Return the analyzed category with high confidence
+    if (analysis.confidence > 0.8) {
+      return analysis.category;
+    }
+  }
+  
+  // Fallback to original logic for compatibility
   const lowerName = name.toLowerCase();
   
   // Check for pack/set indicators first
   const isMultiPack = lowerName.includes('pack') || lowerName.includes('set') || 
                     lowerName.includes('bundle') || lowerName.includes('case') ||
-                    /\d+\s*(x|×)\s*\d+/i.test(lowerName); // patterns like "6x330ml"
+                    /\d+\s*(x|×)\s*\d+/i.test(lowerName);
   
   // Beer categories
   if (lowerName.includes('beer') || lowerName.includes('lager') || lowerName.includes('ale')) {
@@ -79,6 +93,16 @@ export const getCategoryFromName = (name: string, price: number): string => {
       return 'Tequila Premium Sets';
     }
     return 'Tequila';
+  }
+  
+  // Liqueur
+  if (lowerName.includes('liqueur')) {
+    return 'Liqueur';
+  }
+  
+  // Juice
+  if (lowerName.includes('juice')) {
+    return 'Juices';
   }
   
   // Default premium category for expensive items

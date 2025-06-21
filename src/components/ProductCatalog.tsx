@@ -7,24 +7,32 @@ import ProductsPagination from './ProductsPagination';
 import ProductLoadingSkeleton from './ProductLoadingSkeleton';
 import { useOptimizedProducts } from '@/hooks/useOptimizedProducts';
 import { useDebouncedSearch } from '@/hooks/useDebouncedSearch';
-import { usePagination } from '@/hooks/usePagination';
 import { Slider } from '@/components/ui/slider';
 
-// Fixed categories for filtering
+// Enhanced categories including new description-based ones
 const FIXED_CATEGORIES = [
   'All',
-  'Whisky',
+  'Beer',
+  '6-Packs & Beer Sets',
   'Wine',
-  'Beers',
-  'Champagne',
-  'Liqueur',
-  'Tequila',
-  'Gin',
-  'Cognac',
-  'Brandy',
-  'Rum',
+  'Wine Sets & Collections',
+  'Whiskey',
+  'Whiskey Collections',
   'Vodka',
-  'Juices'
+  'Vodka Premium Sets',
+  'Champagne',
+  'Champagne & Sparkling Sets',
+  'Gin',
+  'Gin Premium Collections',
+  'Cognac & Premium Brandy',
+  'Rum',
+  'Rum Collections',
+  'Tequila',
+  'Tequila Premium Sets',
+  'Liqueur',
+  'Juices',
+  'Premium Collection',
+  'Spirits'
 ];
 
 const ProductCatalog: React.FC = () => {
@@ -97,7 +105,7 @@ const ProductCatalog: React.FC = () => {
 
   const showPriceFilter = priceList.length > 1;
 
-  console.log('🔍 ProductCatalog OPTIMIZED:', {
+  console.log('🔍 ProductCatalog ENHANCED:', {
     productsCount: products.length,
     priceFilteredCount: priceFilteredProducts.length,
     loading,
@@ -166,7 +174,7 @@ const ProductCatalog: React.FC = () => {
           setShowAuditReport={setShowAuditReport}
         />
 
-        {/* Price Filter */}
+        {/* Enhanced Price Filter with Category Context */}
         {showPriceFilter && (
           <div className="max-w-2xl mx-auto mb-8">
             <div className="mb-2 flex justify-between items-center">
@@ -227,13 +235,18 @@ const ProductCatalog: React.FC = () => {
           />
         )}
 
-        {/* Show total results info */}
+        {/* Enhanced Results Info */}
         <div className="text-center mt-8">
           <p className="text-barrush-platinum/70 font-iphone">
             Showing {priceFilteredProducts.length} of {totalCount} products
             {debouncedSearchTerm && ` matching "${debouncedSearchTerm}"`}
             {selectedCategory !== 'All' && ` in ${selectedCategory}`}
           </p>
+          {selectedCategory !== 'All' && (
+            <p className="text-barrush-platinum/50 text-sm font-iphone mt-1">
+              Categories are now enhanced with description analysis for better accuracy
+            </p>
+          )}
         </div>
       </div>
     </section>

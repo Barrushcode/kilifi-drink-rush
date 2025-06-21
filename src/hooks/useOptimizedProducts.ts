@@ -41,7 +41,6 @@ export const useOptimizedProducts = ({
   const [error, setError] = useState<string | null>(null);
   const [totalCount, setTotalCount] = useState(0);
 
-  // Move fetchProducts inside useEffect to avoid dependency issues
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -80,7 +79,7 @@ export const useOptimizedProducts = ({
           return;
         }
 
-        // Batch process products with parallel image checks
+        // Process products with parallel image checks
         const processedProducts = await Promise.all(
           data.map(async (product: any, index: number) => {
             if (typeof product.Price !== 'number' || isNaN(product.Price)) {
@@ -91,10 +90,8 @@ export const useOptimizedProducts = ({
             const productPrice = product.Price;
             const description = product.Description || '';
 
-            // Parallel image check - try Supabase first, then fallback
-            const [storageImage] = await Promise.all([
-              getSupabaseProductImageUrl(product.Title || 'Unknown Product')
-            ]);
+            // Get Supabase image
+            const storageImage = await getSupabaseProductImageUrl(product.Title || 'Unknown Product');
 
             let productImage: string | null = null;
             if (storageImage) {
@@ -109,11 +106,8 @@ export const useOptimizedProducts = ({
               return null;
             }
 
-            let category = getCategoryFromName(product.Title || 'Unknown Product', productPrice);
-
-            if (description.toLowerCase().includes('beer')) {
-              category = 'Beer';
-            }
+            // Enhanced category detection using both name and description
+            let category = getCategoryFromName(product.Title || 'Unknown Product', productPrice, description);
 
             return {
               id: startIndex + index + 1,
@@ -160,7 +154,6 @@ export const useOptimizedProducts = ({
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
   const refetch = () => {
-    // Trigger re-fetch by updating a dependency
     setLoading(true);
   };
 
