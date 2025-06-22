@@ -12,29 +12,25 @@ export const useClientSideFilter = ({ products, searchTerm, selectedCategory }: 
   const filteredProducts = useMemo(() => {
     let filtered = [...products];
 
-    // Apply search filter - simple string matching
+    // Simple JavaScript string matching - no complex logic
     if (searchTerm && searchTerm.trim()) {
       const searchLower = searchTerm.toLowerCase().trim();
       filtered = filtered.filter(product => {
-        // Search in product name, category, and description of variants
+        // Basic string includes matching like plain JavaScript
         const nameMatch = product.baseName.toLowerCase().includes(searchLower);
         const categoryMatch = product.category.toLowerCase().includes(searchLower);
-        const variantMatch = product.variants.some(variant => 
-          variant.originalProduct.name.toLowerCase().includes(searchLower) ||
-          (variant.originalProduct.description && variant.originalProduct.description.toLowerCase().includes(searchLower))
-        );
+        const descriptionMatch = product.description && product.description.toLowerCase().includes(searchLower);
         
-        return nameMatch || categoryMatch || variantMatch;
+        return nameMatch || categoryMatch || descriptionMatch;
       });
     }
 
-    // Apply category filter
+    // Simple category matching
     if (selectedCategory !== 'All') {
       filtered = filtered.filter(product => {
-        const productCategoryLC = product.category.toLowerCase();
-        const selectedCategoryLC = selectedCategory.toLowerCase();
-        return productCategoryLC.includes(selectedCategoryLC) || 
-               selectedCategoryLC.includes(productCategoryLC);
+        const productCategory = product.category.toLowerCase();
+        const selectedCategoryLower = selectedCategory.toLowerCase();
+        return productCategory.includes(selectedCategoryLower);
       });
     }
 
