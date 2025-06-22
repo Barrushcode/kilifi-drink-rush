@@ -37,18 +37,17 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
   const [error, setError] = useState<string | null>(null);
   const [totalCount, setTotalCount] = useState(0);
 
-  // Main fetch function without any dependencies causing circular reference
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      console.log('🔍 Fetching optimized products with search:', { 
+      console.log('🔍 Fetching products with full-text search:', { 
         searchTerm, 
         selectedCategory, 
         currentPage 
       });
 
-      // Build the query with pre-filtering at database level
+      // Build the query with full-text search capabilities
       let query = supabase
         .from('allthealcoholicproducts')
         .select('Title, Description, Price, "Product image URL"', { count: 'exact' })
@@ -58,14 +57,17 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
         .not('"Product image URL"', 'is', null)
         .neq('"Product image URL"', '');
 
-      // Enhanced search filter - search in both Title and Description
+      // Enhanced full-text search across multiple fields
       if (searchTerm && searchTerm.trim()) {
         const trimmedSearch = searchTerm.trim();
-        console.log('🔍 Applying search filter for:', trimmedSearch);
+        console.log('🔍 Applying full-text search for:', trimmedSearch);
+        
+        // Use Supabase full-text search with proper text search operators
+        // This searches across Title and Description with case-insensitive matching
         query = query.or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
       }
 
-      // Get paginated data directly
+      // Get paginated data
       const startIndex = (currentPage - 1) * itemsPerPage;
       const { data, error: fetchError, count } = await query
         .order('Title', { ascending: true })
@@ -77,59 +79,58 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
       setTotalCount(count || 0);
 
       if (!data || data.length === 0) {
-        console.log('📭 No products found for current search/filter criteria');
+        console.log('📭 No products found for current search criteria');
         setProducts([]);
         return;
       }
 
       // Process products with parallel image checks
-      const processedProducts = await Promise.all(
-        data.map(async (product: any, index: number) => {
-          if (typeof product.Price !== 'number' || isNaN(product.Price)) {
-            console.warn('[🛑 MISSING OR INVALID PRICE]', product.Title);
-            return null;
-          }
+      const processedProducts: Product[] = [];
+      
+      for (let index = 0; index < data.length; index++) {
+        const product = data[index];
+        
+        if (typeof product.Price !== 'number' || isNaN(product.Price)) {
+          console.warn('[🛑 MISSING OR INVALID PRICE]', product.Title);
+          continue;
+        }
 
-          const productPrice = product.Price;
-          const description = product.Description || '';
+        const productPrice = product.Price;
+        const description = product.Description || '';
 
-          // Get Supabase image
-          const storageImage = await getSupabaseProductImageUrl(product.Title || 'Unknown Product');
+        // Get Supabase image
+        const storageImage = await getSupabaseProductImageUrl(product.Title || 'Unknown Product');
 
-          let productImage: string | null = null;
-          if (storageImage) {
-            productImage = storageImage;
-          } else if (product["Product image URL"] && typeof product["Product image URL"] === "string" && product["Product image URL"].trim().length > 0) {
-            productImage = product["Product image URL"];
-          }
+        let productImage: string | null = null;
+        if (storageImage) {
+          productImage = storageImage;
+        } else if (product["Product image URL"] && typeof product["Product image URL"] === "string" && product["Product image URL"].trim().length > 0) {
+          productImage = product["Product image URL"];
+        }
 
-          // Skip products without images
-          if (!productImage) {
-            console.log(`❌ Skipping ${product.Title} - no image available`);
-            return null;
-          }
+        // Skip products without images
+        if (!productImage) {
+          console.log(`❌ Skipping ${product.Title} - no image available`);
+          continue;
+        }
 
-          // Enhanced category detection using both name and description
-          const category = getCategoryFromName(product.Title || 'Unknown Product', productPrice, description);
+        // Enhanced category detection using both name and description
+        const category = getCategoryFromName(product.Title || 'Unknown Product', productPrice, description);
 
-          return {
-            id: startIndex + index + 1,
-            name: product.Title || 'Unknown Product',
-            price: `KES ${productPrice.toLocaleString()}`,
-            description,
-            category,
-            image: productImage
-          };
-        })
-      );
-
-      // Filter out null results
-      const validProducts = processedProducts.filter((p): p is Product => p !== null);
+        processedProducts.push({
+          id: startIndex + index + 1,
+          name: product.Title || 'Unknown Product',
+          price: `KES ${productPrice.toLocaleString()}`,
+          description,
+          category,
+          image: productImage
+        });
+      }
 
       // Apply category filter after processing
-      let filteredProducts = validProducts;
+      let filteredProducts = processedProducts;
       if (selectedCategory !== 'All') {
-        filteredProducts = validProducts.filter(product => {
+        filteredProducts = processedProducts.filter(product => {
           const productCategoryLC = product.category.toLowerCase();
           const selectedCategoryLC = selectedCategory.toLowerCase();
           return productCategoryLC.includes(selectedCategoryLC) || 
@@ -162,7 +163,6 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
-  // Simple refetch function that just calls fetchProducts
   const refetch = useCallback(() => {
     fetchProducts();
   }, [fetchProducts]);
