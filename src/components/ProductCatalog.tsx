@@ -8,6 +8,7 @@ import ProductsPagination from './ProductsPagination';
 import ProductLoadingSkeleton from './ProductLoadingSkeleton';
 import { useOptimizedProducts } from '@/hooks/useOptimizedProducts';
 import { useDebouncedSearch } from '@/hooks/useDebouncedSearch';
+import { useClientSideFilter } from '@/hooks/useClientSideFilter';
 import { Slider } from '@/components/ui/slider';
 
 // Enhanced categories including new description-based ones
@@ -38,6 +39,7 @@ const FIXED_CATEGORIES = [
 
 const ProductCatalog: React.FC = () => {
   const [searchInput, setSearchInput] = useState('');
+  const [clientSearchInput, setClientSearchInput] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
   const [showAuditReport, setShowAuditReport] = useState(false);
@@ -61,9 +63,16 @@ const ProductCatalog: React.FC = () => {
     itemsPerPage
   });
 
+  // Client-side filtering for live search
+  const clientFilteredProducts = useClientSideFilter({
+    products,
+    searchTerm: clientSearchInput,
+    selectedCategory
+  });
+
   // Price filtering (client-side for now since we have limited data per page)
   const priceList = useMemo(() => {
-    return products
+    return clientFilteredProducts
       .map(product => {
         return product.lowestPrice
           ? typeof product.lowestPrice === 'number'
@@ -73,7 +82,7 @@ const ProductCatalog: React.FC = () => {
       })
       .filter(price => !isNaN(price) && price > 0)
       .sort((a, b) => a - b);
-  }, [products]);
+  }, [clientFilteredProducts]);
 
   const minPriceAvailable = priceList.length > 0 ? priceList[0] : 0;
   const maxPriceAvailable = priceList.length > 0 ? priceList[priceList.length - 1] : 100000;
@@ -89,7 +98,7 @@ const ProductCatalog: React.FC = () => {
 
   // Price filtering
   const priceFilteredProducts = useMemo(() => {
-    return products.filter(prod => {
+    return clientFilteredProducts.filter(prod => {
       const priceNum = prod.lowestPrice
         ? typeof prod.lowestPrice === 'number'
           ? prod.lowestPrice
@@ -97,7 +106,7 @@ const ProductCatalog: React.FC = () => {
         : 0;
       return priceNum >= priceRange[0] && priceNum <= priceRange[1];
     });
-  }, [products, priceRange]);
+  }, [clientFilteredProducts, priceRange]);
 
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -109,10 +118,12 @@ const ProductCatalog: React.FC = () => {
   // Enhanced debug logging for search functionality
   console.log('🔍 ProductCatalog Search Debug:', {
     searchInput,
+    clientSearchInput,
     debouncedSearchTerm,
     selectedCategory,
     currentPage,
     productsCount: products.length,
+    clientFilteredCount: clientFilteredProducts.length,
     priceFilteredCount: priceFilteredProducts.length,
     totalCount,
     totalPages,
@@ -167,8 +178,8 @@ const ProductCatalog: React.FC = () => {
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-16 xl:px-20 2xl:px-0 relative z-10">
         <ProductCatalogHeader
-          searchTerm={searchInput}
-          setSearchTerm={setSearchInput}
+          searchTerm={clientSearchInput}
+          setSearchTerm={setClientSearchInput}
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
           categories={FIXED_CATEGORIES}
@@ -176,16 +187,13 @@ const ProductCatalog: React.FC = () => {
           setShowAuditReport={setShowAuditReport}
         />
 
-        {/* Real-time search feedback */}
-        {searchInput && (
+        {/* Real-time search feedback for client-side filtering */}
+        {clientSearchInput && (
           <div className="text-center mb-4">
             <p className="text-barrush-platinum/80 font-iphone text-sm">
-              {loading ? 
-                `🔍 Searching for "${searchInput}"...` : 
-                `Found ${totalCount} results for "${searchInput}"`
-              }
+              Found {priceFilteredProducts.length} results for "{clientSearchInput}" (live filtered)
             </p>
-            {!loading && totalCount === 0 && (
+            {priceFilteredProducts.length === 0 && (
               <p className="text-barrush-platinum/60 font-iphone text-xs mt-1">
                 Try searching for wine, beer, whiskey, or other spirits
               </p>
@@ -227,7 +235,7 @@ const ProductCatalog: React.FC = () => {
           filteredProducts={priceFilteredProducts}
           paginatedProducts={priceFilteredProducts}
           selectedCategory={selectedCategory}
-          searchTerm={debouncedSearchTerm}
+          searchTerm={clientSearchInput}
         />
         
         <div className="w-full">
@@ -235,35 +243,25 @@ const ProductCatalog: React.FC = () => {
             paginatedProducts={priceFilteredProducts}
             filteredProducts={priceFilteredProducts}
             loading={loading}
-            searchTerm={searchInput}
-            setSearchTerm={setSearchInput}
+            searchTerm={clientSearchInput}
+            setSearchTerm={setClientSearchInput}
             setSelectedCategory={setSelectedCategory}
           />
         </div>
 
-        {totalPages > 1 && (
-          <ProductsPagination
-            totalPages={totalPages}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            hasNextPage={currentPage < totalPages}
-            hasPreviousPage={currentPage > 1}
-            startIndex={(currentPage - 1) * itemsPerPage}
-            endIndex={Math.min(currentPage * itemsPerPage, totalCount)}
-            filteredProductsLength={totalCount}
-          />
-        )}
-
+        {/* Note: Pagination is disabled for client-side filtering since we show all filtered results */}
+        
         {/* Enhanced Results Info with Search Context */}
         <div className="text-center mt-8">
           <p className="text-barrush-platinum/70 font-iphone">
-            Showing {priceFilteredProducts.length} of {totalCount} products
-            {debouncedSearchTerm && ` matching "${debouncedSearchTerm}"`}
+            Showing {priceFilteredProducts.length} products
+            {clientSearchInput && ` matching "${clientSearchInput}"`}
             {selectedCategory !== 'All' && ` in ${selectedCategory}`}
+            {clientSearchInput && ' (live filtered)'}
           </p>
           {selectedCategory !== 'All' && (
             <p className="text-barrush-platinum/50 text-sm font-iphone mt-1">
-              Search includes both product names and descriptions for better results
+              Live search includes product names, categories, and descriptions
             </p>
           )}
         </div>
