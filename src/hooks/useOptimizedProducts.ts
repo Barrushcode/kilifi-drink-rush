@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getCategoryFromName } from '@/utils/categoryUtils';
 import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
@@ -36,30 +36,21 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [totalCount, setTotalCount] = useState(0);
-  
-  // Use refs to avoid dependency issues
-  const searchTermRef = useRef(searchTerm);
-  const selectedCategoryRef = useRef(selectedCategory);
-  const currentPageRef = useRef(currentPage);
-  const itemsPerPageRef = useRef(itemsPerPage);
 
-  // Update refs when params change
-  useEffect(() => {
-    searchTermRef.current = searchTerm;
-    selectedCategoryRef.current = selectedCategory;
-    currentPageRef.current = currentPage;
-    itemsPerPageRef.current = itemsPerPage;
-  }, [searchTerm, selectedCategory, currentPage, itemsPerPage]);
-
-  // Stable fetchProducts function using useCallback with minimal dependencies
-  const fetchProducts = useCallback(async () => {
+  // Stable fetchProducts function with direct parameter access
+  const fetchProducts = useCallback(async (
+    searchTermValue: string,
+    selectedCategoryValue: string,
+    currentPageValue: number,
+    itemsPerPageValue: number
+  ) => {
     try {
       setLoading(true);
       setError(null);
       console.log('🔍 Fetching optimized products with search:', { 
-        searchTerm: searchTermRef.current, 
-        selectedCategory: selectedCategoryRef.current, 
-        currentPage: currentPageRef.current 
+        searchTerm: searchTermValue, 
+        selectedCategory: selectedCategoryValue, 
+        currentPage: currentPageValue 
       });
 
       // Build the query with pre-filtering at database level
@@ -73,21 +64,21 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
         .neq('"Product image URL"', '');
 
       // Enhanced search filter - search in both Title and Description
-      if (searchTermRef.current && searchTermRef.current.trim()) {
-        const trimmedSearch = searchTermRef.current.trim();
+      if (searchTermValue && searchTermValue.trim()) {
+        const trimmedSearch = searchTermValue.trim();
         console.log('🔍 Applying search filter for:', trimmedSearch);
         query = query.or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
       }
 
       // Get paginated data directly
-      const startIndex = (currentPageRef.current - 1) * itemsPerPageRef.current;
+      const startIndex = (currentPageValue - 1) * itemsPerPageValue;
       const { data, error: fetchError, count } = await query
         .order('Title', { ascending: true })
-        .range(startIndex, startIndex + itemsPerPageRef.current - 1);
+        .range(startIndex, startIndex + itemsPerPageValue - 1);
 
       if (fetchError) throw fetchError;
 
-      console.log(`📦 Fetched ${data?.length || 0} products for page ${currentPageRef.current} (total: ${count})`);
+      console.log(`📦 Fetched ${data?.length || 0} products for page ${currentPageValue} (total: ${count})`);
       setTotalCount(count || 0);
 
       if (!data || data.length === 0) {
@@ -142,10 +133,10 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
 
       // Apply category filter after processing
       let filteredProducts = validProducts;
-      if (selectedCategoryRef.current !== 'All') {
+      if (selectedCategoryValue !== 'All') {
         filteredProducts = validProducts.filter(product => {
           const productCategoryLC = product.category.toLowerCase();
-          const selectedCategoryLC = selectedCategoryRef.current.toLowerCase();
+          const selectedCategoryLC = selectedCategoryValue.toLowerCase();
           return productCategoryLC.includes(selectedCategoryLC) || 
                  selectedCategoryLC.includes(productCategoryLC);
         });
@@ -154,8 +145,8 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
       const groupedProducts = groupProductsByBaseName(filteredProducts);
       
       console.log(`✨ Search results: ${groupedProducts.length} grouped products found`);
-      if (searchTermRef.current) {
-        console.log(`🎯 Search term "${searchTermRef.current}" matched ${groupedProducts.length} results`);
+      if (searchTermValue) {
+        console.log(`🎯 Search term "${searchTermValue}" matched ${groupedProducts.length} results`);
       }
       
       setProducts(groupedProducts);
@@ -167,18 +158,18 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
     } finally {
       setLoading(false);
     }
-  }, []); // Empty dependency array since we're using refs
+  }, []); // Empty dependency array is safe now
 
   // Effect to trigger fetch when params change
   useEffect(() => {
-    fetchProducts();
+    fetchProducts(searchTerm, selectedCategory, currentPage, itemsPerPage);
   }, [searchTerm, selectedCategory, currentPage, itemsPerPage, fetchProducts]);
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
   const refetch = useCallback(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+    fetchProducts(searchTerm, selectedCategory, currentPage, itemsPerPage);
+  }, [searchTerm, selectedCategory, currentPage, itemsPerPage, fetchProducts]);
 
   return {
     products,
