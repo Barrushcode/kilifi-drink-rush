@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import ProductCatalogHeader from './ProductCatalogHeader';
@@ -43,7 +44,7 @@ const ProductCatalog: React.FC = () => {
   const itemsPerPage = 12;
 
   // Faster debounce for better UX
-  const debouncedSearchTerm = useDebouncedSearch(searchInput, 100);
+  const debouncedSearchTerm = useDebouncedSearch(searchInput, 300);
 
   // Use the optimized products hook
   const { 
@@ -175,15 +176,20 @@ const ProductCatalog: React.FC = () => {
           setShowAuditReport={setShowAuditReport}
         />
 
-        {/* Enhanced search feedback */}
-        {debouncedSearchTerm && (
+        {/* Real-time search feedback */}
+        {searchInput && (
           <div className="text-center mb-4">
             <p className="text-barrush-platinum/80 font-iphone text-sm">
               {loading ? 
-                `🔍 Searching for "${debouncedSearchTerm}"...` : 
-                `Found ${totalCount} results for "${debouncedSearchTerm}"`
+                `🔍 Searching for "${searchInput}"...` : 
+                `Found ${totalCount} results for "${searchInput}"`
               }
             </p>
+            {!loading && totalCount === 0 && (
+              <p className="text-barrush-platinum/60 font-iphone text-xs mt-1">
+                Try searching for wine, beer, whiskey, or other spirits
+              </p>
+            )}
           </div>
         )}
 
