@@ -1,5 +1,5 @@
 
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { GroupedProduct } from '@/utils/productGroupingUtils';
 
 interface UseClientSideFilterProps {
@@ -12,7 +12,7 @@ export const useClientSideFilter = ({ products, searchTerm, selectedCategory }: 
   const filteredProducts = useMemo(() => {
     let filtered = [...products];
 
-    // Apply search filter
+    // Apply search filter - simple string matching
     if (searchTerm && searchTerm.trim()) {
       const searchLower = searchTerm.toLowerCase().trim();
       filtered = filtered.filter(product => {

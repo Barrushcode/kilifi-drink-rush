@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getCategoryFromName } from '@/utils/categoryUtils';
 import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
@@ -37,8 +37,8 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
   const [error, setError] = useState<string | null>(null);
   const [totalCount, setTotalCount] = useState(0);
 
-  // Main fetch function without any dependencies causing circular reference
-  const fetchProducts = useCallback(async () => {
+  // Simple fetch function without useCallback to avoid circular dependencies
+  const fetchProducts = async () => {
     try {
       setLoading(true);
       setError(null);
@@ -153,19 +153,19 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
     } finally {
       setLoading(false);
     }
-  }, [searchTerm, selectedCategory, currentPage, itemsPerPage]);
+  };
 
   // Effect to trigger fetch when params change
   useEffect(() => {
     fetchProducts();
-  }, [fetchProducts]);
+  }, [searchTerm, selectedCategory, currentPage, itemsPerPage]);
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
-  // Simple refetch function that just calls fetchProducts
-  const refetch = useCallback(() => {
+  // Simple refetch function
+  const refetch = () => {
     fetchProducts();
-  }, [fetchProducts]);
+  };
 
   return {
     products,
