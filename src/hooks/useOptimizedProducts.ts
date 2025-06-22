@@ -37,20 +37,15 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
   const [error, setError] = useState<string | null>(null);
   const [totalCount, setTotalCount] = useState(0);
 
-  // Stable fetchProducts function with direct parameter access
-  const fetchProducts = useCallback(async (
-    searchTermValue: string,
-    selectedCategoryValue: string,
-    currentPageValue: number,
-    itemsPerPageValue: number
-  ) => {
+  // Main fetch function without any dependencies causing circular reference
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       console.log('🔍 Fetching optimized products with search:', { 
-        searchTerm: searchTermValue, 
-        selectedCategory: selectedCategoryValue, 
-        currentPage: currentPageValue 
+        searchTerm, 
+        selectedCategory, 
+        currentPage 
       });
 
       // Build the query with pre-filtering at database level
@@ -64,21 +59,21 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
         .neq('"Product image URL"', '');
 
       // Enhanced search filter - search in both Title and Description
-      if (searchTermValue && searchTermValue.trim()) {
-        const trimmedSearch = searchTermValue.trim();
+      if (searchTerm && searchTerm.trim()) {
+        const trimmedSearch = searchTerm.trim();
         console.log('🔍 Applying search filter for:', trimmedSearch);
         query = query.or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
       }
 
       // Get paginated data directly
-      const startIndex = (currentPageValue - 1) * itemsPerPageValue;
+      const startIndex = (currentPage - 1) * itemsPerPage;
       const { data, error: fetchError, count } = await query
         .order('Title', { ascending: true })
-        .range(startIndex, startIndex + itemsPerPageValue - 1);
+        .range(startIndex, startIndex + itemsPerPage - 1);
 
       if (fetchError) throw fetchError;
 
-      console.log(`📦 Fetched ${data?.length || 0} products for page ${currentPageValue} (total: ${count})`);
+      console.log(`📦 Fetched ${data?.length || 0} products for page ${currentPage} (total: ${count})`);
       setTotalCount(count || 0);
 
       if (!data || data.length === 0) {
@@ -133,10 +128,10 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
 
       // Apply category filter after processing
       let filteredProducts = validProducts;
-      if (selectedCategoryValue !== 'All') {
+      if (selectedCategory !== 'All') {
         filteredProducts = validProducts.filter(product => {
           const productCategoryLC = product.category.toLowerCase();
-          const selectedCategoryLC = selectedCategoryValue.toLowerCase();
+          const selectedCategoryLC = selectedCategory.toLowerCase();
           return productCategoryLC.includes(selectedCategoryLC) || 
                  selectedCategoryLC.includes(productCategoryLC);
         });
@@ -145,8 +140,8 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
       const groupedProducts = groupProductsByBaseName(filteredProducts);
       
       console.log(`✨ Search results: ${groupedProducts.length} grouped products found`);
-      if (searchTermValue) {
-        console.log(`🎯 Search term "${searchTermValue}" matched ${groupedProducts.length} results`);
+      if (searchTerm) {
+        console.log(`🎯 Search term "${searchTerm}" matched ${groupedProducts.length} results`);
       }
       
       setProducts(groupedProducts);
@@ -158,18 +153,19 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
     } finally {
       setLoading(false);
     }
-  }, []); // Empty dependency array is safe now
+  }, [searchTerm, selectedCategory, currentPage, itemsPerPage]);
 
   // Effect to trigger fetch when params change
   useEffect(() => {
-    fetchProducts(searchTerm, selectedCategory, currentPage, itemsPerPage);
-  }, [searchTerm, selectedCategory, currentPage, itemsPerPage, fetchProducts]);
+    fetchProducts();
+  }, [fetchProducts]);
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
+  // Simple refetch function that just calls fetchProducts
   const refetch = useCallback(() => {
-    fetchProducts(searchTerm, selectedCategory, currentPage, itemsPerPage);
-  }, [searchTerm, selectedCategory, currentPage, itemsPerPage, fetchProducts]);
+    fetchProducts();
+  }, [fetchProducts]);
 
   return {
     products,
