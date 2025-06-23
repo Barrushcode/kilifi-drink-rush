@@ -37,17 +37,17 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
   const [error, setError] = useState<string | null>(null);
   const [totalCount, setTotalCount] = useState(0);
 
-  const fetchProducts = useCallback(async () => {
+  const fetchProducts = async () => {
     try {
       setLoading(true);
       setError(null);
-      console.log('🔍 Fetching products with full-text search:', { 
+      console.log('🔍 Fetching products with category filter:', { 
         searchTerm, 
         selectedCategory, 
         currentPage 
       });
 
-      // Build the query with full-text search capabilities
+      // Build the query with category-based description filtering
       let query = supabase
         .from('allthealcoholicproducts')
         .select('Title, Description, Price, "Product image URL"', { count: 'exact' })
@@ -57,13 +57,16 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
         .not('"Product image URL"', 'is', null)
         .neq('"Product image URL"', '');
 
-      // Enhanced full-text search across multiple fields
+      // Apply category filter on description field
+      if (selectedCategory !== 'All') {
+        console.log('🏷️ Applying category filter on description:', selectedCategory);
+        query = query.ilike('Description', `%${selectedCategory}%`);
+      }
+
+      // Apply search filter if provided
       if (searchTerm && searchTerm.trim()) {
         const trimmedSearch = searchTerm.trim();
-        console.log('🔍 Applying full-text search for:', trimmedSearch);
-        
-        // Use Supabase full-text search with proper text search operators
-        // This searches across Title and Description with case-insensitive matching
+        console.log('🔍 Applying search filter:', trimmedSearch);
         query = query.or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
       }
 
@@ -79,12 +82,12 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
       setTotalCount(count || 0);
 
       if (!data || data.length === 0) {
-        console.log('📭 No products found for current search criteria');
+        console.log('📭 No products found for current criteria');
         setProducts([]);
         return;
       }
 
-      // Process products with parallel image checks
+      // Process products
       const processedProducts: Product[] = [];
       
       for (let index = 0; index < data.length; index++) {
@@ -127,22 +130,11 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
         });
       }
 
-      // Apply category filter after processing
-      let filteredProducts = processedProducts;
-      if (selectedCategory !== 'All') {
-        filteredProducts = processedProducts.filter(product => {
-          const productCategoryLC = product.category.toLowerCase();
-          const selectedCategoryLC = selectedCategory.toLowerCase();
-          return productCategoryLC.includes(selectedCategoryLC) || 
-                 selectedCategoryLC.includes(productCategoryLC);
-        });
-      }
-
-      const groupedProducts = groupProductsByBaseName(filteredProducts);
+      const groupedProducts = groupProductsByBaseName(processedProducts);
       
-      console.log(`✨ Search results: ${groupedProducts.length} grouped products found`);
-      if (searchTerm) {
-        console.log(`🎯 Search term "${searchTerm}" matched ${groupedProducts.length} results`);
+      console.log(`✨ Category filter results: ${groupedProducts.length} grouped products found`);
+      if (selectedCategory !== 'All') {
+        console.log(`🎯 Category "${selectedCategory}" matched ${groupedProducts.length} results`);
       }
       
       setProducts(groupedProducts);
@@ -154,18 +146,18 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
     } finally {
       setLoading(false);
     }
-  }, [searchTerm, selectedCategory, currentPage, itemsPerPage]);
+  };
 
   // Effect to trigger fetch when params change
   useEffect(() => {
     fetchProducts();
-  }, [fetchProducts]);
+  }, [searchTerm, selectedCategory, currentPage, itemsPerPage]);
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
   const refetch = useCallback(() => {
     fetchProducts();
-  }, [fetchProducts]);
+  }, [searchTerm, selectedCategory, currentPage, itemsPerPage]);
 
   return {
     products,

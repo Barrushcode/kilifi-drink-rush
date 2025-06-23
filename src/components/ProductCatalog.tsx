@@ -7,7 +7,6 @@ import ProductGrid from './ProductGrid';
 import ProductsPagination from './ProductsPagination';
 import ProductLoadingSkeleton from './ProductLoadingSkeleton';
 import { useOptimizedProducts } from '@/hooks/useOptimizedProducts';
-import { useFullTextSearch } from '@/hooks/useFullTextSearch';
 import { useDebouncedSearch } from '@/hooks/useDebouncedSearch';
 import { Slider } from '@/components/ui/slider';
 
@@ -44,36 +43,23 @@ const ProductCatalog: React.FC = () => {
   const [showAuditReport, setShowAuditReport] = useState(false);
   const itemsPerPage = 12;
 
-  // Faster debounce for better UX
+  // Debounce search for better UX
   const debouncedSearchTerm = useDebouncedSearch(searchInput, 300);
 
-  // Use full-text search when there's a search term
+  // Use optimized products hook with category filtering
   const { 
-    searchResults, 
-    isSearching, 
-    searchError,
-    hasSearched 
-  } = useFullTextSearch(debouncedSearchTerm);
-
-  // Use regular products when not searching
-  const { 
-    products: regularProducts, 
-    loading: regularLoading, 
-    error: regularError, 
+    products, 
+    loading, 
+    error, 
     totalCount, 
     totalPages,
     refetch 
   } = useOptimizedProducts({
-    searchTerm: hasSearched ? '' : debouncedSearchTerm, // Don't double-search
+    searchTerm: debouncedSearchTerm,
     selectedCategory,
     currentPage,
     itemsPerPage
   });
-
-  // Determine which products to show
-  const products = hasSearched ? searchResults : regularProducts;
-  const loading = hasSearched ? isSearching : regularLoading;
-  const error = hasSearched ? searchError : regularError;
 
   // Price filtering (client-side for now since we have limited data per page)
   const priceList = useMemo(() => {
@@ -120,17 +106,15 @@ const ProductCatalog: React.FC = () => {
 
   const showPriceFilter = priceList.length > 1;
 
-  // Enhanced debug logging for search functionality
-  console.log('🔍 ProductCatalog Search Debug:', {
+  // Enhanced debug logging
+  console.log('🔍 ProductCatalog Debug:', {
     searchInput,
     debouncedSearchTerm,
-    hasSearched,
-    isSearching,
     selectedCategory,
     currentPage,
     productsCount: products.length,
     priceFilteredCount: priceFilteredProducts.length,
-    totalCount: hasSearched ? searchResults.length : totalCount,
+    totalCount,
     loading,
     error
   });
@@ -145,7 +129,9 @@ const ProductCatalog: React.FC = () => {
             </h2>
             <div className="w-16 lg:w-20 h-px bg-barrush-copper mx-auto my-6"></div>
             <p className="text-lg lg:text-xl text-barrush-platinum/90 max-w-3xl mx-auto mb-4 leading-relaxed font-iphone">
-              {hasSearched ? `Searching for "${debouncedSearchTerm}"...` : 'Loading our curated selection...'}
+              {debouncedSearchTerm ? `Searching for "${debouncedSearchTerm}"...` : 
+               selectedCategory !== 'All' ? `Loading ${selectedCategory} products...` : 
+               'Loading our curated selection...'}
             </p>
           </div>
           <ProductLoadingSkeleton />
@@ -191,20 +177,18 @@ const ProductCatalog: React.FC = () => {
           setShowAuditReport={setShowAuditReport}
         />
 
-        {/* Real-time search feedback */}
-        {searchInput && (
+        {/* Real-time search and category feedback */}
+        {(searchInput || selectedCategory !== 'All') && (
           <div className="text-center mb-4">
             <p className="text-barrush-platinum/80 font-iphone text-sm">
               {loading ? 
-                `🔍 Searching for "${searchInput}"...` : 
-                hasSearched ? 
-                  `Found ${products.length} results for "${searchInput}"` :
-                  `Found ${totalCount} results for "${searchInput}"`
+                `🔍 ${searchInput ? `Searching for "${searchInput}"` : `Filtering ${selectedCategory}`}...` : 
+                `Found ${totalCount} results${searchInput ? ` for "${searchInput}"` : ''}${selectedCategory !== 'All' ? ` in ${selectedCategory}` : ''}`
               }
             </p>
             {!loading && products.length === 0 && (
               <p className="text-barrush-platinum/60 font-iphone text-xs mt-1">
-                Try searching for "Johnnie Walker", "wine", "beer", "whiskey", or other spirits
+                Try searching for "Johnnie Walker", "wine", "beer", "whiskey", or select a different category
               </p>
             )}
           </div>
@@ -258,7 +242,7 @@ const ProductCatalog: React.FC = () => {
           />
         </div>
 
-        {!hasSearched && totalPages > 1 && (
+        {totalPages > 1 && (
           <ProductsPagination
             totalPages={totalPages}
             currentPage={currentPage}
@@ -271,18 +255,16 @@ const ProductCatalog: React.FC = () => {
           />
         )}
 
-        {/* Enhanced Results Info with Search Context */}
+        {/* Enhanced Results Info with Search and Category Context */}
         <div className="text-center mt-8">
           <p className="text-barrush-platinum/70 font-iphone">
-            Showing {priceFilteredProducts.length} of {hasSearched ? products.length : totalCount} products
+            Showing {priceFilteredProducts.length} of {totalCount} products
             {debouncedSearchTerm && ` matching "${debouncedSearchTerm}"`}
             {selectedCategory !== 'All' && ` in ${selectedCategory}`}
           </p>
-          {hasSearched && (
-            <p className="text-barrush-platinum/50 text-sm font-iphone mt-1">
-              Full-text search across product names and descriptions
-            </p>
-          )}
+          <p className="text-barrush-platinum/50 text-sm font-iphone mt-1">
+            Dynamic filtering from Supabase database
+          </p>
         </div>
       </div>
     </section>
