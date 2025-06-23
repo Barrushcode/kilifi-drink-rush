@@ -59,37 +59,52 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           currentPage 
         });
 
-        // Build base query with explicit typing
-        let query = supabase
+        // Start with a fresh query builder for each request
+        const baseQuery = supabase
           .from('allthealcoholicproducts')
-          .select('Title, Description, Price, "Product image URL"', { count: 'exact' });
-
-        // Apply base filters
-        query = query
+          .select('Title, Description, Price, "Product image URL"', { count: 'exact' })
           .not('Price', 'is', null)
           .gte('Price', 100)
           .lte('Price', 500000)
           .not('"Product image URL"', 'is', null)
           .neq('"Product image URL"', '');
 
-        // Apply category filter
+        // Build filter conditions array
+        const filters: string[] = [];
+        
+        // Add category filter
         if (selectedCategory !== 'All') {
           console.log('🏷️ Applying category filter on description:', selectedCategory);
-          query = query.ilike('Description', `%${selectedCategory}%`);
+          filters.push(`Description.ilike.%${selectedCategory}%`);
         }
 
-        // Apply search filter if provided
+        // Add search filter
         if (searchTerm && searchTerm.trim()) {
           const trimmedSearch = searchTerm.trim();
           console.log('🔍 Applying search filter:', trimmedSearch);
-          query = query.or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
+          filters.push(`Title.ilike.%${trimmedSearch}%`);
+          filters.push(`Description.ilike.%${trimmedSearch}%`);
+        }
+
+        // Apply filters conditionally
+        let finalQuery = baseQuery;
+        
+        if (selectedCategory !== 'All') {
+          finalQuery = finalQuery.ilike('Description', `%${selectedCategory}%`);
+        }
+        
+        if (searchTerm && searchTerm.trim()) {
+          const trimmedSearch = searchTerm.trim();
+          finalQuery = finalQuery.or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
         }
 
         // Get paginated data
         const startIndex = (currentPage - 1) * itemsPerPage;
-        const { data, error: fetchError, count } = await query
+        const response = await finalQuery
           .order('Title', { ascending: true })
           .range(startIndex, startIndex + itemsPerPage - 1);
+
+        const { data, error: fetchError, count } = response;
 
         if (fetchError) throw fetchError;
         if (isCancelled) return;
