@@ -6,9 +6,11 @@ import ProductsDebugInfo from './ProductsDebugInfo';
 import ProductGrid from './ProductGrid';
 import ProductsPagination from './ProductsPagination';
 import ProductLoadingSkeleton from './ProductLoadingSkeleton';
+import ProductPriceFilter from './ProductPriceFilter';
+import ProductSearchFeedback from './ProductSearchFeedback';
+import ProductResultsInfo from './ProductResultsInfo';
 import { useOptimizedProducts } from '@/hooks/useOptimizedProducts';
 import { useDebouncedSearch } from '@/hooks/useDebouncedSearch';
-import { Slider } from '@/components/ui/slider';
 
 // Enhanced categories including new description-based ones
 const FIXED_CATEGORIES = [
@@ -177,51 +179,22 @@ const ProductCatalog: React.FC = () => {
           setShowAuditReport={setShowAuditReport}
         />
 
-        {/* Real-time search and category feedback */}
-        {(searchInput || selectedCategory !== 'All') && (
-          <div className="text-center mb-4">
-            <p className="text-barrush-platinum/80 font-iphone text-sm">
-              {loading ? 
-                `🔍 ${searchInput ? `Searching for "${searchInput}"` : `Filtering ${selectedCategory}`}...` : 
-                `Found ${totalCount} results${searchInput ? ` for "${searchInput}"` : ''}${selectedCategory !== 'All' ? ` in ${selectedCategory}` : ''}`
-              }
-            </p>
-            {!loading && products.length === 0 && (
-              <p className="text-barrush-platinum/60 font-iphone text-xs mt-1">
-                Try searching for "Johnnie Walker", "wine", "beer", "whiskey", or select a different category
-              </p>
-            )}
-          </div>
-        )}
+        <ProductSearchFeedback
+          searchInput={searchInput}
+          selectedCategory={selectedCategory}
+          loading={loading}
+          totalCount={totalCount}
+          productsLength={products.length}
+        />
 
-        {/* Enhanced Price Filter with Category Context */}
-        {showPriceFilter && (
-          <div className="max-w-2xl mx-auto mb-8">
-            <div className="mb-2 flex justify-between items-center">
-              <span className="text-barrush-platinum text-sm font-iphone">
-                Filter by price ({selectedCategory !== 'All' ? selectedCategory : 'All categories'})
-              </span>
-              <span className="text-barrush-platinum/80 text-xs">
-                {priceRange[0] === minPriceAvailable && priceRange[1] === maxPriceAvailable
-                  ? 'All Prices'
-                  : `KES ${priceRange[0].toLocaleString()} - KES ${priceRange[1].toLocaleString()}`}
-              </span>
-            </div>
-            <Slider
-              min={minPriceAvailable}
-              max={maxPriceAvailable}
-              step={100}
-              value={priceRange}
-              onValueChange={vals => setPriceRange([vals[0], vals[1]])}
-              className="w-full"
-              minStepsBetweenThumbs={1}
-            />
-            <div className="flex justify-between mt-1 text-xs text-barrush-platinum/70 font-iphone">
-              <span>KES {minPriceAvailable.toLocaleString()}</span>
-              <span>KES {maxPriceAvailable.toLocaleString()}</span>
-            </div>
-          </div>
-        )}
+        <ProductPriceFilter
+          priceRange={priceRange}
+          setPriceRange={setPriceRange}
+          minPriceAvailable={minPriceAvailable}
+          maxPriceAvailable={maxPriceAvailable}
+          selectedCategory={selectedCategory}
+          showPriceFilter={showPriceFilter}
+        />
 
         <ProductsDebugInfo
           products={products}
@@ -255,17 +228,14 @@ const ProductCatalog: React.FC = () => {
           />
         )}
 
-        {/* Enhanced Results Info with Search and Category Context */}
-        <div className="text-center mt-8">
-          <p className="text-barrush-platinum/70 font-iphone">
-            Showing {priceFilteredProducts.length} of {totalCount} products
-            {debouncedSearchTerm && ` matching "${debouncedSearchTerm}"`}
-            {selectedCategory !== 'All' && ` in ${selectedCategory}`}
-          </p>
-          <p className="text-barrush-platinum/50 text-sm font-iphone mt-1">
-            Dynamic filtering from Supabase database
-          </p>
-        </div>
+        <ProductResultsInfo
+          priceFilteredProductsLength={priceFilteredProducts.length}
+          totalCount={totalCount}
+          debouncedSearchTerm={debouncedSearchTerm}
+          selectedCategory={selectedCategory}
+          currentPage={currentPage}
+          itemsPerPage={itemsPerPage}
+        />
       </div>
     </section>
   );

@@ -37,7 +37,7 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
   const [error, setError] = useState<string | null>(null);
   const [totalCount, setTotalCount] = useState(0);
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -146,18 +146,14 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchTerm, selectedCategory, currentPage, itemsPerPage]);
 
   // Effect to trigger fetch when params change
   useEffect(() => {
     fetchProducts();
-  }, [searchTerm, selectedCategory, currentPage, itemsPerPage]);
+  }, [fetchProducts]);
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
-
-  const refetch = useCallback(() => {
-    fetchProducts();
-  }, [searchTerm, selectedCategory, currentPage, itemsPerPage]);
 
   return {
     products,
@@ -165,6 +161,6 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
     error,
     totalCount,
     totalPages,
-    refetch
+    refetch: fetchProducts
   };
 };
