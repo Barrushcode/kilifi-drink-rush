@@ -59,11 +59,13 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           currentPage 
         });
 
-        // Build the base query
-        const selectFields = 'Title, Description, Price, "Product image URL"';
-        const baseQueryBuilder = supabase
+        // Build base query with explicit typing
+        let query = supabase
           .from('allthealcoholicproducts')
-          .select(selectFields, { count: 'exact' })
+          .select('Title, Description, Price, "Product image URL"', { count: 'exact' });
+
+        // Apply base filters
+        query = query
           .not('Price', 'is', null)
           .gte('Price', 100)
           .lte('Price', 500000)
@@ -71,22 +73,21 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           .neq('"Product image URL"', '');
 
         // Apply category filter
-        let queryBuilder = baseQueryBuilder;
         if (selectedCategory !== 'All') {
           console.log('🏷️ Applying category filter on description:', selectedCategory);
-          queryBuilder = queryBuilder.ilike('Description', `%${selectedCategory}%`);
+          query = query.ilike('Description', `%${selectedCategory}%`);
         }
 
         // Apply search filter if provided
         if (searchTerm && searchTerm.trim()) {
           const trimmedSearch = searchTerm.trim();
           console.log('🔍 Applying search filter:', trimmedSearch);
-          queryBuilder = queryBuilder.or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
+          query = query.or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
         }
 
         // Get paginated data
         const startIndex = (currentPage - 1) * itemsPerPage;
-        const { data, error: fetchError, count } = await queryBuilder
+        const { data, error: fetchError, count } = await query
           .order('Title', { ascending: true })
           .range(startIndex, startIndex + itemsPerPage - 1);
 
