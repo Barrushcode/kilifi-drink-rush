@@ -45,7 +45,7 @@ const ProductCatalog: React.FC = () => {
   const [showAuditReport, setShowAuditReport] = useState(false);
   const itemsPerPage = 12;
 
-  // Debounce search for better UX
+  // Debounce search with 300ms delay for Supabase queries
   const debouncedSearchTerm = useDebouncedSearch(searchInput, 300);
 
   // Use optimized products hook with category filtering
