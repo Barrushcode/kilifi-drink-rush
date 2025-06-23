@@ -36,8 +36,8 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [totalCount, setTotalCount] = useState(0);
+  const [refetchTrigger, setRefetchTrigger] = useState(0);
 
-  // Effect to trigger fetch when params change
   useEffect(() => {
     let isCancelled = false;
 
@@ -51,7 +51,7 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           currentPage 
         });
 
-        // Build the query with category-based description filtering
+        // Build the query with only necessary fields for performance
         let query = supabase
           .from('allthealcoholicproducts')
           .select('Title, Description, Price, "Product image URL"', { count: 'exact' })
@@ -163,13 +163,12 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
     return () => {
       isCancelled = true;
     };
-  }, [searchTerm, selectedCategory, currentPage, itemsPerPage]);
+  }, [searchTerm, selectedCategory, currentPage, itemsPerPage, refetchTrigger]);
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
   const refetch = () => {
-    // Trigger re-fetch by updating a dependency
-    setLoading(true);
+    setRefetchTrigger(prev => prev + 1);
   };
 
   return {
