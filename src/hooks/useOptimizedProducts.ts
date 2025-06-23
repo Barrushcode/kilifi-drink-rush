@@ -30,6 +30,14 @@ interface UseOptimizedProductsReturn {
   refetch: () => void;
 }
 
+// Define the raw product type from Supabase
+interface RawProduct {
+  Title: string | null;
+  Description: string | null;
+  Price: number;
+  "Product image URL": string | null;
+}
+
 export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOptimizedProductsReturn => {
   const { searchTerm, selectedCategory, currentPage, itemsPerPage } = params;
   const [products, setProducts] = useState<GroupedProduct[]>([]);
@@ -52,7 +60,7 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
         });
 
         // Build the query with only necessary fields for performance
-        let query = supabase
+        const baseQuery = supabase
           .from('allthealcoholicproducts')
           .select('Title, Description, Price, "Product image URL"', { count: 'exact' })
           .not('Price', 'is', null)
@@ -62,6 +70,7 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           .neq('"Product image URL"', '');
 
         // Apply category filter on description field
+        let query = baseQuery;
         if (selectedCategory !== 'All') {
           console.log('🏷️ Applying category filter on description:', selectedCategory);
           query = query.ilike('Description', `%${selectedCategory}%`);
@@ -92,11 +101,11 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           return;
         }
 
-        // Process products
+        // Process products with explicit typing
         const processedProducts: Product[] = [];
         
         for (let index = 0; index < data.length; index++) {
-          const product = data[index];
+          const product = data[index] as RawProduct;
           
           if (typeof product.Price !== 'number' || isNaN(product.Price)) {
             console.warn('[🛑 MISSING OR INVALID PRICE]', product.Title);
