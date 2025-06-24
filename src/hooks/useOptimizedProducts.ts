@@ -59,43 +59,58 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           currentPage 
         });
 
-        // Build the query step by step to avoid TypeScript inference issues
-        const tableName = 'allthealcoholicproducts';
-        const selectColumns = 'Title, Description, Price, "Product image URL"';
-        
-        // Start with the most basic query
-        let queryBuilder = supabase
-          .from(tableName)
-          .select(selectColumns, { count: 'exact' });
+        // Build filters object to avoid type inference issues
+        const filters: any[] = [
+          ['Price', 'not.is', 'null'],
+          ['Price', 'gte', '100'],
+          ['Price', 'lte', '500000'],
+          ['"Product image URL"', 'not.is', 'null'],
+          ['"Product image URL"', 'neq', '']
+        ];
 
-        // Apply base filters one by one
-        queryBuilder = queryBuilder.not('Price', 'is', null);
-        queryBuilder = queryBuilder.gte('Price', 100);
-        queryBuilder = queryBuilder.lte('Price', 500000);
-        queryBuilder = queryBuilder.not('"Product image URL"', 'is', null);
-        queryBuilder = queryBuilder.neq('"Product image URL"', '');
-
-        // Apply category filter if not 'All'
+        // Add category filter if not 'All'
         if (selectedCategory !== 'All') {
           console.log('🏷️ Applying category filter on description:', selectedCategory);
-          queryBuilder = queryBuilder.ilike('Description', `%${selectedCategory}%`);
+          filters.push(['Description', 'ilike', `%${selectedCategory}%`]);
         }
         
-        // Apply search filter if provided
+        // Add search filter if provided
         if (searchTerm && searchTerm.trim()) {
           const trimmedSearch = searchTerm.trim();
           console.log('🔍 Applying search filter:', trimmedSearch);
-          queryBuilder = queryBuilder.or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
+          filters.push(['or', `Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`]);
         }
+
+        // Start with base query
+        let query = supabase
+          .from('allthealcoholicproducts')
+          .select('Title, Description, Price, "Product image URL"', { count: 'exact' });
+
+        // Apply all filters
+        filters.forEach(([column, operator, value]) => {
+          if (operator === 'or') {
+            query = query.or(value);
+          } else if (operator === 'not.is') {
+            query = query.not(column, 'is', value);
+          } else if (operator === 'gte') {
+            query = query.gte(column, value);
+          } else if (operator === 'lte') {
+            query = query.lte(column, value);
+          } else if (operator === 'neq') {
+            query = query.neq(column, value);
+          } else if (operator === 'ilike') {
+            query = query.ilike(column, value);
+          }
+        });
 
         // Add ordering and pagination
         const startIndex = (currentPage - 1) * itemsPerPage;
-        queryBuilder = queryBuilder.order('Title', { ascending: true });
-        queryBuilder = queryBuilder.range(startIndex, startIndex + itemsPerPage - 1);
+        query = query
+          .order('Title', { ascending: true })
+          .range(startIndex, startIndex + itemsPerPage - 1);
 
-        // Execute the query with explicit typing
-        const result = await queryBuilder;
-        const { data, error: fetchError, count } = result;
+        // Execute the query
+        const { data, error: fetchError, count } = await query;
 
         if (fetchError) throw fetchError;
         if (isCancelled) return;
