@@ -15,14 +15,14 @@ const ProductImageLoader: React.FC<ProductImageLoaderProps> = ({
   className = "",
   priority = false
 }) => {
-  // Add cache busting for product images to ensure fresh content
+  // Determine if cache busting is needed for external images
   const shouldBustCache = src.includes('drinksvine') || src.includes('Product image URL');
   
   return (
     <LazyProductImage
       src={src}
       alt={alt}
-      className={className}
+      className={`${className} rounded-lg`}
       priority={priority}
       bustCache={shouldBustCache}
     />

@@ -36,7 +36,8 @@ const LazyProductImage: React.FC<LazyProductImageProps> = ({
         }
       },
       {
-        rootMargin: '50px' // Start loading 50px before the image comes into view
+        rootMargin: '100px', // Increased for better UX - start loading earlier
+        threshold: 0.1
       }
     );
 
@@ -51,23 +52,28 @@ const LazyProductImage: React.FC<LazyProductImageProps> = ({
     setIsLoaded(true);
   };
 
+  const handleImageError = () => {
+    setIsLoaded(true); // Still hide skeleton even on error
+  };
+
   return (
     <div ref={imgRef} className={`relative ${className}`}>
       {!isLoaded && (
         <Skeleton 
-          className="absolute inset-0 bg-gray-700"
+          className="absolute inset-0 bg-gray-700 animate-pulse"
         />
       )}
       {isInView && (
         <OptimizedImage
           src={src}
           alt={alt}
-          className={`transition-opacity duration-300 ${
+          className={`transition-opacity duration-500 ${
             isLoaded ? 'opacity-100' : 'opacity-0'
           } ${className}`}
           priority={priority}
           bustCache={bustCache}
           onLoad={handleImageLoad}
+          onError={handleImageError}
         />
       )}
     </div>

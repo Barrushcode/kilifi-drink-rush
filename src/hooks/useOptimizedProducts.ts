@@ -59,58 +59,40 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           currentPage 
         });
 
-        // Build filters object to avoid type inference issues
-        const filters: any[] = [
-          ['Price', 'not.is', 'null'],
-          ['Price', 'gte', '100'],
-          ['Price', 'lte', '500000'],
-          ['"Product image URL"', 'not.is', 'null'],
-          ['"Product image URL"', 'neq', '']
-        ];
+        // Start with base query - simplified to avoid deep type instantiation
+        const baseQuery = supabase
+          .from('allthealcoholicproducts')
+          .select('Title, Description, Price, "Product image URL"', { count: 'exact' });
+
+        // Apply basic filters
+        let query = baseQuery
+          .not('Price', 'is', null)
+          .gte('Price', 100)
+          .lte('Price', 500000)
+          .not('"Product image URL"', 'is', null)
+          .neq('"Product image URL"', '');
 
         // Add category filter if not 'All'
         if (selectedCategory !== 'All') {
           console.log('🏷️ Applying category filter on description:', selectedCategory);
-          filters.push(['Description', 'ilike', `%${selectedCategory}%`]);
+          query = query.ilike('Description', `%${selectedCategory}%`);
         }
         
         // Add search filter if provided
         if (searchTerm && searchTerm.trim()) {
           const trimmedSearch = searchTerm.trim();
           console.log('🔍 Applying search filter:', trimmedSearch);
-          filters.push(['or', `Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`]);
+          query = query.or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
         }
-
-        // Start with base query
-        let query = supabase
-          .from('allthealcoholicproducts')
-          .select('Title, Description, Price, "Product image URL"', { count: 'exact' });
-
-        // Apply all filters
-        filters.forEach(([column, operator, value]) => {
-          if (operator === 'or') {
-            query = query.or(value);
-          } else if (operator === 'not.is') {
-            query = query.not(column, 'is', value);
-          } else if (operator === 'gte') {
-            query = query.gte(column, value);
-          } else if (operator === 'lte') {
-            query = query.lte(column, value);
-          } else if (operator === 'neq') {
-            query = query.neq(column, value);
-          } else if (operator === 'ilike') {
-            query = query.ilike(column, value);
-          }
-        });
 
         // Add ordering and pagination
         const startIndex = (currentPage - 1) * itemsPerPage;
-        query = query
+        const finalQuery = query
           .order('Title', { ascending: true })
           .range(startIndex, startIndex + itemsPerPage - 1);
 
         // Execute the query
-        const { data, error: fetchError, count } = await query;
+        const { data, error: fetchError, count } = await finalQuery;
 
         if (fetchError) throw fetchError;
         if (isCancelled) return;

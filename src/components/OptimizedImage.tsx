@@ -10,6 +10,7 @@ interface OptimizedImageProps {
   fallbackSrc?: string;
   bustCache?: boolean;
   onLoad?: () => void;
+  onError?: () => void;
 }
 
 const OptimizedImage: React.FC<OptimizedImageProps> = ({ 
@@ -17,19 +18,40 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   alt, 
   className = "",
   priority = false,
-  fallbackSrc = "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+  fallbackSrc = "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=60",
   bustCache = false,
-  onLoad
+  onLoad,
+  onError
 }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [imageSrc, setImageSrc] = useState(src);
+  const [imageSrc, setImageSrc] = useState('');
   const [retryCount, setRetryCount] = useState(0);
 
+  // Optimize image URL for better performance
+  const optimizeImageUrl = (url: string): string => {
+    // If it's an Unsplash image, add optimization parameters
+    if (url.includes('unsplash.com')) {
+      const optimizedUrl = new URL(url);
+      optimizedUrl.searchParams.set('w', '400');
+      optimizedUrl.searchParams.set('q', '75');
+      optimizedUrl.searchParams.set('auto', 'format');
+      optimizedUrl.searchParams.set('fit', 'crop');
+      return optimizedUrl.toString();
+    }
+    
+    // Add cache busting if requested
+    if (bustCache) {
+      const separator = url.includes('?') ? '&' : '?';
+      return `${url}${separator}t=${Date.now()}`;
+    }
+    
+    return url;
+  };
+
   useEffect(() => {
-    // Add cache busting parameter if requested
-    const cacheBustedSrc = bustCache ? `${src}?t=${Date.now()}` : src;
-    setImageSrc(cacheBustedSrc);
+    const optimizedSrc = optimizeImageUrl(src);
+    setImageSrc(optimizedSrc);
     setLoading(true);
     setError(false);
     setRetryCount(0);
@@ -49,11 +71,13 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     
     if (imageSrc !== fallbackSrc && retryCount < 1) {
       console.log('🔄 Trying fallback image:', fallbackSrc);
-      const cacheBustedFallback = bustCache ? `${fallbackSrc}?t=${Date.now()}` : fallbackSrc;
-      setImageSrc(cacheBustedFallback);
+      const optimizedFallback = optimizeImageUrl(fallbackSrc);
+      setImageSrc(optimizedFallback);
       setLoading(true);
       setError(false);
       setRetryCount(prev => prev + 1);
+    } else {
+      onError?.();
     }
   };
 
@@ -68,12 +92,17 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
       <img
         src={imageSrc}
         alt={alt}
-        className={`w-full h-full object-contain transition-opacity duration-300 ${
+        className={`w-full h-full object-contain transition-opacity duration-500 ${
           loading ? 'opacity-0' : 'opacity-100'
         }`}
         onLoad={handleImageLoad}
         onError={handleImageError}
         loading={priority ? "eager" : "lazy"}
+        decoding="async"
+        style={{
+          maxWidth: '100%',
+          height: 'auto'
+        }}
       />
       <div 
         className="absolute inset-0 transition-all duration-300"

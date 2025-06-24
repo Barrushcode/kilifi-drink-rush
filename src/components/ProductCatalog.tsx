@@ -43,7 +43,7 @@ const ProductCatalog: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
   const [showAuditReport, setShowAuditReport] = useState(false);
-  const itemsPerPage = 6; // Reduced from 12 to 6 for faster loading
+  const itemsPerPage = 8; // Optimized batch size for better performance
 
   // Use optimized products hook with manual search term
   const { 
