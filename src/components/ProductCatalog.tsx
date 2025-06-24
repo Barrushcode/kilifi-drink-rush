@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import ProductCatalogHeader from './ProductCatalogHeader';
@@ -42,7 +43,7 @@ const ProductCatalog: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
   const [showAuditReport, setShowAuditReport] = useState(false);
-  const itemsPerPage = 12;
+  const itemsPerPage = 6; // Reduced from 12 to 6 for faster loading
 
   // Debounce search with 700ms delay for slower typers
   const debouncedSearchTerm = useDebouncedSearch(searchInput, 700);
