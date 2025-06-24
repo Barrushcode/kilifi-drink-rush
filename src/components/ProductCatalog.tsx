@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import ProductCatalogHeader from './ProductCatalogHeader';
@@ -45,8 +44,8 @@ const ProductCatalog: React.FC = () => {
   const [showAuditReport, setShowAuditReport] = useState(false);
   const itemsPerPage = 12;
 
-  // Debounce search with 300ms delay for Supabase queries
-  const debouncedSearchTerm = useDebouncedSearch(searchInput, 300);
+  // Debounce search with 700ms delay for slower typers
+  const debouncedSearchTerm = useDebouncedSearch(searchInput, 700);
 
   // Use optimized products hook with category filtering
   const { 
