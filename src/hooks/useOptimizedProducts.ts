@@ -59,48 +59,40 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           currentPage 
         });
 
-        // Build query using separate variables to avoid deep type instantiation
-        const tableName = 'allthealcoholicproducts';
-        const selectColumns = 'Title, Description, Price, "Product image URL"';
-        const countOption = { count: 'exact' } as const;
+        // Start with base query - use simpler approach to avoid TypeScript issues
+        const baseQuery = supabase
+          .from('allthealcoholicproducts')
+          .select('Title, Description, Price, "Product image URL"', { count: 'exact' });
 
-        // Start with the basic query
-        const baseQuery = supabase.from(tableName).select(selectColumns, countOption);
-
-        // Apply filters step by step
-        const filteredQuery = baseQuery
+        // Apply base filters
+        let query = baseQuery
           .not('Price', 'is', null)
           .gte('Price', 100)
           .lte('Price', 500000)
           .not('"Product image URL"', 'is', null)
           .neq('"Product image URL"', '');
 
-        // Apply category filter conditionally
-        let categoryQuery = filteredQuery;
+        // Apply category filter if not 'All'
         if (selectedCategory !== 'All') {
           console.log('🏷️ Applying category filter on description:', selectedCategory);
-          categoryQuery = filteredQuery.ilike('Description', `%${selectedCategory}%`);
+          query = query.ilike('Description', `%${selectedCategory}%`);
         }
         
-        // Apply search filter conditionally
-        let searchQuery = categoryQuery;
+        // Apply search filter if provided
         if (searchTerm && searchTerm.trim()) {
           const trimmedSearch = searchTerm.trim();
           console.log('🔍 Applying search filter:', trimmedSearch);
-          searchQuery = categoryQuery.or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
+          query = query.or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
         }
 
         // Add ordering and pagination
         const startIndex = (currentPage - 1) * itemsPerPage;
-        const finalQuery = searchQuery
+        query = query
           .order('Title', { ascending: true })
           .range(startIndex, startIndex + itemsPerPage - 1);
 
         // Execute the query
-        const queryResult = await finalQuery;
-        const data = queryResult.data;
-        const fetchError = queryResult.error;
-        const count = queryResult.count;
+        const { data, error: fetchError, count } = await query;
 
         if (fetchError) throw fetchError;
         if (isCancelled) return;

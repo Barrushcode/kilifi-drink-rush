@@ -1,7 +1,9 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Search } from 'lucide-react';
 import ImageScrapingInterface from './ImageScrapingInterface';
-import { downloadMissingImagesCSV } from '@/utils/downloadMissingImagesCSV'; // <-- Add this import
+import { downloadMissingImagesCSV } from '@/utils/downloadMissingImagesCSV';
 
 interface ProductCatalogHeaderProps {
   searchTerm: string;
@@ -11,6 +13,8 @@ interface ProductCatalogHeaderProps {
   categories: string[];
   showAuditReport: boolean;
   setShowAuditReport: (show: boolean) => void;
+  onSearch: () => void;
+  onKeyPress: (e: React.KeyboardEvent) => void;
 }
 
 const ProductCatalogHeader: React.FC<ProductCatalogHeaderProps> = ({
@@ -20,7 +24,9 @@ const ProductCatalogHeader: React.FC<ProductCatalogHeaderProps> = ({
   setSelectedCategory,
   categories,
   showAuditReport,
-  setShowAuditReport
+  setShowAuditReport,
+  onSearch,
+  onKeyPress
 }) => {
   const [showImageScraping, setShowImageScraping] = useState(false);
 
@@ -36,14 +42,21 @@ const ProductCatalogHeader: React.FC<ProductCatalogHeaderProps> = ({
 
       {/* Search and Filter Controls */}
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-center mb-4">
-        <div className="relative">
+        <div className="relative flex">
           <input
             type="text"
-            placeholder="Search products..."
+            placeholder="Search products... (press Enter or click Search)"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="px-4 py-2 rounded-lg border border-barrush-steel/30 bg-barrush-midnight/50 text-barrush-platinum placeholder-barrush-platinum/60 focus:outline-none focus:ring-2 focus:ring-rose-600 w-64"
+            onKeyPress={onKeyPress}
+            className="px-4 py-2 rounded-l-lg border border-barrush-steel/30 bg-barrush-midnight/50 text-barrush-platinum placeholder-barrush-platinum/60 focus:outline-none focus:ring-2 focus:ring-rose-600 w-80"
           />
+          <Button
+            onClick={onSearch}
+            className="bg-rose-600 hover:bg-rose-500 px-3 py-2 rounded-r-lg rounded-l-none border border-l-0 border-rose-600"
+          >
+            <Search className="h-4 w-4" />
+          </Button>
         </div>
 
         <select
@@ -57,7 +70,6 @@ const ProductCatalogHeader: React.FC<ProductCatalogHeaderProps> = ({
           ))}
         </select>
       </div>
-      {/* Removed admin controls for Debug Info, Image Scraper, Download CSV */}
     </div>
   );
 };

@@ -10,7 +10,6 @@ import ProductPriceFilter from './ProductPriceFilter';
 import ProductSearchFeedback from './ProductSearchFeedback';
 import ProductResultsInfo from './ProductResultsInfo';
 import { useOptimizedProducts } from '@/hooks/useOptimizedProducts';
-import { useDebouncedSearch } from '@/hooks/useDebouncedSearch';
 
 // Enhanced categories including new description-based ones
 const FIXED_CATEGORIES = [
@@ -40,15 +39,13 @@ const FIXED_CATEGORIES = [
 
 const ProductCatalog: React.FC = () => {
   const [searchInput, setSearchInput] = useState('');
+  const [actualSearchTerm, setActualSearchTerm] = useState(''); // The term actually used for searching
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
   const [showAuditReport, setShowAuditReport] = useState(false);
   const itemsPerPage = 6; // Reduced from 12 to 6 for faster loading
 
-  // Debounce search with 700ms delay for slower typers
-  const debouncedSearchTerm = useDebouncedSearch(searchInput, 700);
-
-  // Use optimized products hook with category filtering
+  // Use optimized products hook with manual search term
   const { 
     products, 
     loading, 
@@ -57,11 +54,24 @@ const ProductCatalog: React.FC = () => {
     totalPages,
     refetch 
   } = useOptimizedProducts({
-    searchTerm: debouncedSearchTerm,
+    searchTerm: actualSearchTerm,
     selectedCategory,
     currentPage,
     itemsPerPage
   });
+
+  // Handle search when user presses Enter or clicks search button
+  const handleSearch = () => {
+    setActualSearchTerm(searchInput.trim());
+    setCurrentPage(1); // Reset to first page when searching
+  };
+
+  // Handle Enter key press in search input
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
 
   // Price filtering (client-side for now since we have limited data per page)
   const priceList = useMemo(() => {
@@ -87,7 +97,7 @@ const ProductCatalog: React.FC = () => {
   // Reset price filter range when category or search changes
   useEffect(() => {
     setPriceRange([minPriceAvailable, maxPriceAvailable]);
-  }, [minPriceAvailable, maxPriceAvailable, selectedCategory, debouncedSearchTerm]);
+  }, [minPriceAvailable, maxPriceAvailable, selectedCategory, actualSearchTerm]);
 
   // Price filtering
   const priceFilteredProducts = useMemo(() => {
@@ -104,14 +114,14 @@ const ProductCatalog: React.FC = () => {
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedSearchTerm, selectedCategory, priceRange]);
+  }, [actualSearchTerm, selectedCategory, priceRange]);
 
   const showPriceFilter = priceList.length > 1;
 
   // Enhanced debug logging
   console.log('🔍 ProductCatalog Debug:', {
     searchInput,
-    debouncedSearchTerm,
+    actualSearchTerm,
     selectedCategory,
     currentPage,
     productsCount: products.length,
@@ -131,7 +141,7 @@ const ProductCatalog: React.FC = () => {
             </h2>
             <div className="w-16 lg:w-20 h-px bg-barrush-copper mx-auto my-6"></div>
             <p className="text-lg lg:text-xl text-barrush-platinum/90 max-w-3xl mx-auto mb-4 leading-relaxed font-iphone">
-              {debouncedSearchTerm ? `Searching for "${debouncedSearchTerm}"...` : 
+              {actualSearchTerm ? `Searching for "${actualSearchTerm}"...` : 
                selectedCategory !== 'All' ? `Loading ${selectedCategory} products...` : 
                'Loading our curated selection...'}
             </p>
@@ -177,10 +187,12 @@ const ProductCatalog: React.FC = () => {
           categories={FIXED_CATEGORIES}
           showAuditReport={showAuditReport}
           setShowAuditReport={setShowAuditReport}
+          onSearch={handleSearch}
+          onKeyPress={handleKeyPress}
         />
 
         <ProductSearchFeedback
-          searchInput={searchInput}
+          searchInput={actualSearchTerm}
           selectedCategory={selectedCategory}
           loading={loading}
           totalCount={totalCount}
@@ -201,7 +213,7 @@ const ProductCatalog: React.FC = () => {
           filteredProducts={priceFilteredProducts}
           paginatedProducts={priceFilteredProducts}
           selectedCategory={selectedCategory}
-          searchTerm={debouncedSearchTerm}
+          searchTerm={actualSearchTerm}
         />
         
         <div className="w-full">
@@ -231,7 +243,7 @@ const ProductCatalog: React.FC = () => {
         <ProductResultsInfo
           priceFilteredProductsLength={priceFilteredProducts.length}
           totalCount={totalCount}
-          debouncedSearchTerm={debouncedSearchTerm}
+          debouncedSearchTerm={actualSearchTerm}
           selectedCategory={selectedCategory}
           currentPage={currentPage}
           itemsPerPage={itemsPerPage}
