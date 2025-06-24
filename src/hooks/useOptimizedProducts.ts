@@ -59,12 +59,13 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           currentPage 
         });
 
-        // Create base query with minimal chaining
-        const baseQueryBuilder = supabase.from('allthealcoholicproducts');
-        
-        // Build the query step by step
-        let queryBuilder = baseQueryBuilder
-          .select('Title, Description, Price, "Product image URL"', { count: 'exact' })
+        // Start with base selection and filters
+        let query = supabase
+          .from('allthealcoholicproducts')
+          .select('Title, Description, Price, "Product image URL"', { count: 'exact' });
+
+        // Apply base filters
+        query = query
           .not('Price', 'is', null)
           .gte('Price', 100)
           .lte('Price', 500000)
@@ -74,24 +75,25 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
         // Apply category filter if not 'All'
         if (selectedCategory !== 'All') {
           console.log('🏷️ Applying category filter on description:', selectedCategory);
-          queryBuilder = queryBuilder.ilike('Description', `%${selectedCategory}%`);
+          query = query.ilike('Description', `%${selectedCategory}%`);
         }
         
         // Apply search filter if provided
         if (searchTerm && searchTerm.trim()) {
           const trimmedSearch = searchTerm.trim();
           console.log('🔍 Applying search filter:', trimmedSearch);
-          queryBuilder = queryBuilder.or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
+          query = query.or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
         }
 
         // Add ordering and pagination
         const startIndex = (currentPage - 1) * itemsPerPage;
-        queryBuilder = queryBuilder
+        query = query
           .order('Title', { ascending: true })
           .range(startIndex, startIndex + itemsPerPage - 1);
 
-        // Execute the query
-        const { data, error: fetchError, count } = await queryBuilder;
+        // Execute the query with explicit typing
+        const result = await query;
+        const { data, error: fetchError, count } = result;
 
         if (fetchError) throw fetchError;
         if (isCancelled) return;
