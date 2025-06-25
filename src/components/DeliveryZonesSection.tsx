@@ -46,7 +46,7 @@ const DeliveryZonesSection: React.FC = () => {
         </div>
         
         <div className="grid md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {zones.map((zone, index) => <Card key={index} className={`bg-barrush-burgundy/20 border-blue-500 border-2 transition-all duration-300 hover:scale-105`}>
+          {zones.map((zone, index) => <Card key={index} className="bg-slate-950">
               <CardContent className="p-8 text-center bg-slate-950">
                 <div className="text-5xl mb-4">{zone.icon}</div>
                 <h3 className="text-2xl font-bold text-barrush-gold mb-2 text-zinc-50">
