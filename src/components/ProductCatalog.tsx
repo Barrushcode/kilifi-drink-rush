@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import ProductCatalogHeader from './ProductCatalogHeader';
@@ -38,11 +39,12 @@ const FIXED_CATEGORIES = [
 
 const ProductCatalog: React.FC = () => {
   const [searchInput, setSearchInput] = useState('');
-  const [actualSearchTerm, setActualSearchTerm] = useState(''); // The term actually used for searching
+  const [actualSearchTerm, setActualSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
   const [showAuditReport, setShowAuditReport] = useState(false);
-  const itemsPerPage = 4; // Reduced from 8 to 4 for faster loading
+  const [paginationLoading, setPaginationLoading] = useState(false);
+  const itemsPerPage = 3; // Reduced to 3 products per page for faster loading
 
   // Use optimized products hook with manual search term
   const { 
@@ -62,7 +64,7 @@ const ProductCatalog: React.FC = () => {
   // Handle search when user presses Enter or clicks search button
   const handleSearch = () => {
     setActualSearchTerm(searchInput.trim());
-    setCurrentPage(1); // Reset to first page when searching
+    setCurrentPage(1);
   };
 
   // Handle Enter key press in search input
@@ -70,6 +72,19 @@ const ProductCatalog: React.FC = () => {
     if (e.key === 'Enter') {
       handleSearch();
     }
+  };
+
+  // Enhanced page change with loading lock
+  const handlePageChange = async (newPage: number) => {
+    if (paginationLoading || newPage === currentPage) return;
+    
+    setPaginationLoading(true);
+    setCurrentPage(newPage);
+    
+    // Add a small delay to prevent rapid clicking
+    setTimeout(() => {
+      setPaginationLoading(false);
+    }, 500);
   };
 
   // Price filtering (client-side for now since we have limited data per page)
@@ -127,6 +142,7 @@ const ProductCatalog: React.FC = () => {
     priceFilteredCount: priceFilteredProducts.length,
     totalCount,
     loading,
+    paginationLoading,
     error
   });
 
@@ -219,7 +235,7 @@ const ProductCatalog: React.FC = () => {
           <ProductGrid
             paginatedProducts={priceFilteredProducts}
             filteredProducts={priceFilteredProducts}
-            loading={loading}
+            loading={loading || paginationLoading}
             searchTerm={searchInput}
             setSearchTerm={setSearchInput}
             setSelectedCategory={setSelectedCategory}
@@ -230,12 +246,13 @@ const ProductCatalog: React.FC = () => {
           <ProductsPagination
             totalPages={totalPages}
             currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            hasNextPage={currentPage < totalPages}
-            hasPreviousPage={currentPage > 1}
+            setCurrentPage={handlePageChange}
+            hasNextPage={currentPage < totalPages && !paginationLoading}
+            hasPreviousPage={currentPage > 1 && !paginationLoading}
             startIndex={(currentPage - 1) * itemsPerPage}
             endIndex={Math.min(currentPage * itemsPerPage, totalCount)}
             filteredProductsLength={totalCount}
+            loading={paginationLoading}
           />
         )}
 

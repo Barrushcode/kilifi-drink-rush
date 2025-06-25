@@ -9,6 +9,7 @@ interface LazyProductImageProps {
   className?: string;
   priority?: boolean;
   bustCache?: boolean;
+  onImageLoad?: (success: boolean) => void;
 }
 
 const LazyProductImage: React.FC<LazyProductImageProps> = ({
@@ -16,10 +17,12 @@ const LazyProductImage: React.FC<LazyProductImageProps> = ({
   alt,
   className = "",
   priority = false,
-  bustCache = false
+  bustCache = false,
+  onImageLoad
 }) => {
   const [isInView, setIsInView] = useState(priority);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const imgRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -36,7 +39,7 @@ const LazyProductImage: React.FC<LazyProductImageProps> = ({
         }
       },
       {
-        rootMargin: '100px', // Increased for better UX - start loading earlier
+        rootMargin: '100px',
         threshold: 0.1
       }
     );
@@ -50,26 +53,35 @@ const LazyProductImage: React.FC<LazyProductImageProps> = ({
 
   const handleImageLoad = () => {
     setIsLoaded(true);
+    setHasError(false);
+    onImageLoad?.(true);
   };
 
   const handleImageError = () => {
-    setIsLoaded(true); // Still hide skeleton even on error
+    setIsLoaded(true);
+    setHasError(true);
+    onImageLoad?.(false);
   };
+
+  // Don't render anything if image failed to load
+  if (hasError) {
+    return null;
+  }
 
   return (
     <div ref={imgRef} className={`relative ${className}`}>
       {!isLoaded && (
         <Skeleton 
-          className="absolute inset-0 bg-gray-700 animate-pulse"
+          className="absolute inset-0 bg-gray-700 animate-pulse w-full h-full"
         />
       )}
       {isInView && (
         <OptimizedImage
           src={src}
           alt={alt}
-          className={`transition-opacity duration-500 ${
+          className={`transition-opacity duration-500 object-cover w-full h-full ${
             isLoaded ? 'opacity-100' : 'opacity-0'
-          } ${className}`}
+          }`}
           priority={priority}
           bustCache={bustCache}
           onLoad={handleImageLoad}

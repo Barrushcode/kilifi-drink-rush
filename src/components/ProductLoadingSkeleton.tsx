@@ -5,8 +5,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const ProductLoadingSkeleton: React.FC = () => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 lg:gap-6 xl:gap-8 max-w-full mx-auto">
-      {[...Array(8)].map((_, i) => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 lg:gap-6 xl:gap-8 max-w-full mx-auto">
+      {[...Array(3)].map((_, i) => (
         <Card key={i} className="bg-glass-effect border-barrush-steel/30 min-h-[400px] flex flex-col animate-pulse">
           <Skeleton className="h-64 w-full bg-gray-700 rounded-t-lg" />
           <CardContent className="p-4 lg:p-6 flex-1 flex flex-col justify-between">
