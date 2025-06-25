@@ -1,8 +1,6 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-
 const DeliveryZonesSection: React.FC = () => {
   const zones = [{
     name: "Tezo",
@@ -36,9 +34,7 @@ const DeliveryZonesSection: React.FC = () => {
     icon: "⛴️",
     description: "Ferry terminal area"
   }];
-
-  return (
-    <section className="py-20 bg-barrush-charcoal">
+  return <section className="py-20 bg-barrush-charcoal">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-barrush-gold mb-6 text-zinc-100">
@@ -50,11 +46,7 @@ const DeliveryZonesSection: React.FC = () => {
         </div>
         
         <div className="grid md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {zones.map((zone, index) => (
-            <Card 
-              key={index} 
-              className={`bg-barrush-burgundy/20 border-blue-500 border-2 transition-all duration-300 hover:scale-105`}
-            >
+          {zones.map((zone, index) => <Card key={index} className={`bg-barrush-burgundy/20 border-blue-500 border-2 transition-all duration-300 hover:scale-105`}>
               <CardContent className="p-8 text-center bg-slate-950">
                 <div className="text-5xl mb-4">{zone.icon}</div>
                 <h3 className="text-2xl font-bold text-barrush-gold mb-2 text-zinc-50">
@@ -66,20 +58,15 @@ const DeliveryZonesSection: React.FC = () => {
                 <p className="text-barrush-cream/80 mb-4 text-zinc-100">
                   {zone.description}
                 </p>
-                {zone.special && (
-                  <Badge className="bg-green-500 text-white">Special</Badge>
-                )}
+                {zone.special}
               </CardContent>
-            </Card>
-          ))}
+            </Card>)}
         </div>
         
         <div className="text-center mt-12">
           
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default DeliveryZonesSection;
