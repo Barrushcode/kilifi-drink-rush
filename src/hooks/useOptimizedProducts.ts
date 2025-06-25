@@ -60,25 +60,25 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           itemsPerPage
         });
 
-        // First, get all products that match our filters (without pagination)
-        // This allows us to properly count and group them
+        // Build query step by step to avoid complex type inference
         let query = supabase
           .from('allthealcoholicproducts')
           .select('Title, Description, Price, "Product image URL"');
 
-        // Apply filters
+        // Apply category filter
         if (selectedCategory !== 'All') {
           console.log('🏷️ Applying category filter on description:', selectedCategory);
           query = query.ilike('Description', `%${selectedCategory}%`);
         }
         
+        // Apply search filter
         if (searchTerm && searchTerm.trim()) {
           const trimmedSearch = searchTerm.trim();
           console.log('🔍 Applying search filter:', trimmedSearch);
           query = query.or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
         }
 
-        // Apply basic filters
+        // Apply basic filters and ordering
         query = query
           .not('Price', 'is', null)
           .gte('Price', 100)
@@ -87,7 +87,7 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           .neq('"Product image URL"', '')
           .order('Title', { ascending: true });
 
-        // Execute the query to get all matching products
+        // Execute the query
         const { data: allData, error: fetchError } = await query;
 
         if (fetchError) throw fetchError;
@@ -102,42 +102,45 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           return;
         }
 
-        // Process and filter products with images
+        // Process products with explicit typing
         const processedProducts: Product[] = [];
         
         for (let index = 0; index < allData.length; index++) {
-          const product = allData[index] as RawProduct;
+          const rawProduct = allData[index];
           
-          if (typeof product.Price !== 'number' || isNaN(product.Price)) {
-            console.warn('[🛑 MISSING OR INVALID PRICE]', product.Title);
+          // Type guard for price
+          if (typeof rawProduct.Price !== 'number' || isNaN(rawProduct.Price)) {
+            console.warn('[🛑 MISSING OR INVALID PRICE]', rawProduct.Title);
             continue;
           }
 
-          const productPrice = product.Price;
-          const description = product.Description || '';
+          const productPrice = rawProduct.Price;
+          const description = rawProduct.Description || '';
 
           // Get Supabase image
-          const storageImage = await getSupabaseProductImageUrl(product.Title || 'Unknown Product');
+          const storageImage = await getSupabaseProductImageUrl(rawProduct.Title || 'Unknown Product');
 
           let productImage: string | null = null;
           if (storageImage) {
             productImage = storageImage;
-          } else if (product["Product image URL"] && typeof product["Product image URL"] === "string" && product["Product image URL"].trim().length > 0) {
-            productImage = product["Product image URL"];
+          } else if (rawProduct["Product image URL"] && 
+                     typeof rawProduct["Product image URL"] === "string" && 
+                     rawProduct["Product image URL"].trim().length > 0) {
+            productImage = rawProduct["Product image URL"];
           }
 
-          // Skip products without images - this filters out invalid products
+          // Skip products without images
           if (!productImage) {
-            console.log(`❌ Skipping ${product.Title} - no image available`);
+            console.log(`❌ Skipping ${rawProduct.Title} - no image available`);
             continue;
           }
 
           // Enhanced category detection using both name and description
-          const category = getCategoryFromName(product.Title || 'Unknown Product', productPrice, description);
+          const category = getCategoryFromName(rawProduct.Title || 'Unknown Product', productPrice, description);
 
           processedProducts.push({
             id: index + 1,
-            name: product.Title || 'Unknown Product',
+            name: rawProduct.Title || 'Unknown Product',
             price: `KES ${productPrice.toLocaleString()}`,
             description,
             category,
@@ -152,7 +155,7 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
         
         console.log(`✨ After grouping and image filtering: ${groupedProducts.length} grouped products`);
         
-        // Now apply pagination to the grouped and filtered results
+        // Apply pagination to the grouped and filtered results
         const totalFilteredCount = groupedProducts.length;
         const startIndex = (currentPage - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
