@@ -53,16 +53,18 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
       try {
         setLoading(true);
         setError(null);
-        console.log('🔍 Fetching products with category filter:', { 
+        console.log('🔍 Fetching products with filters:', { 
           searchTerm, 
           selectedCategory, 
-          currentPage 
+          currentPage,
+          itemsPerPage
         });
 
-        // Build query step by step to avoid deep type instantiation
+        // First, get all products that match our filters (without pagination)
+        // This allows us to properly count and group them
         let query = supabase
           .from('allthealcoholicproducts')
-          .select('Title, Description, Price, "Product image URL"', { count: 'exact' });
+          .select('Title, Description, Price, "Product image URL"');
 
         // Apply filters
         if (selectedCategory !== 'All') {
@@ -82,34 +84,29 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           .gte('Price', 100)
           .lte('Price', 500000)
           .not('"Product image URL"', 'is', null)
-          .neq('"Product image URL"', '');
+          .neq('"Product image URL"', '')
+          .order('Title', { ascending: true });
 
-        // Add ordering and pagination
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        query = query
-          .order('Title', { ascending: true })
-          .range(startIndex, startIndex + itemsPerPage - 1);
-
-        // Execute the query
-        const { data, error: fetchError, count } = await query;
+        // Execute the query to get all matching products
+        const { data: allData, error: fetchError } = await query;
 
         if (fetchError) throw fetchError;
         if (isCancelled) return;
 
-        console.log(`📦 Fetched ${data?.length || 0} products for page ${currentPage} (total: ${count})`);
-        setTotalCount(count || 0);
+        console.log(`📦 Fetched ${allData?.length || 0} products matching filters`);
 
-        if (!data || data.length === 0) {
+        if (!allData || allData.length === 0) {
           console.log('📭 No products found for current criteria');
           setProducts([]);
+          setTotalCount(0);
           return;
         }
 
-        // Process products with explicit typing
+        // Process and filter products with images
         const processedProducts: Product[] = [];
         
-        for (let index = 0; index < data.length; index++) {
-          const product = data[index] as RawProduct;
+        for (let index = 0; index < allData.length; index++) {
+          const product = allData[index] as RawProduct;
           
           if (typeof product.Price !== 'number' || isNaN(product.Price)) {
             console.warn('[🛑 MISSING OR INVALID PRICE]', product.Title);
@@ -129,7 +126,7 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
             productImage = product["Product image URL"];
           }
 
-          // Skip products without images
+          // Skip products without images - this filters out invalid products
           if (!productImage) {
             console.log(`❌ Skipping ${product.Title} - no image available`);
             continue;
@@ -139,7 +136,7 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           const category = getCategoryFromName(product.Title || 'Unknown Product', productPrice, description);
 
           processedProducts.push({
-            id: startIndex + index + 1,
+            id: index + 1,
             name: product.Title || 'Unknown Product',
             price: `KES ${productPrice.toLocaleString()}`,
             description,
@@ -150,20 +147,28 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
 
         if (isCancelled) return;
 
+        // Group products by base name
         const groupedProducts = groupProductsByBaseName(processedProducts);
         
-        console.log(`✨ Category filter results: ${groupedProducts.length} grouped products found`);
-        if (selectedCategory !== 'All') {
-          console.log(`🎯 Category "${selectedCategory}" matched ${groupedProducts.length} results`);
-        }
+        console.log(`✨ After grouping and image filtering: ${groupedProducts.length} grouped products`);
         
-        setProducts(groupedProducts);
+        // Now apply pagination to the grouped and filtered results
+        const totalFilteredCount = groupedProducts.length;
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const paginatedProducts = groupedProducts.slice(startIndex, endIndex);
+
+        console.log(`📄 Page ${currentPage}: showing products ${startIndex + 1}-${Math.min(endIndex, totalFilteredCount)} of ${totalFilteredCount}`);
+        
+        setProducts(paginatedProducts);
+        setTotalCount(totalFilteredCount);
 
       } catch (error) {
         if (isCancelled) return;
         console.error('💥 Error fetching products:', error);
         setError('Failed to load products. Please try again.');
         setProducts([]);
+        setTotalCount(0);
       } finally {
         if (!isCancelled) {
           setLoading(false);
