@@ -20,25 +20,32 @@ export interface GroupedProduct {
   matchLevel: string;
 }
 
-// Extract size from product name (750ML, 1L, 375ML, etc.)
+// Enhanced size extraction with better patterns and normalization
 export const extractSize = (productName: string): { baseName: string; size: string } => {
   const name = productName.trim();
   
-  // Common size patterns
+  // Enhanced size patterns including common typos
   const sizePatterns = [
     /(\d+(?:\.\d+)?)\s*ML/gi,
-    /(\d+(?:\.\d+)?)\s*L(?!iter)/gi,
-    /(\d+(?:\.\d+)?)\s*LITER/gi,
+    /(\d+(?:\.\d+)?)\s*L(?!iter|itr|eter|tr)/gi,
+    /(\d+(?:\.\d+)?)\s*(?:LITER|LITRE|LTR|LITR|LETER|SLTRER)/gi,
     /(\d+(?:\.\d+)?)\s*OZ/gi,
     /(\d+(?:\.\d+)?)\s*CL/gi,
-    /(MINI|SMALL|LARGE|JUMBO|MAGNUM)/gi,
-    /(\d+(?:\.\d+)?)\s*LITRE/gi
+    /(MINI|SMALL|LARGE|JUMBO|MAGNUM|HALF|QUARTER)/gi,
+    /(\d+(?:\.\d+)?)\s*(?:BOTTLE|BTL)/gi
   ];
 
   for (const pattern of sizePatterns) {
     const match = name.match(pattern);
     if (match) {
-      const size = match[0].trim();
+      let size = match[0].trim();
+      
+      // Normalize common size typos
+      size = size
+        .replace(/LITER|LITRE|LTR|LITR|LETER|SLTRER/gi, 'L')
+        .replace(/BOTTLE|BTL/gi, 'BTL')
+        .replace(/\s+/g, '');
+      
       const baseName = name.replace(pattern, '').trim().replace(/\s+/g, ' ');
       return { baseName, size };
     }
@@ -48,21 +55,30 @@ export const extractSize = (productName: string): { baseName: string; size: stri
   return { baseName: name, size: 'Standard' };
 };
 
-// Normalize product name for grouping (remove brand variations, extra spaces)
+// Enhanced product name normalization
 export const normalizeProductName = (name: string): string => {
   return normalizeString(name)
-    .replace(/\b(premium|select|classic|original|special|reserve|limited)\b/gi, '')
+    // Remove common filler words
+    .replace(/\b(premium|select|classic|original|special|reserve|limited|finest|quality)\b/gi, '')
+    // Fix common typos
+    .replace(/\b(johnnie|johny|johnny)\s*walker\b/gi, 'johnnie walker')
+    .replace(/\b(absolut|absolute)\b/gi, 'absolut')
+    .replace(/\b(ballantines?|ballentines?)\b/gi, 'ballantines')
+    .replace(/\b(hennessey|hennesy)\b/gi, 'hennessy')
+    .replace(/\b(jameso?n)\b/gi, 'jameson')
+    .replace(/\b(captain\s*morgan?)\b/gi, 'captain morgan')
+    .replace(/\b(smirnof+)\b/gi, 'smirnoff')
     .replace(/\s+/g, ' ')
     .trim();
 };
 
-// Group products by base name
+// Group products by base name with enhanced matching
 export const groupProductsByBaseName = (products: any[], preserveOrder = false): GroupedProduct[] => {
   const groups = new Map<string, {
     products: any[];
     baseName: string;
     normalizedKey: string;
-    originalOrder: number; // New: preserve the first index
+    originalOrder: number;
   }>();
 
   // First pass: group products by normalized base name
@@ -73,9 +89,9 @@ export const groupProductsByBaseName = (products: any[], preserveOrder = false):
     if (!groups.has(normalizedKey)) {
       groups.set(normalizedKey, {
         products: [],
-        baseName,
+        baseName: baseName.toUpperCase(), // Convert to ALL CAPS for display
         normalizedKey,
-        originalOrder: idx // Track order of first occurrence
+        originalOrder: idx
       });
     }
     groups.get(normalizedKey)!.products.push({
@@ -111,7 +127,7 @@ export const groupProductsByBaseName = (products: any[], preserveOrder = false):
 
     groupedProducts.push({
       id: `grouped-${normalizedKey.replace(/\s+/g, '-')}`,
-      baseName: group.baseName,
+      baseName: group.baseName, // Already converted to ALL CAPS above
       description: firstProduct.description,
       image: firstProduct.image,
       category: firstProduct.category,
@@ -119,24 +135,19 @@ export const groupProductsByBaseName = (products: any[], preserveOrder = false):
       lowestPrice,
       lowestPriceFormatted,
       matchLevel: firstProduct.matchLevel || 'grouped',
-      // Add order property for outer sorting
       originalOrder: group.originalOrder
     } as GroupedProduct & { originalOrder: number });
   });
 
-  // Sort:
+  // Sort based on preserveOrder flag
   if (preserveOrder) {
-    // Sort by original order in products array
     return groupedProducts
       .sort((a, b) => (a as any).originalOrder - (b as any).originalOrder)
       .map(g => {
-        // Remove the extra property so types don't leak
         const { originalOrder, ...rest } = g as any;
         return rest;
       });
   } else {
-    // Sort by lowest price descending
     return groupedProducts.sort((a, b) => b.lowestPrice - a.lowestPrice);
   }
 };
-

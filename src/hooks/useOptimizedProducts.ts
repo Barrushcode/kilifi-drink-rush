@@ -59,40 +59,39 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           currentPage 
         });
 
-        // Start with base query - simplified to avoid deep type instantiation
-        const baseQuery = supabase
+        // Build query step by step to avoid deep type instantiation
+        let query = supabase
           .from('allthealcoholicproducts')
           .select('Title, Description, Price, "Product image URL"', { count: 'exact' });
 
-        // Apply basic filters
-        let query = baseQuery
-          .not('Price', 'is', null)
-          .gte('Price', 100)
-          .lte('Price', 500000)
-          .not('"Product image URL"', 'is', null)
-          .neq('"Product image URL"', '');
-
-        // Add category filter if not 'All'
+        // Apply filters
         if (selectedCategory !== 'All') {
           console.log('🏷️ Applying category filter on description:', selectedCategory);
           query = query.ilike('Description', `%${selectedCategory}%`);
         }
         
-        // Add search filter if provided
         if (searchTerm && searchTerm.trim()) {
           const trimmedSearch = searchTerm.trim();
           console.log('🔍 Applying search filter:', trimmedSearch);
           query = query.or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
         }
 
+        // Apply basic filters
+        query = query
+          .not('Price', 'is', null)
+          .gte('Price', 100)
+          .lte('Price', 500000)
+          .not('"Product image URL"', 'is', null)
+          .neq('"Product image URL"', '');
+
         // Add ordering and pagination
         const startIndex = (currentPage - 1) * itemsPerPage;
-        const finalQuery = query
+        query = query
           .order('Title', { ascending: true })
           .range(startIndex, startIndex + itemsPerPage - 1);
 
         // Execute the query
-        const { data, error: fetchError, count } = await finalQuery;
+        const { data, error: fetchError, count } = await query;
 
         if (fetchError) throw fetchError;
         if (isCancelled) return;

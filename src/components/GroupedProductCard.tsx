@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,16 +10,13 @@ import { GroupedProduct, ProductVariant } from '@/utils/productGroupingUtils';
 import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import ProductQuickViewModal from './ProductQuickViewModal';
-import { normalizeString } from '@/utils/stringUtils';
 import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
 import ProductImageLoader from './ProductImageLoader';
-import { correctProductName } from '@/utils/nameCorrectionUtils';
 
 // Utility to determine if the product image is appropriate
 function isImageAppropriate(url?: string) {
   if (!url) return false;
   const lowerUrl = url.toLowerCase();
-  // Exclude low quality/social domains
   const badDomains = [
     'youtube.com', 'youtu.be', 'pinterest.com', 'facebook.com', 'instagram.com',
     'twitter.com', 'tiktok.com', 'reddit.com', 'blogspot.com', 'wordpress.com',
@@ -26,24 +24,17 @@ function isImageAppropriate(url?: string) {
     'svg', 'icon', 'logo'
   ];
   if (badDomains.some(domain => lowerUrl.includes(domain))) return false;
-  // Exclude clearly broken, tiny images
   if (
     lowerUrl.endsWith('.svg') ||
     /150|default|thumb|generic/i.test(lowerUrl) ||
     lowerUrl.includes('placeholder')
   ) return false;
-  // Accept only links with .jpg/.jpeg/.png/webp and of reasonable length
   if (!/\.(jpg|jpeg|png|webp)$/i.test(lowerUrl)) return false;
-  // Accept high-quality known sources, otherwise fallback if no other indicators
   return true;
 }
 
 interface GroupedProductCardProps {
   product: GroupedProduct;
-}
-
-function capitalizeWords(str: string) {
-  return str.replace(/\w\S*/g, (w) => w.replace(/^\w/, (c) => c.toUpperCase()));
 }
 
 const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80";
@@ -66,7 +57,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         price: selectedVariant.price,
         priceFormatted: selectedVariant.priceFormatted,
         size: selectedVariant.size,
-        image: product.image, // Retaining image for cart/modal data
+        image: product.image,
         category: product.category
       };
       addItem(cartItem);
@@ -93,7 +84,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         price: selectedVariant.price,
         priceFormatted: selectedVariant.priceFormatted,
         size: selectedVariant.size,
-        image: product.image, // Retaining image for cart/modal data
+        image: product.image,
         category: product.category
       };
       addItem(cartItem);
@@ -113,7 +104,6 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
     setSelectedVariant(variant);
   };
 
-  // Card click expands/collapses - do not fire if on a button
   const handleCardClick = (e: React.MouseEvent) => {
     const tag = (e.target as HTMLElement).tagName.toLowerCase();
     if (tag === 'button' || tag === 'svg' || (e.target as HTMLElement).closest('button')) return;
@@ -130,9 +120,8 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
     return () => { ignore = true; };
   }, [product.baseName]);
 
-  // const displayName = capitalizeWords(normalizeString(product.baseName));
-  // Replace with correction utility
-  const displayName = correctProductName(product.baseName);
+  // Use the baseName which is already in ALL CAPS from the grouping utility
+  const displayName = product.baseName;
 
   let displayImage = supabaseImage || (isImageAppropriate(product.image) ? product.image : FALLBACK_IMAGE);
 
@@ -141,10 +130,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
       <ProductQuickViewModal
         open={modalOpen}
         onOpenChange={setModalOpen}
-        product={{
-          ...product,
-          baseName: correctProductName(product.baseName)
-        }}
+        product={product}
       />
       <Card
         className="overflow-hidden h-full min-h-[320px] shadow-lg transition-all duration-300 group hover:scale-105 bg-barrush-slate border-barrush-steel/30 flex flex-col cursor-pointer"
@@ -157,9 +143,8 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         role="button"
       >
         <CardContent className="p-2 md:p-4 lg:p-5 flex flex-col h-full">
-          {/* Product main content */}
           <div className="flex flex-col flex-grow">
-            {/* Larger, less squished Image */}
+            {/* Product Image */}
             <div className="w-full aspect-square rounded-lg overflow-hidden mb-2 relative flex items-center justify-center bg-barrush-midnight">
               <ProductImageLoader
                 src={displayImage}
@@ -169,10 +154,13 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-barrush-midnight/60 to-transparent group-hover:from-barrush-midnight/40 transition-all duration-300" />
             </div>
+            
+            {/* Product Name in ALL CAPS */}
             <h3 className="text-xs md:text-base lg:text-xl font-bold mb-1 font-iphone line-clamp-2 text-barrush-platinum break-words">
               {displayName}
             </h3>
-            {/* Only show details if expanded */}
+            
+            {/* Expanded Details */}
             {expanded && (
               <>
                 <div className="flex flex-wrap items-center gap-1 md:gap-2 mb-2">
@@ -186,16 +174,16 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
                   )}
                 </div>
                 {product.description && (
-                  // Removing line-clamp in expanded view ensures full description is always visible
                   <p className="mb-2 text-xs md:text-sm font-iphone text-barrush-platinum/80">
                     {product.description}
                   </p>
                 )}
-                {/* Size Selector */}
+                
+                {/* Size Selector with clear labeling */}
                 {product.variants.length > 1 ? (
                   <div className="mb-2">
                     <label className="block text-xs font-medium mb-1 font-iphone text-barrush-platinum/80">
-                      Size & Price:
+                      Available Sizes:
                     </label>
                     <Select 
                       value={product.variants.indexOf(selectedVariant).toString()} 
@@ -212,7 +200,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
                             className="font-iphone text-barrush-platinum hover:!bg-barrush-steel/50 focus:!bg-barrush-steel/50"
                           >
                             <div className="flex justify-between items-center w-full">
-                              <span className="text-xs">{variant.size}</span>
+                              <span className="text-xs font-medium">{variant.size}</span>
                               <span className="ml-2 font-bold text-xs text-pink-400">
                                 {variant.priceFormatted}
                               </span>
@@ -224,11 +212,12 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
                   </div>
                 ) : (
                   <div className="mb-2">
-                    <span className="text-xs font-iphone text-barrush-platinum/80">
+                    <span className="text-xs font-iphone text-barrush-platinum/80 bg-barrush-steel/30 px-2 py-1 rounded">
                       Size: {selectedVariant.size}
                     </span>
                   </div>
                 )}
+                
                 <div className="flex flex-col">
                   <span className="text-base md:text-lg lg:text-xl font-bold font-iphone text-barrush-platinum">
                     {selectedVariant.priceFormatted}
@@ -241,26 +230,40 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
                 </div>
               </>
             )}
-            {/* --- COLLAPSED state: show short details for consistent card height --- */}
+            
+            {/* Collapsed State */}
             {!expanded && (
               <>
                 <div className="flex flex-wrap items-center gap-1 md:gap-2 mb-2">
                   <Badge className="px-2 py-1 text-xs font-iphone bg-barrush-steel/60 text-barrush-platinum border-barrush-steel/80">
                     {product.category}
                   </Badge>
+                  {product.variants.length > 1 && (
+                    <Badge variant="outline" className="text-xs font-iphone text-barrush-platinum/70 border-barrush-steel/80">
+                      {product.variants.length} sizes available
+                    </Badge>
+                  )}
                 </div>
                 {product.description && (
                   <p className="text-barrush-platinum/80 mb-2 text-xs line-clamp-2 font-iphone">
                     {product.description}
                   </p>
                 )}
-                <span className="text-base md:text-lg lg:text-xl font-bold font-iphone text-barrush-platinum">
-                  {selectedVariant.priceFormatted}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-base md:text-lg lg:text-xl font-bold font-iphone text-barrush-platinum">
+                    {product.lowestPriceFormatted}
+                  </span>
+                  {product.variants.length > 1 && (
+                    <span className="text-xs font-iphone text-barrush-platinum/60">
+                      + {product.variants.length - 1} more
+                    </span>
+                  )}
+                </div>
               </>
             )}
           </div>
-          {/* Action Buttons - always align to bottom */}
+          
+          {/* Action Buttons */}
           <div className="flex gap-2 mt-4 w-full flex-col sm:flex-row">
             <Button 
               onClick={(e) => { e.stopPropagation(); handleAddToCart(); }}
