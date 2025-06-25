@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 
 interface ProductsPaginationProps {
@@ -23,43 +23,7 @@ const ProductsPagination: React.FC<ProductsPaginationProps> = ({
   endIndex,
   filteredProductsLength
 }) => {
-  const [isNavigating, setIsNavigating] = useState(false);
-
   if (totalPages <= 1) return null;
-
-  const handlePageChange = async (newPage: number) => {
-    if (isNavigating || newPage === currentPage) return;
-    
-    setIsNavigating(true);
-    console.log(`🔄 Navigating from page ${currentPage} to page ${newPage}`);
-    setCurrentPage(newPage);
-    
-    // Small delay to prevent rapid clicking
-    setTimeout(() => {
-      setIsNavigating(false);
-    }, 500);
-  };
-
-  const handlePrevious = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (hasPreviousPage && !isNavigating) {
-      handlePageChange(currentPage - 1);
-    }
-  };
-
-  const handleNext = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (hasNextPage && !isNavigating) {
-      handlePageChange(currentPage + 1);
-    }
-  };
-
-  const handlePageClick = (e: React.MouseEvent, page: number) => {
-    e.preventDefault();
-    if (!isNavigating) {
-      handlePageChange(page);
-    }
-  };
 
   return (
     <>
@@ -70,12 +34,11 @@ const ProductsPagination: React.FC<ProductsPaginationProps> = ({
             <PaginationItem>
               <PaginationPrevious 
                 href="#" 
-                onClick={handlePrevious}
-                className={`${
-                  !hasPreviousPage || isNavigating 
-                    ? 'opacity-50 cursor-not-allowed' 
-                    : 'text-barrush-platinum hover:text-rose-600'
-                } bg-glass-effect border-barrush-steel/40 font-iphone h-touch px-4 lg:px-6`} 
+                onClick={e => {
+                  e.preventDefault();
+                  if (hasPreviousPage) setCurrentPage(currentPage - 1);
+                }} 
+                className={`${!hasPreviousPage ? 'opacity-50 cursor-not-allowed' : 'text-barrush-platinum hover:text-rose-600'} bg-glass-effect border-barrush-steel/40 font-iphone h-touch px-4 lg:px-6`} 
               />
             </PaginationItem>
             
@@ -87,15 +50,12 @@ const ProductsPagination: React.FC<ProductsPaginationProps> = ({
                   <PaginationItem key={page}>
                     <PaginationLink 
                       href="#" 
-                      onClick={(e) => handlePageClick(e, page)}
+                      onClick={e => {
+                        e.preventDefault();
+                        setCurrentPage(page);
+                      }} 
                       isActive={isCurrentPage} 
-                      className={`${
-                        isCurrentPage 
-                          ? 'bg-rose-600 text-white border-rose-600' 
-                          : 'bg-glass-effect border-barrush-steel/40 text-barrush-platinum hover:text-rose-600'
-                      } ${
-                        isNavigating ? 'opacity-50 cursor-not-allowed' : ''
-                      } font-iphone h-touch min-w-touch px-4 lg:px-6`}
+                      className={`${isCurrentPage ? 'bg-rose-600 text-white border-rose-600' : 'bg-glass-effect border-barrush-steel/40 text-barrush-platinum hover:text-rose-600'} font-iphone h-touch min-w-touch px-4 lg:px-6`}
                     >
                       {page}
                     </PaginationLink>
@@ -115,12 +75,11 @@ const ProductsPagination: React.FC<ProductsPaginationProps> = ({
             <PaginationItem>
               <PaginationNext 
                 href="#" 
-                onClick={handleNext}
-                className={`${
-                  !hasNextPage || isNavigating 
-                    ? 'opacity-50 cursor-not-allowed' 
-                    : 'text-barrush-platinum hover:text-rose-600'
-                } bg-glass-effect border-barrush-steel/40 font-iphone h-touch px-4 lg:px-6`} 
+                onClick={e => {
+                  e.preventDefault();
+                  if (hasNextPage) setCurrentPage(currentPage + 1);
+                }} 
+                className={`${!hasNextPage ? 'opacity-50 cursor-not-allowed' : 'text-barrush-platinum hover:text-rose-600'} bg-glass-effect border-barrush-steel/40 font-iphone h-touch px-4 lg:px-6`} 
               />
             </PaginationItem>
           </PaginationContent>
@@ -139,9 +98,6 @@ const ProductsPagination: React.FC<ProductsPaginationProps> = ({
               color: 'rgba(229, 231, 235, 0.7)'
             }}>
               Showing {startIndex + 1}-{Math.min(endIndex, filteredProductsLength)} of {filteredProductsLength} product families
-              {isNavigating && (
-                <span className="ml-2 text-rose-400">Loading...</span>
-              )}
             </p>
           )}
         </div>
