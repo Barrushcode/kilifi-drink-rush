@@ -44,8 +44,6 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [supabaseImage, setSupabaseImage] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [imageError, setImageError] = useState(false);
 
   const navigate = useNavigate();
   const { addItem } = useCart();
@@ -112,11 +110,6 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
     setExpanded(prev => !prev);
   };
 
-  const handleImageLoadResult = (success: boolean) => {
-    setImageLoaded(success);
-    setImageError(!success);
-  };
-
   useEffect(() => {
     let ignore = false;
     async function fetchImage() {
@@ -131,11 +124,6 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
   const displayName = product.baseName;
 
   let displayImage = supabaseImage || (isImageAppropriate(product.image) ? product.image : FALLBACK_IMAGE);
-
-  // Don't render the card at all if the image failed to load
-  if (imageError) {
-    return null;
-  }
 
   return (
     <>
@@ -156,154 +144,146 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
       >
         <CardContent className="p-2 md:p-4 lg:p-5 flex flex-col h-full">
           <div className="flex flex-col flex-grow">
-            {/* Product Image with enhanced loading */}
+            {/* Product Image */}
             <div className="w-full aspect-square rounded-lg overflow-hidden mb-2 relative flex items-center justify-center bg-barrush-midnight">
               <ProductImageLoader
                 src={displayImage}
                 alt={displayName}
-                className="w-full h-full"
+                className="w-full h-full object-cover"
                 priority={false}
-                onImageLoad={handleImageLoadResult}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-barrush-midnight/60 to-transparent group-hover:from-barrush-midnight/40 transition-all duration-300" />
             </div>
             
-            {/* Only render content if image is loaded */}
-            {imageLoaded && (
+            {/* Product Name in ALL CAPS */}
+            <h3 className="text-xs md:text-base lg:text-xl font-bold mb-1 font-iphone line-clamp-2 text-barrush-platinum break-words">
+              {displayName}
+            </h3>
+            
+            {/* Expanded Details */}
+            {expanded && (
               <>
-                {/* Product Name in ALL CAPS */}
-                <h3 className="text-xs md:text-base lg:text-xl font-bold mb-1 font-iphone line-clamp-2 text-barrush-platinum break-words">
-                  {displayName}
-                </h3>
-                
-                {/* Expanded Details */}
-                {expanded && (
-                  <>
-                    <div className="flex flex-wrap items-center gap-1 md:gap-2 mb-2">
-                      <Badge className="px-2 py-1 text-xs font-iphone bg-barrush-steel/60 text-barrush-platinum border-barrush-steel/80">
-                        {product.category}
-                      </Badge>
-                      {product.variants.length > 1 && (
-                        <Badge variant="outline" className="text-xs font-iphone text-barrush-platinum/70 border-barrush-steel/80">
-                          {product.variants.length} sizes
-                        </Badge>
-                      )}
-                    </div>
-                    {product.description && (
-                      <p className="mb-2 text-xs md:text-sm font-iphone text-barrush-platinum/80">
-                        {product.description}
-                      </p>
-                    )}
-                    
-                    {/* Size Selector with clear labeling */}
-                    {product.variants.length > 1 ? (
-                      <div className="mb-2">
-                        <label className="block text-xs font-medium mb-1 font-iphone text-barrush-platinum/80">
-                          Available Sizes:
-                        </label>
-                        <Select 
-                          value={product.variants.indexOf(selectedVariant).toString()} 
-                          onValueChange={handleVariantChange}
-                        >
-                          <SelectTrigger className="h-10 font-iphone text-xs bg-barrush-midnight border-barrush-steel text-barrush-platinum">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="z-50 bg-barrush-midnight border-barrush-steel">
-                            {product.variants.map((variant, index) => (
-                              <SelectItem 
-                                key={index} 
-                                value={index.toString()}
-                                className="font-iphone text-barrush-platinum hover:!bg-barrush-steel/50 focus:!bg-barrush-steel/50"
-                              >
-                                <div className="flex justify-between items-center w-full">
-                                  <span className="text-xs font-medium">{variant.size}</span>
-                                  <span className="ml-2 font-bold text-xs text-pink-400">
-                                    {variant.priceFormatted}
-                                  </span>
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    ) : (
-                      <div className="mb-2">
-                        <span className="text-xs font-iphone text-barrush-platinum/80 bg-barrush-steel/30 px-2 py-1 rounded">
-                          Size: {selectedVariant.size}
-                        </span>
-                      </div>
-                    )}
-                    
-                    <div className="flex flex-col">
-                      <span className="text-base md:text-lg lg:text-xl font-bold font-iphone text-barrush-platinum">
-                        {selectedVariant.priceFormatted}
-                      </span>
-                      {product.variants.length > 1 && selectedVariant !== product.variants[0] && (
-                        <span className="text-xs font-iphone text-barrush-platinum/70">
-                          from {product.lowestPriceFormatted}
-                        </span>
-                      )}
-                    </div>
-                  </>
+                <div className="flex flex-wrap items-center gap-1 md:gap-2 mb-2">
+                  <Badge className="px-2 py-1 text-xs font-iphone bg-barrush-steel/60 text-barrush-platinum border-barrush-steel/80">
+                    {product.category}
+                  </Badge>
+                  {product.variants.length > 1 && (
+                    <Badge variant="outline" className="text-xs font-iphone text-barrush-platinum/70 border-barrush-steel/80">
+                      {product.variants.length} sizes
+                    </Badge>
+                  )}
+                </div>
+                {product.description && (
+                  <p className="mb-2 text-xs md:text-sm font-iphone text-barrush-platinum/80">
+                    {product.description}
+                  </p>
                 )}
                 
-                {/* Collapsed State */}
-                {!expanded && (
-                  <>
-                    <div className="flex flex-wrap items-center gap-1 md:gap-2 mb-2">
-                      <Badge className="px-2 py-1 text-xs font-iphone bg-barrush-steel/60 text-barrush-platinum border-barrush-steel/80">
-                        {product.category}
-                      </Badge>
-                      {product.variants.length > 1 && (
-                        <Badge variant="outline" className="text-xs font-iphone text-barrush-platinum/70 border-barrush-steel/80">
-                          {product.variants.length} sizes available
-                        </Badge>
-                      )}
-                    </div>
-                    {product.description && (
-                      <p className="text-barrush-platinum/80 mb-2 text-xs line-clamp-2 font-iphone">
-                        {product.description}
-                      </p>
-                    )}
-                    <div className="flex items-center gap-2">
-                      <span className="text-base md:text-lg lg:text-xl font-bold font-iphone text-barrush-platinum">
-                        {product.lowestPriceFormatted}
-                      </span>
-                      {product.variants.length > 1 && (
-                        <span className="text-xs font-iphone text-barrush-platinum/60">
-                          + {product.variants.length - 1} more
-                        </span>
-                      )}
-                    </div>
-                  </>
+                {/* Size Selector with clear labeling */}
+                {product.variants.length > 1 ? (
+                  <div className="mb-2">
+                    <label className="block text-xs font-medium mb-1 font-iphone text-barrush-platinum/80">
+                      Available Sizes:
+                    </label>
+                    <Select 
+                      value={product.variants.indexOf(selectedVariant).toString()} 
+                      onValueChange={handleVariantChange}
+                    >
+                      <SelectTrigger className="h-10 font-iphone text-xs bg-barrush-midnight border-barrush-steel text-barrush-platinum">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="z-50 bg-barrush-midnight border-barrush-steel">
+                        {product.variants.map((variant, index) => (
+                          <SelectItem 
+                            key={index} 
+                            value={index.toString()}
+                            className="font-iphone text-barrush-platinum hover:!bg-barrush-steel/50 focus:!bg-barrush-steel/50"
+                          >
+                            <div className="flex justify-between items-center w-full">
+                              <span className="text-xs font-medium">{variant.size}</span>
+                              <span className="ml-2 font-bold text-xs text-pink-400">
+                                {variant.priceFormatted}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                ) : (
+                  <div className="mb-2">
+                    <span className="text-xs font-iphone text-barrush-platinum/80 bg-barrush-steel/30 px-2 py-1 rounded">
+                      Size: {selectedVariant.size}
+                    </span>
+                  </div>
                 )}
+                
+                <div className="flex flex-col">
+                  <span className="text-base md:text-lg lg:text-xl font-bold font-iphone text-barrush-platinum">
+                    {selectedVariant.priceFormatted}
+                  </span>
+                  {product.variants.length > 1 && selectedVariant !== product.variants[0] && (
+                    <span className="text-xs font-iphone text-barrush-platinum/70">
+                      from {product.lowestPriceFormatted}
+                    </span>
+                  )}
+                </div>
+              </>
+            )}
+            
+            {/* Collapsed State */}
+            {!expanded && (
+              <>
+                <div className="flex flex-wrap items-center gap-1 md:gap-2 mb-2">
+                  <Badge className="px-2 py-1 text-xs font-iphone bg-barrush-steel/60 text-barrush-platinum border-barrush-steel/80">
+                    {product.category}
+                  </Badge>
+                  {product.variants.length > 1 && (
+                    <Badge variant="outline" className="text-xs font-iphone text-barrush-platinum/70 border-barrush-steel/80">
+                      {product.variants.length} sizes available
+                    </Badge>
+                  )}
+                </div>
+                {product.description && (
+                  <p className="text-barrush-platinum/80 mb-2 text-xs line-clamp-2 font-iphone">
+                    {product.description}
+                  </p>
+                )}
+                <div className="flex items-center gap-2">
+                  <span className="text-base md:text-lg lg:text-xl font-bold font-iphone text-barrush-platinum">
+                    {product.lowestPriceFormatted}
+                  </span>
+                  {product.variants.length > 1 && (
+                    <span className="text-xs font-iphone text-barrush-platinum/60">
+                      + {product.variants.length - 1} more
+                    </span>
+                  )}
+                </div>
               </>
             )}
           </div>
           
-          {/* Action Buttons - only show if image is loaded */}
-          {imageLoaded && (
-            <div className="flex gap-2 mt-4 w-full flex-col sm:flex-row">
-              <Button 
-                onClick={(e) => { e.stopPropagation(); handleAddToCart(); }}
-                className="flex-1 font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-transparent border-2 border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white w-full"
-              >
-                <ShoppingCart className="h-3 w-3 mr-1" />
-                Add to Cart
-              </Button>
-              <Button 
-                onClick={(e) => { e.stopPropagation(); handleBuyNow(); }}
-                className="flex-1 font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-rose-600 hover:bg-rose-500 text-white border-none shadow-lg w-full"
-                style={{
-                  backgroundColor: '#e11d48',
-                  color: '#fff',
-                }}
-              >
-                <CreditCard className="h-3 w-3 mr-1" />
-                Buy Now
-              </Button>
-            </div>
-          )}
+          {/* Action Buttons */}
+          <div className="flex gap-2 mt-4 w-full flex-col sm:flex-row">
+            <Button 
+              onClick={(e) => { e.stopPropagation(); handleAddToCart(); }}
+              className="flex-1 font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-transparent border-2 border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white w-full"
+            >
+              <ShoppingCart className="h-3 w-3 mr-1" />
+              Add to Cart
+            </Button>
+            <Button 
+              onClick={(e) => { e.stopPropagation(); handleBuyNow(); }}
+              className="flex-1 font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-rose-600 hover:bg-rose-500 text-white border-none shadow-lg w-full"
+              style={{
+                backgroundColor: '#e11d48',
+                color: '#fff',
+              }}
+            >
+              <CreditCard className="h-3 w-3 mr-1" />
+              Buy Now
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </>

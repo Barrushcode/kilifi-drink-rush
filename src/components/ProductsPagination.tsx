@@ -11,7 +11,6 @@ interface ProductsPaginationProps {
   startIndex: number;
   endIndex: number;
   filteredProductsLength: number;
-  loading?: boolean;
 }
 
 const ProductsPagination: React.FC<ProductsPaginationProps> = ({
@@ -22,14 +21,13 @@ const ProductsPagination: React.FC<ProductsPaginationProps> = ({
   hasPreviousPage,
   startIndex,
   endIndex,
-  filteredProductsLength,
-  loading = false
+  filteredProductsLength
 }) => {
   if (totalPages <= 1) return null;
 
   return (
     <>
-      {/* Enhanced pagination for desktop with loading state */}
+      {/* Enhanced pagination for desktop */}
       <div className="flex justify-center mt-16 lg:mt-20">
         <Pagination>
           <PaginationContent className="gap-2">
@@ -38,9 +36,9 @@ const ProductsPagination: React.FC<ProductsPaginationProps> = ({
                 href="#" 
                 onClick={e => {
                   e.preventDefault();
-                  if (hasPreviousPage && !loading) setCurrentPage(currentPage - 1);
+                  if (hasPreviousPage) setCurrentPage(currentPage - 1);
                 }} 
-                className={`${(!hasPreviousPage || loading) ? 'opacity-50 cursor-not-allowed' : 'text-barrush-platinum hover:text-rose-600'} bg-glass-effect border-barrush-steel/40 font-iphone h-touch px-4 lg:px-6 ${loading ? 'animate-pulse' : ''}`} 
+                className={`${!hasPreviousPage ? 'opacity-50 cursor-not-allowed' : 'text-barrush-platinum hover:text-rose-600'} bg-glass-effect border-barrush-steel/40 font-iphone h-touch px-4 lg:px-6`} 
               />
             </PaginationItem>
             
@@ -54,10 +52,10 @@ const ProductsPagination: React.FC<ProductsPaginationProps> = ({
                       href="#" 
                       onClick={e => {
                         e.preventDefault();
-                        if (!loading) setCurrentPage(page);
+                        setCurrentPage(page);
                       }} 
                       isActive={isCurrentPage} 
-                      className={`${isCurrentPage ? 'bg-rose-600 text-white border-rose-600' : 'bg-glass-effect border-barrush-steel/40 text-barrush-platinum hover:text-rose-600'} font-iphone h-touch min-w-touch px-4 lg:px-6 ${loading ? 'cursor-not-allowed opacity-50' : ''}`}
+                      className={`${isCurrentPage ? 'bg-rose-600 text-white border-rose-600' : 'bg-glass-effect border-barrush-steel/40 text-barrush-platinum hover:text-rose-600'} font-iphone h-touch min-w-touch px-4 lg:px-6`}
                     >
                       {page}
                     </PaginationLink>
@@ -79,9 +77,9 @@ const ProductsPagination: React.FC<ProductsPaginationProps> = ({
                 href="#" 
                 onClick={e => {
                   e.preventDefault();
-                  if (hasNextPage && !loading) setCurrentPage(currentPage + 1);
+                  if (hasNextPage) setCurrentPage(currentPage + 1);
                 }} 
-                className={`${(!hasNextPage || loading) ? 'opacity-50 cursor-not-allowed' : 'text-barrush-platinum hover:text-rose-600'} bg-glass-effect border-barrush-steel/40 font-iphone h-touch px-4 lg:px-6 ${loading ? 'animate-pulse' : ''}`} 
+                className={`${!hasNextPage ? 'opacity-50 cursor-not-allowed' : 'text-barrush-platinum hover:text-rose-600'} bg-glass-effect border-barrush-steel/40 font-iphone h-touch px-4 lg:px-6`} 
               />
             </PaginationItem>
           </PaginationContent>
@@ -99,7 +97,7 @@ const ProductsPagination: React.FC<ProductsPaginationProps> = ({
             <p className="text-base lg:text-lg font-iphone" style={{
               color: 'rgba(229, 231, 235, 0.7)'
             }}>
-              {loading ? 'Loading products...' : `Showing ${startIndex + 1}-${Math.min(endIndex, filteredProductsLength)} of ${filteredProductsLength} product families`}
+              Showing {startIndex + 1}-{Math.min(endIndex, filteredProductsLength)} of {filteredProductsLength} product families
             </p>
           )}
         </div>
