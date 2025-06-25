@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useCart } from '@/contexts/CartContext';
 import ShippingInfoForm from './ShippingInfoForm';
@@ -19,6 +20,18 @@ const DELIVERY_ZONES = [{
   name: 'Bofa',
   value: 'bofa',
   fee: 200
+}, {
+  name: 'Mtondia',
+  value: 'mtondia',
+  fee: 250
+}, {
+  name: 'CBD',
+  value: 'cbd',
+  fee: 100
+}, {
+  name: 'Old Ferry',
+  value: 'old_ferry',
+  fee: 100
 }];
 const TILL_NUMBER = '5950470';
 
