@@ -42,7 +42,7 @@ const ProductCatalog: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
   const [showAuditReport, setShowAuditReport] = useState(false);
-  const itemsPerPage = 4; // Reduced from 8 to 4 for faster loading
+  const itemsPerPage = 4; // Set to 4 as requested
 
   // Use optimized products hook with manual search term
   const { 
@@ -72,7 +72,7 @@ const ProductCatalog: React.FC = () => {
     }
   };
 
-  // Price filtering (client-side for now since we have limited data per page)
+  // Simple price filtering (client-side for the current page products)
   const priceList = useMemo(() => {
     return products
       .map(product => {
@@ -98,7 +98,7 @@ const ProductCatalog: React.FC = () => {
     setPriceRange([minPriceAvailable, maxPriceAvailable]);
   }, [minPriceAvailable, maxPriceAvailable, selectedCategory, actualSearchTerm]);
 
-  // Price filtering
+  // Price filtering (client-side for current page)
   const priceFilteredProducts = useMemo(() => {
     return products.filter(prod => {
       const priceNum = prod.lowestPrice
@@ -113,7 +113,7 @@ const ProductCatalog: React.FC = () => {
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [actualSearchTerm, selectedCategory, priceRange]);
+  }, [actualSearchTerm, selectedCategory]);
 
   const showPriceFilter = priceList.length > 1;
 
@@ -126,6 +126,7 @@ const ProductCatalog: React.FC = () => {
     productsCount: products.length,
     priceFilteredCount: priceFilteredProducts.length,
     totalCount,
+    totalPages,
     loading,
     error
   });

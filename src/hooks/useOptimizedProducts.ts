@@ -53,51 +53,80 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
       try {
         setLoading(true);
         setError(null);
-        console.log('🔍 Fetching products with category filter:', { 
+        console.log('🔍 Fetching products with filters:', { 
           searchTerm, 
           selectedCategory, 
-          currentPage 
+          currentPage,
+          itemsPerPage
         });
 
-        // Build query step by step to avoid deep type instantiation
-        let query = supabase
+        // First, get the total count for pagination
+        let countQuery = supabase
           .from('allthealcoholicproducts')
-          .select('Title, Description, Price, "Product image URL"', { count: 'exact' });
+          .select('*', { count: 'exact', head: true });
 
-        // Apply filters
+        // Apply the same filters for count
         if (selectedCategory !== 'All') {
-          console.log('🏷️ Applying category filter on description:', selectedCategory);
-          query = query.ilike('Description', `%${selectedCategory}%`);
+          countQuery = countQuery.ilike('Description', `%${selectedCategory}%`);
         }
         
         if (searchTerm && searchTerm.trim()) {
           const trimmedSearch = searchTerm.trim();
-          console.log('🔍 Applying search filter:', trimmedSearch);
-          query = query.or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
+          countQuery = countQuery.or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
         }
 
-        // Apply basic filters
-        query = query
+        // Apply basic filters for count
+        countQuery = countQuery
           .not('Price', 'is', null)
           .gte('Price', 100)
           .lte('Price', 500000)
           .not('"Product image URL"', 'is', null)
           .neq('"Product image URL"', '');
 
-        // Add ordering and pagination
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        query = query
-          .order('Title', { ascending: true })
-          .range(startIndex, startIndex + itemsPerPage - 1);
+        const { count } = await countQuery;
+        
+        if (isCancelled) return;
+        
+        console.log(`📊 Total matching products: ${count}`);
+        setTotalCount(count || 0);
 
-        // Execute the query
-        const { data, error: fetchError, count } = await query;
+        // Now fetch the actual data for this page
+        let dataQuery = supabase
+          .from('allthealcoholicproducts')
+          .select('Title, Description, Price, "Product image URL"');
+
+        // Apply the same filters for data
+        if (selectedCategory !== 'All') {
+          dataQuery = dataQuery.ilike('Description', `%${selectedCategory}%`);
+        }
+        
+        if (searchTerm && searchTerm.trim()) {
+          const trimmedSearch = searchTerm.trim();
+          dataQuery = dataQuery.or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
+        }
+
+        // Apply basic filters for data
+        dataQuery = dataQuery
+          .not('Price', 'is', null)
+          .gte('Price', 100)
+          .lte('Price', 500000)
+          .not('"Product image URL"', 'is', null)
+          .neq('"Product image URL"', '');
+
+        // Apply pagination using Supabase range
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage - 1;
+        
+        dataQuery = dataQuery
+          .order('Title', { ascending: true })
+          .range(startIndex, endIndex);
+
+        const { data, error: fetchError } = await dataQuery;
 
         if (fetchError) throw fetchError;
         if (isCancelled) return;
 
-        console.log(`📦 Fetched ${data?.length || 0} products for page ${currentPage} (total: ${count})`);
-        setTotalCount(count || 0);
+        console.log(`📦 Fetched ${data?.length || 0} products for page ${currentPage}`);
 
         if (!data || data.length === 0) {
           console.log('📭 No products found for current criteria');
@@ -152,10 +181,7 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
 
         const groupedProducts = groupProductsByBaseName(processedProducts);
         
-        console.log(`✨ Category filter results: ${groupedProducts.length} grouped products found`);
-        if (selectedCategory !== 'All') {
-          console.log(`🎯 Category "${selectedCategory}" matched ${groupedProducts.length} results`);
-        }
+        console.log(`✨ Page ${currentPage} results: ${groupedProducts.length} grouped products`);
         
         setProducts(groupedProducts);
 
