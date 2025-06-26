@@ -53,63 +53,60 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
       try {
         setLoading(true);
         setError(null);
-        console.log('🔍 Fetching products with category filter:', { 
+        console.log('🔍 Fetching products with filters:', { 
           searchTerm, 
           selectedCategory, 
-          currentPage 
+          currentPage,
+          itemsPerPage
         });
 
-        // Build query step by step to avoid deep type instantiation
-        let query = supabase
+        // First, get ALL products that match our filters (without pagination)
+        // This approach avoids the complex TypeScript inference issues
+        const baseQuery = supabase
           .from('allthealcoholicproducts')
-          .select('Title, Description, Price, "Product image URL"', { count: 'exact' });
+          .select('Title, Description, Price, "Product image URL"');
 
-        // Apply filters
+        // Apply category filter
+        let categoryQuery = baseQuery;
         if (selectedCategory !== 'All') {
-          console.log('🏷️ Applying category filter on description:', selectedCategory);
-          query = query.ilike('Description', `%${selectedCategory}%`);
+          console.log('🏷️ Applying category filter:', selectedCategory);
+          categoryQuery = baseQuery.ilike('Description', `%${selectedCategory}%`);
         }
-        
+
+        // Apply search filter
+        let searchQuery = categoryQuery;
         if (searchTerm && searchTerm.trim()) {
           const trimmedSearch = searchTerm.trim();
           console.log('🔍 Applying search filter:', trimmedSearch);
-          query = query.or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
+          searchQuery = categoryQuery.or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
         }
 
-        // Apply basic filters
-        query = query
+        // Apply basic filters and execute
+        const { data: allData, error: fetchError } = await searchQuery
           .not('Price', 'is', null)
           .gte('Price', 100)
           .lte('Price', 500000)
           .not('"Product image URL"', 'is', null)
-          .neq('"Product image URL"', '');
-
-        // Add ordering and pagination
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        query = query
-          .order('Title', { ascending: true })
-          .range(startIndex, startIndex + itemsPerPage - 1);
-
-        // Execute the query
-        const { data, error: fetchError, count } = await query;
+          .neq('"Product image URL"', '')
+          .order('Title', { ascending: true });
 
         if (fetchError) throw fetchError;
         if (isCancelled) return;
 
-        console.log(`📦 Fetched ${data?.length || 0} products for page ${currentPage} (total: ${count})`);
-        setTotalCount(count || 0);
+        console.log(`📦 Fetched ${allData?.length || 0} total products before processing`);
 
-        if (!data || data.length === 0) {
+        if (!allData || allData.length === 0) {
           console.log('📭 No products found for current criteria');
           setProducts([]);
+          setTotalCount(0);
           return;
         }
 
-        // Process products with explicit typing
+        // Process all products and filter out those without valid images
         const processedProducts: Product[] = [];
         
-        for (let index = 0; index < data.length; index++) {
-          const product = data[index] as RawProduct;
+        for (let index = 0; index < allData.length; index++) {
+          const product = allData[index] as RawProduct;
           
           if (typeof product.Price !== 'number' || isNaN(product.Price)) {
             console.warn('[🛑 MISSING OR INVALID PRICE]', product.Title);
@@ -129,7 +126,7 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
             productImage = product["Product image URL"];
           }
 
-          // Skip products without images
+          // Skip products without images - this is key for clean display
           if (!productImage) {
             console.log(`❌ Skipping ${product.Title} - no image available`);
             continue;
@@ -139,7 +136,7 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           const category = getCategoryFromName(product.Title || 'Unknown Product', productPrice, description);
 
           processedProducts.push({
-            id: startIndex + index + 1,
+            id: index + 1,
             name: product.Title || 'Unknown Product',
             price: `KES ${productPrice.toLocaleString()}`,
             description,
@@ -150,14 +147,22 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
 
         if (isCancelled) return;
 
+        // Group products by base name
         const groupedProducts = groupProductsByBaseName(processedProducts);
         
-        console.log(`✨ Category filter results: ${groupedProducts.length} grouped products found`);
-        if (selectedCategory !== 'All') {
-          console.log(`🎯 Category "${selectedCategory}" matched ${groupedProducts.length} results`);
-        }
+        console.log(`✨ Total grouped products after filtering: ${groupedProducts.length}`);
         
-        setProducts(groupedProducts);
+        // Set total count based on grouped products
+        setTotalCount(groupedProducts.length);
+        
+        // Apply pagination to the grouped products
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const paginatedProducts = groupedProducts.slice(startIndex, endIndex);
+        
+        console.log(`📄 Page ${currentPage}: showing ${paginatedProducts.length} products (${startIndex + 1}-${Math.min(endIndex, groupedProducts.length)} of ${groupedProducts.length})`);
+        
+        setProducts(paginatedProducts);
 
       } catch (error) {
         if (isCancelled) return;
