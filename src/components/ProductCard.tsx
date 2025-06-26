@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,11 +27,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   return (
     <Card className="bg-glass-effect border-barrush-steel/30 border hover:border-barrush-copper/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden">
-      <ProductImageLoader
-        src={product.image}
-        alt={`${correctProductName(product.name)} - ${product.category}`}
-        className="h-64 object-contain"
-      />
+      <div className="h-64 w-full overflow-hidden">
+        <ProductImageLoader
+          src={product.image}
+          alt={`${correctProductName(product.name)} - ${product.category}`}
+          className="w-full h-full object-cover"
+        />
+      </div>
       <CardContent className="p-8">
         <h3 className="text-2xl font-bold mb-3 font-serif text-red-200">
           {correctProductName(product.name)}

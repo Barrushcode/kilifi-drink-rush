@@ -92,7 +92,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
       <img
         src={imageSrc}
         alt={alt}
-        className={`w-full h-full object-contain transition-opacity duration-500 ${
+        className={`w-full h-full object-cover transition-opacity duration-500 ${
           loading ? 'opacity-0' : 'opacity-100'
         }`}
         onLoad={handleImageLoad}
@@ -100,8 +100,8 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
         loading={priority ? "eager" : "lazy"}
         decoding="async"
         style={{
-          maxWidth: '100%',
-          height: 'auto'
+          objectFit: 'cover',
+          objectPosition: 'center'
         }}
       />
       <div 

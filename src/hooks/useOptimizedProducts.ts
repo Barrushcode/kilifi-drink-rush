@@ -60,28 +60,35 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           itemsPerPage
         });
 
+        // Build base query conditions
+        const conditions: string[] = [];
+        const params: any[] = [];
+
+        // Add category filter
+        if (selectedCategory !== 'All') {
+          conditions.push(`Description.ilike.%${selectedCategory}%`);
+        }
+        
+        // Add search filter
+        if (searchTerm && searchTerm.trim()) {
+          const trimmedSearch = searchTerm.trim();
+          conditions.push(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
+        }
+
         // First, get the total count for pagination
         let countQuery = supabase
           .from('allthealcoholicproducts')
-          .select('*', { count: 'exact', head: true });
-
-        // Apply the same filters for count
-        if (selectedCategory !== 'All') {
-          countQuery = countQuery.ilike('Description', `%${selectedCategory}%`);
-        }
-        
-        if (searchTerm && searchTerm.trim()) {
-          const trimmedSearch = searchTerm.trim();
-          countQuery = countQuery.or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
-        }
-
-        // Apply basic filters for count
-        countQuery = countQuery
+          .select('*', { count: 'exact', head: true })
           .not('Price', 'is', null)
           .gte('Price', 100)
           .lte('Price', 500000)
           .not('"Product image URL"', 'is', null)
           .neq('"Product image URL"', '');
+
+        // Apply filters to count query
+        if (conditions.length > 0) {
+          countQuery = countQuery.or(conditions.join(','));
+        }
 
         const { count } = await countQuery;
         
@@ -93,25 +100,17 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
         // Now fetch the actual data for this page
         let dataQuery = supabase
           .from('allthealcoholicproducts')
-          .select('Title, Description, Price, "Product image URL"');
-
-        // Apply the same filters for data
-        if (selectedCategory !== 'All') {
-          dataQuery = dataQuery.ilike('Description', `%${selectedCategory}%`);
-        }
-        
-        if (searchTerm && searchTerm.trim()) {
-          const trimmedSearch = searchTerm.trim();
-          dataQuery = dataQuery.or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
-        }
-
-        // Apply basic filters for data
-        dataQuery = dataQuery
+          .select('Title, Description, Price, "Product image URL"')
           .not('Price', 'is', null)
           .gte('Price', 100)
           .lte('Price', 500000)
           .not('"Product image URL"', 'is', null)
           .neq('"Product image URL"', '');
+
+        // Apply filters to data query
+        if (conditions.length > 0) {
+          dataQuery = dataQuery.or(conditions.join(','));
+        }
 
         // Apply pagination using Supabase range
         const startIndex = (currentPage - 1) * itemsPerPage;

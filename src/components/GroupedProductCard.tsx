@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import ProductQuickViewModal from './ProductQuickViewModal';
 import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
 import ProductImageLoader from './ProductImageLoader';
+import { correctProductName } from '@/utils/nameCorrectionUtils';
 
 // Utility to determine if the product image is appropriate
 function isImageAppropriate(url?: string) {
@@ -49,11 +50,14 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
   const { addItem } = useCart();
   const { toast } = useToast();
 
+  // Use corrected product name for display
+  const correctedName = correctProductName(product.baseName);
+
   const handleAddToCart = () => {
     try {
       const cartItem = {
         id: `${product.baseName}-${selectedVariant.size}`,
-        name: product.baseName,
+        name: correctedName,
         price: selectedVariant.price,
         priceFormatted: selectedVariant.priceFormatted,
         size: selectedVariant.size,
@@ -63,7 +67,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
       addItem(cartItem);
       toast({
         title: "Added to Cart",
-        description: `${product.baseName} (${selectedVariant.size}) added to cart`,
+        description: `${correctedName} (${selectedVariant.size}) added to cart`,
         duration: 2000,
       });
     } catch (error) {
@@ -80,7 +84,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
     try {
       const cartItem = {
         id: `${product.baseName}-${selectedVariant.size}`,
-        name: product.baseName,
+        name: correctedName,
         price: selectedVariant.price,
         priceFormatted: selectedVariant.priceFormatted,
         size: selectedVariant.size,
@@ -120,9 +124,6 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
     return () => { ignore = true; };
   }, [product.baseName]);
 
-  // Use the baseName which is already in ALL CAPS from the grouping utility
-  const displayName = product.baseName;
-
   let displayImage = supabaseImage || (isImageAppropriate(product.image) ? product.image : FALLBACK_IMAGE);
 
   return (
@@ -139,25 +140,25 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         onKeyDown={e => {
           if (e.key === 'Enter') setExpanded(prev => !prev);
         }}
-        aria-label={`Show details for ${displayName}`}
+        aria-label={`Show details for ${correctedName}`}
         role="button"
       >
         <CardContent className="p-2 md:p-4 lg:p-5 flex flex-col h-full">
           <div className="flex flex-col flex-grow">
-            {/* Product Image */}
-            <div className="w-full aspect-square rounded-lg overflow-hidden mb-2 relative flex items-center justify-center bg-barrush-midnight">
+            {/* Product Image with consistent styling */}
+            <div className="w-full aspect-square rounded-lg overflow-hidden mb-2 relative bg-barrush-midnight">
               <ProductImageLoader
                 src={displayImage}
-                alt={displayName}
+                alt={correctedName}
                 className="w-full h-full object-cover"
                 priority={false}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-barrush-midnight/60 to-transparent group-hover:from-barrush-midnight/40 transition-all duration-300" />
             </div>
             
-            {/* Product Name in ALL CAPS */}
+            {/* Product Name with correction */}
             <h3 className="text-xs md:text-base lg:text-xl font-bold mb-1 font-iphone line-clamp-2 text-barrush-platinum break-words">
-              {displayName}
+              {correctedName}
             </h3>
             
             {/* Expanded Details */}
