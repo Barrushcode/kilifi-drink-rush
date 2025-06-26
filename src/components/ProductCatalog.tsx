@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import ProductCatalogHeader from './ProductCatalogHeader';
@@ -43,7 +42,7 @@ const ProductCatalog: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
   const [showAuditReport, setShowAuditReport] = useState(false);
-  const itemsPerPage = 3; // Set to 3 products per page as requested
+  const itemsPerPage = 4; // Reduced from 8 to 4 for faster loading
 
   // Use optimized products hook with manual search term
   const { 
@@ -127,7 +126,6 @@ const ProductCatalog: React.FC = () => {
     productsCount: products.length,
     priceFilteredCount: priceFilteredProducts.length,
     totalCount,
-    totalPages,
     loading,
     error
   });
