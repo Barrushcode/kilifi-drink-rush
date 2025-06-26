@@ -60,35 +60,32 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           itemsPerPage
         });
 
-        // First, get ALL products that match our filters (without pagination)
-        // This approach avoids the complex TypeScript inference issues
-        const baseQuery = supabase
+        // Build the query step by step to avoid TypeScript inference issues
+        let query = supabase
           .from('allthealcoholicproducts')
-          .select('Title, Description, Price, "Product image URL"');
-
-        // Apply category filter
-        let categoryQuery = baseQuery;
-        if (selectedCategory !== 'All') {
-          console.log('🏷️ Applying category filter:', selectedCategory);
-          categoryQuery = baseQuery.ilike('Description', `%${selectedCategory}%`);
-        }
-
-        // Apply search filter
-        let searchQuery = categoryQuery;
-        if (searchTerm && searchTerm.trim()) {
-          const trimmedSearch = searchTerm.trim();
-          console.log('🔍 Applying search filter:', trimmedSearch);
-          searchQuery = categoryQuery.or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
-        }
-
-        // Apply basic filters and execute
-        const { data: allData, error: fetchError } = await searchQuery
+          .select('Title, Description, Price, "Product image URL"')
           .not('Price', 'is', null)
           .gte('Price', 100)
           .lte('Price', 500000)
           .not('"Product image URL"', 'is', null)
           .neq('"Product image URL"', '')
           .order('Title', { ascending: true });
+
+        // Apply category filter if not 'All'
+        if (selectedCategory !== 'All') {
+          console.log('🏷️ Applying category filter:', selectedCategory);
+          query = query.ilike('Description', `%${selectedCategory}%`);
+        }
+
+        // Apply search filter if provided
+        if (searchTerm && searchTerm.trim()) {
+          const trimmedSearch = searchTerm.trim();
+          console.log('🔍 Applying search filter:', trimmedSearch);
+          query = query.or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
+        }
+
+        // Execute the query
+        const { data: allData, error: fetchError } = await query;
 
         if (fetchError) throw fetchError;
         if (isCancelled) return;
