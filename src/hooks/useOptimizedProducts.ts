@@ -30,14 +30,6 @@ interface UseOptimizedProductsReturn {
   refetch: () => void;
 }
 
-// Define the raw product type from Supabase
-interface RawProduct {
-  Title: string | null;
-  Description: string | null;
-  Price: number;
-  "Product image URL": string | null;
-}
-
 export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOptimizedProductsReturn => {
   const { searchTerm, selectedCategory, currentPage, itemsPerPage } = params;
   const [products, setProducts] = useState<GroupedProduct[]>([]);
@@ -60,72 +52,44 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           itemsPerPage
         });
 
-        // Build base query conditions
-        const conditions: string[] = [];
-        const params: any[] = [];
+        // Build query with filters
+        let query = supabase
+          .from('allthealcoholicproducts')
+          .select('Title, Description, Price, "Product image URL"', { count: 'exact' })
+          .not('Price', 'is', null)
+          .gte('Price', 100)
+          .lte('Price', 500000)
+          .not('"Product image URL"', 'is', null)
+          .neq('"Product image URL"', '');
 
         // Add category filter
         if (selectedCategory !== 'All') {
-          conditions.push(`Description.ilike.%${selectedCategory}%`);
+          query = query.ilike('Description', `%${selectedCategory}%`);
         }
         
         // Add search filter
         if (searchTerm && searchTerm.trim()) {
           const trimmedSearch = searchTerm.trim();
-          conditions.push(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
+          query = query.or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`);
         }
 
-        // First, get the total count for pagination
-        let countQuery = supabase
-          .from('allthealcoholicproducts')
-          .select('*', { count: 'exact', head: true })
-          .not('Price', 'is', null)
-          .gte('Price', 100)
-          .lte('Price', 500000)
-          .not('"Product image URL"', 'is', null)
-          .neq('"Product image URL"', '');
-
-        // Apply filters to count query
-        if (conditions.length > 0) {
-          countQuery = countQuery.or(conditions.join(','));
-        }
-
-        const { count } = await countQuery;
-        
-        if (isCancelled) return;
-        
-        console.log(`📊 Total matching products: ${count}`);
-        setTotalCount(count || 0);
-
-        // Now fetch the actual data for this page
-        let dataQuery = supabase
-          .from('allthealcoholicproducts')
-          .select('Title, Description, Price, "Product image URL"')
-          .not('Price', 'is', null)
-          .gte('Price', 100)
-          .lte('Price', 500000)
-          .not('"Product image URL"', 'is', null)
-          .neq('"Product image URL"', '');
-
-        // Apply filters to data query
-        if (conditions.length > 0) {
-          dataQuery = dataQuery.or(conditions.join(','));
-        }
-
-        // Apply pagination using Supabase range
+        // Apply pagination
         const startIndex = (currentPage - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage - 1;
         
-        dataQuery = dataQuery
+        query = query
           .order('Title', { ascending: true })
           .range(startIndex, endIndex);
 
-        const { data, error: fetchError } = await dataQuery;
+        const { data, error: fetchError, count } = await query;
 
         if (fetchError) throw fetchError;
         if (isCancelled) return;
 
+        console.log(`📊 Total matching products: ${count}`);
         console.log(`📦 Fetched ${data?.length || 0} products for page ${currentPage}`);
+
+        setTotalCount(count || 0);
 
         if (!data || data.length === 0) {
           console.log('📭 No products found for current criteria');
@@ -133,11 +97,11 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           return;
         }
 
-        // Process products with explicit typing
+        // Process products
         const processedProducts: Product[] = [];
         
         for (let index = 0; index < data.length; index++) {
-          const product = data[index] as RawProduct;
+          const product = data[index];
           
           if (typeof product.Price !== 'number' || isNaN(product.Price)) {
             console.warn('[🛑 MISSING OR INVALID PRICE]', product.Title);

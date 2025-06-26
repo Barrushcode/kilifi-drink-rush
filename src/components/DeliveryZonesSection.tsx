@@ -1,13 +1,9 @@
+
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 const DeliveryZonesSection: React.FC = () => {
   const zones = [{
-    name: "Tezo",
-    fee: "KES 250",
-    icon: "🏘️",
-    description: "Standard delivery service"
-  }, {
     name: "Mnarani",
     fee: "KES 150",
     icon: "🏖️",
