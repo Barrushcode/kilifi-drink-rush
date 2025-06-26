@@ -42,7 +42,7 @@ const ProductCatalog: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
   const [showAuditReport, setShowAuditReport] = useState(false);
-  const itemsPerPage = 3; // Changed from 4 to 3
+  const itemsPerPage = 4; // Set to 4 as requested
 
   // Use optimized products hook with manual search term
   const { 

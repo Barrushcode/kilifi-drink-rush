@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useCart } from '@/contexts/CartContext';
 import ShippingInfoForm from './ShippingInfoForm';
@@ -8,6 +9,10 @@ import AlternativePaymentInfo from './AlternativePaymentInfo';
 import { useCheckout } from '@/hooks/useCheckout';
 
 const DELIVERY_ZONES = [{
+  name: 'Tezo',
+  value: 'tezo',
+  fee: 250
+}, {
   name: 'Mnarani',
   value: 'mnarani',
   fee: 150

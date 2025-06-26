@@ -55,30 +55,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     setLoading(true);
     setError(false);
     setRetryCount(0);
-
-    // Preload image for faster display
-    const img = new Image();
-    img.onload = () => {
-      setLoading(false);
-      setError(false);
-      onLoad?.();
-    };
-    img.onerror = () => {
-      setLoading(false);
-      setError(true);
-      
-      if (optimizedSrc !== fallbackSrc && retryCount < 1) {
-        const optimizedFallback = optimizeImageUrl(fallbackSrc);
-        setImageSrc(optimizedFallback);
-        setLoading(true);
-        setError(false);
-        setRetryCount(prev => prev + 1);
-      } else {
-        onError?.();
-      }
-    };
-    img.src = optimizedSrc;
-  }, [src, bustCache, fallbackSrc, retryCount, onLoad, onError]);
+  }, [src, bustCache]);
 
   const handleImageLoad = () => {
     console.log('✅ Image loaded successfully:', imageSrc);
@@ -115,7 +92,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
       <img
         src={imageSrc}
         alt={alt}
-        className={`w-full h-full transition-opacity duration-300 ${
+        className={`w-full h-full object-cover transition-opacity duration-500 ${
           loading ? 'opacity-0' : 'opacity-100'
         }`}
         onLoad={handleImageLoad}
