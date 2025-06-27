@@ -28,11 +28,11 @@ serve(async (req: Request) => {
       );
     }
 
-    // Your M-Pesa credentials - Updated with new values
+    // Your M-Pesa live credentials
     const consumerKey = Deno.env.get("SAFARICOM_CONSUMER_KEY");
     const consumerSecret = Deno.env.get("SAFARICOM_CONSUMER_SECRET");
     const passkey = "725a276fe2a83f80e47286da61710e4d0648ee8bb803ed8f9b95dd7ebaec1d99";
-    const shortCode = "3534039"; // Updated business short code
+    const shortCode = "3534039"; // Live business short code
 
     console.log("Environment check:", {
       hasConsumerKey: !!consumerKey,
@@ -49,11 +49,11 @@ serve(async (req: Request) => {
       );
     }
 
-    // Get access token
+    // Get access token from PRODUCTION API
     const auth = btoa(`${consumerKey}:${consumerSecret}`);
-    console.log("Requesting access token...");
+    console.log("Requesting access token from production API...");
     
-    const tokenRes = await fetch("https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials", {
+    const tokenRes = await fetch("https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials", {
       method: "GET",
       headers: { 
         Authorization: `Basic ${auth}`,
@@ -87,13 +87,26 @@ serve(async (req: Request) => {
     const accessToken = tokenData.access_token;
     console.log("Access token obtained successfully");
 
-    // Prepare STK push payload
-    const timestamp = new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14);
+    // Prepare STK push payload with live credentials
+    const now = new Date();
+    const timestamp = now.getFullYear().toString() +
+                     (now.getMonth() + 1).toString().padStart(2, '0') +
+                     now.getDate().toString().padStart(2, '0') +
+                     now.getHours().toString().padStart(2, '0') +
+                     now.getMinutes().toString().padStart(2, '0') +
+                     now.getSeconds().toString().padStart(2, '0');
+    
     const password = btoa(shortCode + passkey + timestamp);
     
-    const formattedPhone = phone.startsWith('+254') ? phone.substring(1) : 
-                          phone.startsWith('0') ? '254' + phone.substring(1) : 
-                          phone.startsWith('254') ? phone : '254' + phone;
+    // Format phone number to start with 2547...
+    let formattedPhone = phone;
+    if (phone.startsWith('+254')) {
+      formattedPhone = phone.substring(1);
+    } else if (phone.startsWith('0')) {
+      formattedPhone = '254' + phone.substring(1);
+    } else if (!phone.startsWith('254')) {
+      formattedPhone = '254' + phone;
+    }
     
     const payload = {
       BusinessShortCode: shortCode,
@@ -104,15 +117,15 @@ serve(async (req: Request) => {
       PartyA: formattedPhone,
       PartyB: shortCode,
       PhoneNumber: formattedPhone,
-      CallBackURL: "https://barrush.com/mpesa-callback", // Replace with your actual callback URL
+      CallBackURL: "https://barrush.com/mpesa-callback", // Keep your existing callback URL
       AccountReference: "Barrush Order",
       TransactionDesc: "Barrush Alcohol Delivery Payment"
     };
 
     console.log("STK Push payload:", { ...payload, Password: "[HIDDEN]" });
 
-    // Send STK push request
-    const stkResponse = await fetch("https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest", {
+    // Send STK push request to PRODUCTION API
+    const stkResponse = await fetch("https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`,
