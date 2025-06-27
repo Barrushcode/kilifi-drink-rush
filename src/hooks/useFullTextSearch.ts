@@ -21,7 +21,7 @@ interface UseFullTextSearchReturn {
   hasSearched: boolean;
 }
 
-interface SupabaseProduct {
+interface SupabaseProductRow {
   Title: string | null;
   Description: string | null;
   Price: number | null;
@@ -66,7 +66,7 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
       const processedProducts: Product[] = [];
       
       for (let index = 0; index < data.length; index++) {
-        const product = data[index] as SupabaseProduct;
+        const product = data[index] as SupabaseProductRow;
         
         if (typeof product.Price !== 'number' || isNaN(product.Price)) {
           continue;
