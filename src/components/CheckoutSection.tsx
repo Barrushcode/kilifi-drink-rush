@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useCart } from '@/contexts/CartContext';
 import ShippingInfoForm from './ShippingInfoForm';
@@ -29,7 +28,7 @@ const DELIVERY_ZONES = [{
   value: 'old_ferry',
   fee: 100
 }];
-const TILL_NUMBER = '3534039'; // Updated to match your new short code
+const TILL_NUMBER = '5950470';
 
 const CheckoutSection: React.FC = () => {
   const {

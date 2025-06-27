@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import ProductCatalogHeader from './ProductCatalogHeader';
@@ -45,21 +44,20 @@ const ProductCatalog: React.FC = () => {
   const [showAuditReport, setShowAuditReport] = useState(false);
   const itemsPerPage = 4; // Set to 4 as requested
 
-  // Use optimized products hook with correct parameters
+  // Use optimized products hook with manual search term
   const { 
     products, 
-    isLoading: loading, 
+    loading, 
     error, 
+    totalCount, 
     totalPages,
-    totalProducts: totalCount,
-    hasProducts 
-  } = useOptimizedProducts(
-    actualSearchTerm,
-    selectedCategory === 'All' ? 'all' : selectedCategory,
-    [0, 100000], // Default price range
+    refetch 
+  } = useOptimizedProducts({
+    searchTerm: actualSearchTerm,
+    selectedCategory,
     currentPage,
     itemsPerPage
-  );
+  });
 
   // Handle search when user presses Enter or clicks search button
   const handleSearch = () => {
@@ -163,7 +161,7 @@ const ProductCatalog: React.FC = () => {
               Our Collection
             </h2>
             <p className="text-lg lg:text-xl text-red-400 mb-6 font-iphone">{error}</p>
-            <Button onClick={() => window.location.reload()} className="bg-rose-600 hover:bg-rose-500 h-touch px-8 py-4 font-iphone text-lg">
+            <Button onClick={refetch} className="bg-rose-600 hover:bg-rose-500 h-touch px-8 py-4 font-iphone text-lg">
               Try Again
             </Button>
           </div>

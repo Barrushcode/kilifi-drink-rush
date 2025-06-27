@@ -20,7 +20,7 @@ serve(async (req: Request) => {
   try {
     const { phone, amount, till }: MpesaStkRequest = await req.json();
 
-    // Validate inputs
+    // Validate inputs minimally
     if (!phone || !amount || !till) {
       return new Response(
         JSON.stringify({ ok: false, error: "Missing required params: phone, amount, till" }),
@@ -28,110 +28,52 @@ serve(async (req: Request) => {
       );
     }
 
-    // Your M-Pesa LIVE production credentials
+    // Collect env
     const consumerKey = Deno.env.get("SAFARICOM_CONSUMER_KEY");
     const consumerSecret = Deno.env.get("SAFARICOM_CONSUMER_SECRET");
-    const passkey = "725a276fe2a83f80e47286da61710e4d0648ee8bb803ed8f9b95dd7ebaec1d99"; // Live passkey
-    const shortCode = "3534039"; // Live business short code
+    const passkey = Deno.env.get("SAFARICOM_PASSKEY");
+    const shortCode = Deno.env.get("SAFARICOM_BUSINESS_SHORT_CODE") ?? till;
 
-    console.log("PRODUCTION Environment check:", {
-      hasConsumerKey: !!consumerKey,
-      hasConsumerSecret: !!consumerSecret,
-      shortCode,
-      passkey: passkey.substring(0, 10) + "...",
-      usingProductionAPI: true
-    });
-
-    if (!consumerKey || !consumerSecret) {
+    if (!consumerKey || !consumerSecret || !passkey || !shortCode) {
       return new Response(
-        JSON.stringify({ ok: false, error: "Live Safaricom API credentials not configured in environment variables" }),
+        JSON.stringify({ ok: false, error: "Safaricom Daraja API credentials are not set (ask admin)." }),
         { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
-    // Get access token from PRODUCTION API
+    // Get access token
     const auth = btoa(`${consumerKey}:${consumerSecret}`);
-    console.log("Requesting access token from PRODUCTION API...");
-    
     const tokenRes = await fetch("https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials", {
-      method: "GET",
-      headers: { 
-        Authorization: `Basic ${auth}`,
-        "Content-Type": "application/json"
-      }
+      headers: { Authorization: `Basic ${auth}` }
     });
-    
-    console.log("Production token response status:", tokenRes.status);
-    
-    let tokenData;
-    try {
-      const tokenText = await tokenRes.text();
-      console.log("Production token response received");
-      tokenData = JSON.parse(tokenText);
-    } catch (parseError) {
-      console.error("Failed to parse production token response:", parseError);
-      return new Response(
-        JSON.stringify({ ok: false, error: "Failed to parse Safaricom production token response", details: `Status: ${tokenRes.status}` }),
-        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
-    
+    const tokenData = await tokenRes.json();
     if (!tokenRes.ok || !tokenData.access_token) {
-      console.error("Production token request failed:", tokenData);
       return new Response(
-        JSON.stringify({ ok: false, error: "Failed to get M-Pesa production access token", details: tokenData }),
+        JSON.stringify({ ok: false, error: "Failed to acquire Safaricom API token" }),
         { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
-
     const accessToken = tokenData.access_token;
-    console.log("Production access token obtained successfully");
 
-    // Prepare STK push payload with LIVE production credentials
-    const now = new Date();
-    const timestamp = now.getFullYear().toString() +
-                     (now.getMonth() + 1).toString().padStart(2, '0') +
-                     now.getDate().toString().padStart(2, '0') +
-                     now.getHours().toString().padStart(2, '0') +
-                     now.getMinutes().toString().padStart(2, '0') +
-                     now.getSeconds().toString().padStart(2, '0');
-    
+    // Prepare STK push payload
+    const timestamp = new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14);
     const password = btoa(shortCode + passkey + timestamp);
-    
-    // Format phone number to start with 2547...
-    let formattedPhone = phone;
-    if (phone.startsWith('+254')) {
-      formattedPhone = phone.substring(1);
-    } else if (phone.startsWith('0')) {
-      formattedPhone = '254' + phone.substring(1);
-    } else if (!phone.startsWith('254')) {
-      formattedPhone = '254' + phone;
-    }
-    
     const payload = {
       BusinessShortCode: shortCode,
       Password: password,
       Timestamp: timestamp,
-      TransactionType: "CustomerBuyGoodsOnline",
-      Amount: Math.round(Number(amount)),
-      PartyA: formattedPhone,
+      TransactionType: "CustomerBuyGoodsOnline", // For Till, not PayBill
+      Amount: Number(amount),
+      PartyA: phone,
       PartyB: shortCode,
-      PhoneNumber: formattedPhone,
-      CallBackURL: "https://barrush.com/mpesa-callback",
-      AccountReference: "Barrush Order",
-      TransactionDesc: "Barrush Alcohol Delivery Payment"
+      PhoneNumber: phone,
+      CallBackURL: "https://example.com/stk-callback", // No actual server yet
+      AccountReference: "Barrush",
+      TransactionDesc: "Barrush Order"
     };
 
-    console.log("PRODUCTION STK Push payload:", { 
-      ...payload, 
-      Password: "[HIDDEN]",
-      timestamp,
-      shortCode,
-      formattedPhone 
-    });
-
-    // Send STK push request to PRODUCTION API
-    const stkResponse = await fetch("https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest", {
+    // Send STK push request
+    const resp = await fetch("https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -139,49 +81,21 @@ serve(async (req: Request) => {
       },
       body: JSON.stringify(payload),
     });
-
-    console.log("Production STK response status:", stkResponse.status);
-    
-    let stkResult;
-    try {
-      const stkText = await stkResponse.text();
-      console.log("Production STK response received");
-      stkResult = JSON.parse(stkText);
-    } catch (parseError) {
-      console.error("Failed to parse production STK response:", parseError);
+    const result = await resp.json();
+    if (!resp.ok || result.ResponseCode !== "0") {
       return new Response(
-        JSON.stringify({ ok: false, error: "Failed to parse M-Pesa production STK response", details: `Status: ${stkResponse.status}` }),
-        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
-    
-    console.log("Production STK result:", stkResult);
-    
-    if (!stkResponse.ok || stkResult.ResponseCode !== "0") {
-      return new Response(
-        JSON.stringify({ 
-          ok: false, 
-          error: stkResult.ResponseDescription || stkResult.errorMessage || "Failed to initiate M-Pesa production payment",
-          details: stkResult 
-        }),
+        JSON.stringify({ ok: false, error: result.ResponseDescription || "Failed to initiate STK Push", saf_details: result }),
         { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
     return new Response(
-      JSON.stringify({ 
-        ok: true, 
-        message: stkResult.CustomerMessage || "Payment request sent to your phone",
-        checkoutRequestID: stkResult.CheckoutRequestID,
-        details: stkResult 
-      }),
+      JSON.stringify({ ok: true, message: result.CustomerMessage, saf_details: result }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
-
   } catch (err: any) {
-    console.error("M-Pesa Production STK Push Error:", err);
     return new Response(
-      JSON.stringify({ ok: false, error: err?.message || "Internal server error" }),
+      JSON.stringify({ ok: false, error: err?.message ?? "Unexpected error in STK push." }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   }
