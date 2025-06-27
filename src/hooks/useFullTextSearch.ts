@@ -34,7 +34,7 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
   const [searchError, setSearchError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
 
-  const performSearch = useCallback(async (trimmedSearch: string) => {
+  const performSearch = useCallback(async (trimmedSearch: string): Promise<void> => {
     try {
       setIsSearching(true);
       setSearchError(null);
@@ -42,7 +42,6 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
       
       console.log('🔍 Full-text search for:', trimmedSearch);
 
-      // Perform full-text search across Title and Description
       const { data, error } = await supabase
         .from('allthealcoholicproducts')
         .select('Title, Description, Price, "Product image URL"')
@@ -64,7 +63,6 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
         return;
       }
 
-      // Process search results
       const processedProducts: Product[] = [];
       
       for (let index = 0; index < data.length; index++) {
@@ -77,7 +75,6 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
         const productPrice = product.Price;
         const description = product.Description || '';
 
-        // Get Supabase image
         const storageImage = await getSupabaseProductImageUrl(product.Title || 'Unknown Product');
 
         let productImage: string | null = null;
@@ -87,12 +84,10 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
           productImage = product["Product image URL"];
         }
 
-        // Skip products without images
         if (!productImage) {
           continue;
         }
 
-        // Enhanced category detection
         const category = getCategoryFromName(product.Title || 'Unknown Product', productPrice, description);
 
         processedProducts.push({
@@ -120,7 +115,6 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
   }, []);
 
   useEffect(() => {
-    // If no search term, clear results
     if (!searchTerm || searchTerm.trim().length === 0) {
       setSearchResults([]);
       setHasSearched(false);

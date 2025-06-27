@@ -1,25 +1,22 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useProducts } from './useProducts';
-import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
 
 export const useOptimizedProducts = (
   searchTerm: string,
   selectedCategory: string,
   priceRange: [number, number],
   currentPage: number,
-  productsPerPage: number = 3
+  productsPerPage: number = 4
 ) => {
   const { products: allProducts, loading: isLoading, error } = useProducts();
   const [imageCache, setImageCache] = useState<Record<string, string>>({});
 
-  // Filter and paginate products
   const { filteredProducts, totalPages, currentProducts } = useMemo(() => {
     if (!allProducts || allProducts.length === 0) {
       return { filteredProducts: [], totalPages: 0, currentProducts: [] };
     }
 
-    // Apply filters
     let filtered = allProducts.filter(product => {
       const matchesSearch = !searchTerm || 
         product.baseName?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -30,7 +27,6 @@ export const useOptimizedProducts = (
       return matchesSearch && matchesCategory && matchesPrice;
     });
 
-    // Calculate pagination
     const total = Math.ceil(filtered.length / productsPerPage);
     const startIndex = (currentPage - 1) * productsPerPage;
     const endIndex = startIndex + productsPerPage;
@@ -43,15 +39,13 @@ export const useOptimizedProducts = (
     };
   }, [allProducts, searchTerm, selectedCategory, priceRange, currentPage, productsPerPage]);
 
-  // Optimize images for current page products
   const optimizedProducts = useMemo(() => {
     return currentProducts.map(product => ({
       ...product,
-      optimizedImageUrl: product.image // Use existing image URL directly
+      optimizedImageUrl: product.image
     }));
   }, [currentProducts]);
 
-  // Preload images for better performance
   useEffect(() => {
     const preloadImages = async () => {
       const imagePromises = optimizedProducts.map(async (product) => {
@@ -59,9 +53,9 @@ export const useOptimizedProducts = (
           try {
             const img = new Image();
             img.src = product.optimizedImageUrl;
-            await new Promise((resolve, reject) => {
-              img.onload = resolve;
-              img.onerror = reject;
+            await new Promise<void>((resolve, reject) => {
+              img.onload = () => resolve();
+              img.onerror = () => reject();
             });
             return { [product.optimizedImageUrl]: product.optimizedImageUrl };
           } catch {
