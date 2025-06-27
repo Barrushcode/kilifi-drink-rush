@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useProducts } from './useProducts';
-import { supabaseImageUrl } from '@/utils/supabaseImageUrl';
+import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
 
 export const useOptimizedProducts = (
   searchTerm: string,
@@ -10,7 +10,7 @@ export const useOptimizedProducts = (
   currentPage: number,
   productsPerPage: number = 3
 ) => {
-  const { data: allProducts, isLoading, error } = useProducts();
+  const { products: allProducts, loading: isLoading, error } = useProducts();
   const [imageCache, setImageCache] = useState<Record<string, string>>({});
 
   // Filter and paginate products
@@ -22,10 +22,10 @@ export const useOptimizedProducts = (
     // Apply filters
     let filtered = allProducts.filter(product => {
       const matchesSearch = !searchTerm || 
-        product.Title?.toLowerCase().includes(searchTerm.toLowerCase());
+        product.name?.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === 'all' || 
-        product.Title?.toLowerCase().includes(selectedCategory.toLowerCase());
-      const matchesPrice = product.Price >= priceRange[0] && product.Price <= priceRange[1];
+        product.name?.toLowerCase().includes(selectedCategory.toLowerCase());
+      const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
       
       return matchesSearch && matchesCategory && matchesPrice;
     });
@@ -47,7 +47,7 @@ export const useOptimizedProducts = (
   const optimizedProducts = useMemo(() => {
     return currentProducts.map(product => ({
       ...product,
-      optimizedImageUrl: supabaseImageUrl(product["Product image URL"] || '')
+      optimizedImageUrl: getSupabaseProductImageUrl(product.name || '')
     }));
   }, [currentProducts]);
 
@@ -92,7 +92,7 @@ export const useOptimizedProducts = (
   return {
     products: optimizedProducts,
     isLoading,
-    error,
+    error: error || '',
     totalPages,
     totalProducts: filteredProducts.length,
     hasProducts: optimizedProducts.length > 0
