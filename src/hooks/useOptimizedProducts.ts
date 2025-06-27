@@ -22,10 +22,10 @@ export const useOptimizedProducts = (
     // Apply filters
     let filtered = allProducts.filter(product => {
       const matchesSearch = !searchTerm || 
-        product.name?.toLowerCase().includes(searchTerm.toLowerCase());
+        product.baseName?.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === 'all' || 
-        product.name?.toLowerCase().includes(selectedCategory.toLowerCase());
-      const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
+        product.category?.toLowerCase().includes(selectedCategory.toLowerCase());
+      const matchesPrice = product.lowestPrice >= priceRange[0] && product.lowestPrice <= priceRange[1];
       
       return matchesSearch && matchesCategory && matchesPrice;
     });
@@ -47,7 +47,7 @@ export const useOptimizedProducts = (
   const optimizedProducts = useMemo(() => {
     return currentProducts.map(product => ({
       ...product,
-      optimizedImageUrl: getSupabaseProductImageUrl(product.name || '')
+      optimizedImageUrl: product.image // Use existing image URL directly
     }));
   }, [currentProducts]);
 
