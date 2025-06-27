@@ -28,11 +28,11 @@ serve(async (req: Request) => {
       );
     }
 
-    // Your M-Pesa credentials
+    // Your M-Pesa credentials - Updated with new values
     const consumerKey = Deno.env.get("SAFARICOM_CONSUMER_KEY");
     const consumerSecret = Deno.env.get("SAFARICOM_CONSUMER_SECRET");
-    const passkey = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
-    const shortCode = "174379"; // Your business short code
+    const passkey = "725a276fe2a83f80e47286da61710e4d0648ee8bb803ed8f9b95dd7ebaec1d99";
+    const shortCode = "3534039"; // Updated business short code
 
     if (!consumerKey || !consumerSecret) {
       return new Response(
