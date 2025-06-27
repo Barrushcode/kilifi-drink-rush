@@ -180,9 +180,9 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
             orderReference: response.reference,
             orderSource: "paystack"
           });
-          // After success, redirect to order placed
+          // After success, redirect to products page instead of order placed
           setTimeout(() => {
-            navigate("/order-placed");
+            navigate("/products");
           }, 1200);
         } catch (emailError) {
           console.error('Failed to send confirmation email:', emailError);

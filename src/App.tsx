@@ -15,7 +15,6 @@ import Help from "./pages/Help";
 import Cart from "./pages/Cart";
 import NotFound from "./pages/NotFound";
 import Navigation from "./components/Navigation";
-import OrderPlaced from "./pages/OrderPlaced";
 import CartDrawer from "@/components/CartDrawer";
 import AgeVerification from "@/components/AgeVerification";
 import { MiniCartDrawerProvider, useMiniCartDrawer } from "@/contexts/CartContext";
@@ -56,7 +55,6 @@ const App = () => {
                     <Route path="/cart" element={<Cart />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/order-placed" element={<OrderPlaced />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </div>
