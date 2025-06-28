@@ -60,15 +60,6 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           itemsPerPage
         });
 
-        // Build the base query conditions separately to avoid deep type inference
-        const baseConditions = {
-          priceNotNull: true,
-          priceMin: 100,
-          priceMax: 500000,
-          imageNotNull: true,
-          imageNotEmpty: true
-        };
-
         // Build OR conditions array for dynamic filters
         const orFilters: string[] = [];
         
@@ -82,58 +73,56 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           orFilters.push(`Description.ilike.%${trimmedSearch}%`);
         }
 
-        // First, get the total count for pagination - build query step by step
-        const countQueryBuilder = supabase
+        // First, get the total count for pagination - use simpler query construction
+        const countQueryBase = supabase
           .from('allthealcoholicproducts')
           .select('*', { count: 'exact', head: true });
 
-        // Apply base filters
-        let countQuery = countQueryBuilder
-          .not('Price', 'is', null)
-          .gte('Price', baseConditions.priceMin)
-          .lte('Price', baseConditions.priceMax)
-          .not('"Product image URL"', 'is', null)
-          .neq('"Product image URL"', '');
+        // Apply filters step by step to avoid deep type inference
+        const countQueryWithPrice = countQueryBase.not('Price', 'is', null);
+        const countQueryWithMinPrice = countQueryWithPrice.gte('Price', 100);
+        const countQueryWithMaxPrice = countQueryWithMinPrice.lte('Price', 500000);
+        const countQueryWithImage = countQueryWithMaxPrice.not('"Product image URL"', 'is', null);
+        const countQueryWithImageCheck = countQueryWithImage.neq('"Product image URL"', '');
 
         // Apply OR filters if any
-        if (orFilters.length > 0) {
-          countQuery = countQuery.or(orFilters.join(','));
-        }
+        const finalCountQuery = orFilters.length > 0 
+          ? countQueryWithImageCheck.or(orFilters.join(','))
+          : countQueryWithImageCheck;
 
-        const { count } = await countQuery;
+        const { count } = await finalCountQuery;
         
         if (isCancelled) return;
         
         console.log(`📊 Total matching products: ${count}`);
         setTotalCount(count || 0);
 
-        // Now fetch the actual data for this page - build query step by step
-        const dataQueryBuilder = supabase
+        // Now fetch the actual data for this page - use simpler query construction
+        const dataQueryBase = supabase
           .from('allthealcoholicproducts')
           .select('Title, Description, Price, "Product image URL"');
 
-        // Apply base filters
-        let dataQuery = dataQueryBuilder
-          .not('Price', 'is', null)
-          .gte('Price', baseConditions.priceMin)
-          .lte('Price', baseConditions.priceMax)
-          .not('"Product image URL"', 'is', null)
-          .neq('"Product image URL"', '');
+        // Apply filters step by step to avoid deep type inference
+        const dataQueryWithPrice = dataQueryBase.not('Price', 'is', null);
+        const dataQueryWithMinPrice = dataQueryWithPrice.gte('Price', 100);
+        const dataQueryWithMaxPrice = dataQueryWithMinPrice.lte('Price', 500000);
+        const dataQueryWithImage = dataQueryWithMaxPrice.not('"Product image URL"', 'is', null);
+        const dataQueryWithImageCheck = dataQueryWithImage.neq('"Product image URL"', '');
 
         // Apply OR filters if any
-        if (orFilters.length > 0) {
-          dataQuery = dataQuery.or(orFilters.join(','));
-        }
+        const dataQueryWithFilters = orFilters.length > 0 
+          ? dataQueryWithImageCheck.or(orFilters.join(','))
+          : dataQueryWithImageCheck;
 
         // Apply pagination using Supabase range
         const startIndex = (currentPage - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage - 1;
         
-        dataQuery = dataQuery
+        const finalDataQuery = dataQueryWithFilters
           .order('Title', { ascending: true })
           .range(startIndex, endIndex);
 
-        const { data, error: fetchError } = await dataQuery;
+        const { data, error: fetchError } = await finalDataQuery;
 
         if (fetchError) throw fetchError;
         if (isCancelled) return;
