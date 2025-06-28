@@ -62,7 +62,6 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
 
         // Build base query conditions
         const conditions: string[] = [];
-        const params: any[] = [];
 
         // Add category filter
         if (selectedCategory !== 'All') {

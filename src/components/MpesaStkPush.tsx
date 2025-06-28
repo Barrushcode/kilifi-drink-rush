@@ -1,9 +1,9 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from "react-router-dom";
 
 interface MpesaStkPushProps {
@@ -43,46 +43,51 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
     }
 
     setProcessing(true);
+    setMessage("Sending M-PESA prompt...");
+
     try {
-      const { data, error } = await supabase.functions.invoke('mpesa-stk-push', {
-        body: {
-          phone: userPhone,
-          amount,
-          till
+      const response = await fetch('https://tyfsxboxshbkdetweuke.functions.supabase.co/stk-push', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          amount: amount,
+          phone: userPhone
+        }),
       });
 
-      if (error || !data?.ok) {
-        setMessage(data?.error || error?.message || "Payment failed. Try again.");
+      if (response.ok) {
+        setMessage("✅ Payment request sent! Check your phone to complete the payment.");
+        toast({
+          title: "Payment Prompt Sent!",
+          description: "Check your phone to complete the M-PESA payment.",
+          className: "bg-green-600 text-white"
+        });
+        
+        if (onPaymentSuccess) onPaymentSuccess();
+        
+        // After a small delay, redirect to order placed
+        setTimeout(() => {
+          navigate("/order-placed");
+        }, 1500);
+      } else {
+        setMessage("❌ Payment failed. Try again or contact support.");
         toast({
           title: "Payment Error",
-          description: data?.error || error?.message || "Failed to initiate payment.",
+          description: "Failed to send payment request. Please try again.",
           variant: "destructive"
         });
-        setProcessing(false);
-        return;
       }
-
-      setMessage(data.message || "STK Push sent. Complete on your phone.");
-      toast({
-        title: "Payment Prompt Sent!",
-        description: data.message || "Approve payment on your mobile device.",
-        className: "bg-green-600 text-white"
-      });
-      setProcessing(false);
-      if (onPaymentSuccess) onPaymentSuccess();
-      // After a small delay, redirect to order placed
-      setTimeout(() => {
-        navigate("/order-placed");
-      }, 1500);
-
-    } catch (err: any) {
-      setMessage("Payment failed. Try again later.");
+    } catch (error) {
+      console.error('Payment error:', error);
+      setMessage("❌ Payment failed. Try again or contact support.");
       toast({
         title: "Payment Error",
-        description: err?.message || "Failed to initiate payment.",
+        description: "Network error. Please check your connection and try again.",
         variant: "destructive"
       });
+    } finally {
       setProcessing(false);
     }
   };
@@ -115,7 +120,7 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
             disabled={processing || !userPhone}
             className={`w-full bg-neon-pink hover:bg-neon-pink/90 text-white font-semibold py-6 text-lg transition-all duration-300 ${processing && 'opacity-60 cursor-not-allowed'}`}
           >
-            {processing ? 'Sending STK Prompt...' : `Pay KES ${amount.toLocaleString()} via M-PESA`}
+            {processing ? 'Sending M-PESA prompt...' : `Pay KES ${amount.toLocaleString()} via M-PESA`}
           </Button>
           {message && <div className="mt-3 text-white text-center">{message}</div>}
           <p className="text-sm text-white/60 text-center mt-2">
