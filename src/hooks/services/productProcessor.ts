@@ -2,12 +2,12 @@
 import { getCategoryFromName } from '@/utils/categoryUtils';
 import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
 import { groupProductsByBaseName } from '@/utils/productGroupingUtils';
-import { Product, RawProduct } from '../types/productTypes';
+import { Product, RawProduct, GroupedProduct } from '../types/productTypes';
 
 export const processRawProducts = async (
   data: RawProduct[], 
   startIndex: number
-): Promise<Product[]> => {
+): Promise<GroupedProduct[]> => {
   const processedProducts: Product[] = [];
   
   for (let index = 0; index < data.length; index++) {
