@@ -18,49 +18,37 @@ export const buildOrFilters = (searchTerm: string, selectedCategory: string): st
 };
 
 export const buildCountQuery = (orFilters: string[]) => {
-  // Start with base query
-  const query = supabase
+  let query = supabase
     .from('allthealcoholicproducts')
-    .select('*', { count: 'exact', head: true });
-
-  // Apply basic filters
-  const filteredQuery = query
+    .select('*', { count: 'exact', head: true })
     .not('Price', 'is', null)
     .gte('Price', 100)
     .lte('Price', 500000)
     .not('"Product image URL"', 'is', null)
     .neq('"Product image URL"', '');
 
-  // Apply OR filters if any exist
   if (orFilters.length > 0) {
-    return filteredQuery.or(orFilters.join(','));
+    query = query.or(orFilters.join(','));
   }
 
-  return filteredQuery;
+  return query;
 };
 
 export const buildDataQuery = (orFilters: string[], startIndex: number, endIndex: number) => {
-  // Start with base query
-  const query = supabase
+  let query = supabase
     .from('allthealcoholicproducts')
-    .select('Title, Description, Price, "Product image URL"');
-
-  // Apply basic filters
-  const filteredQuery = query
+    .select('Title, Description, Price, "Product image URL"')
     .not('Price', 'is', null)
     .gte('Price', 100)
     .lte('Price', 500000)
     .not('"Product image URL"', 'is', null)
     .neq('"Product image URL"', '');
 
-  // Apply OR filters if any exist
-  let finalQuery = filteredQuery;
   if (orFilters.length > 0) {
-    finalQuery = filteredQuery.or(orFilters.join(','));
+    query = query.or(orFilters.join(','));
   }
 
-  // Apply ordering and range
-  return finalQuery
+  return query
     .order('Title', { ascending: true })
     .range(startIndex, endIndex);
 };
