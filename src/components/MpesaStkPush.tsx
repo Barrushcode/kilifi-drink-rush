@@ -43,7 +43,7 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
     }
 
     setProcessing(true);
-    setMessage("Sending M-PESA prompt...");
+    setMessage("Sending M-PESA request...");
 
     try {
       const response = await fetch('https://tyfsxboxshbkdetweuke.functions.supabase.co/stk-push', {
@@ -57,8 +57,8 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
         }),
       });
 
-      if (response.ok) {
-        setMessage("✅ Payment request sent! Check your phone to complete the payment.");
+      if (response.status === 200) {
+        setMessage("✅ Payment request sent! Check your phone.");
         toast({
           title: "Payment Prompt Sent!",
           description: "Check your phone to complete the M-PESA payment.",
@@ -120,7 +120,7 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
             disabled={processing || !userPhone}
             className={`w-full bg-neon-pink hover:bg-neon-pink/90 text-white font-semibold py-6 text-lg transition-all duration-300 ${processing && 'opacity-60 cursor-not-allowed'}`}
           >
-            {processing ? 'Sending M-PESA prompt...' : `Pay KES ${amount.toLocaleString()} via M-PESA`}
+            {processing ? 'Sending M-PESA request...' : `Pay KES ${amount.toLocaleString()} via M-PESA`}
           </Button>
           {message && <div className="mt-3 text-white text-center">{message}</div>}
           <p className="text-sm text-white/60 text-center mt-2">

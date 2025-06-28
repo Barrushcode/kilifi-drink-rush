@@ -60,19 +60,17 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           itemsPerPage
         });
 
-        // Build base query conditions - simplified to avoid type inference issues
-        let orConditions: string | undefined;
-
-        // Add category filter
+        // Build filters array
+        const filters = [];
+        
         if (selectedCategory !== 'All') {
-          orConditions = `Description.ilike.%${selectedCategory}%`;
+          filters.push(`Description.ilike.%${selectedCategory}%`);
         }
         
-        // Add search filter
         if (searchTerm && searchTerm.trim()) {
           const trimmedSearch = searchTerm.trim();
-          const searchCondition = `Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`;
-          orConditions = orConditions ? `${orConditions},${searchCondition}` : searchCondition;
+          filters.push(`Title.ilike.%${trimmedSearch}%`);
+          filters.push(`Description.ilike.%${trimmedSearch}%`);
         }
 
         // First, get the total count for pagination
@@ -85,9 +83,8 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           .not('"Product image URL"', 'is', null)
           .neq('"Product image URL"', '');
 
-        // Apply filters to count query
-        if (orConditions) {
-          countQuery = countQuery.or(orConditions);
+        if (filters.length > 0) {
+          countQuery = countQuery.or(filters.join(','));
         }
 
         const { count } = await countQuery;
@@ -107,9 +104,8 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           .not('"Product image URL"', 'is', null)
           .neq('"Product image URL"', '');
 
-        // Apply filters to data query
-        if (orConditions) {
-          dataQuery = dataQuery.or(orConditions);
+        if (filters.length > 0) {
+          dataQuery = dataQuery.or(filters.join(','));
         }
 
         // Apply pagination using Supabase range
