@@ -60,31 +60,44 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
           itemsPerPage
         });
 
-        // Build filters array
-        const filters = [];
+        // Build the base query conditions separately to avoid deep type inference
+        const baseConditions = {
+          priceNotNull: true,
+          priceMin: 100,
+          priceMax: 500000,
+          imageNotNull: true,
+          imageNotEmpty: true
+        };
+
+        // Build OR conditions array for dynamic filters
+        const orFilters: string[] = [];
         
         if (selectedCategory !== 'All') {
-          filters.push(`Description.ilike.%${selectedCategory}%`);
+          orFilters.push(`Description.ilike.%${selectedCategory}%`);
         }
         
         if (searchTerm && searchTerm.trim()) {
           const trimmedSearch = searchTerm.trim();
-          filters.push(`Title.ilike.%${trimmedSearch}%`);
-          filters.push(`Description.ilike.%${trimmedSearch}%`);
+          orFilters.push(`Title.ilike.%${trimmedSearch}%`);
+          orFilters.push(`Description.ilike.%${trimmedSearch}%`);
         }
 
-        // First, get the total count for pagination
-        let countQuery = supabase
+        // First, get the total count for pagination - build query step by step
+        const countQueryBuilder = supabase
           .from('allthealcoholicproducts')
-          .select('*', { count: 'exact', head: true })
+          .select('*', { count: 'exact', head: true });
+
+        // Apply base filters
+        let countQuery = countQueryBuilder
           .not('Price', 'is', null)
-          .gte('Price', 100)
-          .lte('Price', 500000)
+          .gte('Price', baseConditions.priceMin)
+          .lte('Price', baseConditions.priceMax)
           .not('"Product image URL"', 'is', null)
           .neq('"Product image URL"', '');
 
-        if (filters.length > 0) {
-          countQuery = countQuery.or(filters.join(','));
+        // Apply OR filters if any
+        if (orFilters.length > 0) {
+          countQuery = countQuery.or(orFilters.join(','));
         }
 
         const { count } = await countQuery;
@@ -94,18 +107,22 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
         console.log(`📊 Total matching products: ${count}`);
         setTotalCount(count || 0);
 
-        // Now fetch the actual data for this page
-        let dataQuery = supabase
+        // Now fetch the actual data for this page - build query step by step
+        const dataQueryBuilder = supabase
           .from('allthealcoholicproducts')
-          .select('Title, Description, Price, "Product image URL"')
+          .select('Title, Description, Price, "Product image URL"');
+
+        // Apply base filters
+        let dataQuery = dataQueryBuilder
           .not('Price', 'is', null)
-          .gte('Price', 100)
-          .lte('Price', 500000)
+          .gte('Price', baseConditions.priceMin)
+          .lte('Price', baseConditions.priceMax)
           .not('"Product image URL"', 'is', null)
           .neq('"Product image URL"', '');
 
-        if (filters.length > 0) {
-          dataQuery = dataQuery.or(filters.join(','));
+        // Apply OR filters if any
+        if (orFilters.length > 0) {
+          dataQuery = dataQuery.or(orFilters.join(','));
         }
 
         // Apply pagination using Supabase range
