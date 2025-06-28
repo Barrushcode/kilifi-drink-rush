@@ -1,8 +1,8 @@
 
 import { supabase } from '@/integrations/supabase/client';
 
-export const buildOrFilters = (searchTerm: string, selectedCategory: string) => {
-  const orFilters = [];
+export const buildOrFilters = (searchTerm: string, selectedCategory: string): string[] => {
+  const orFilters: string[] = [];
   
   if (selectedCategory !== 'All') {
     orFilters.push(`Description.ilike.%${selectedCategory}%`);
