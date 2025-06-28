@@ -189,6 +189,27 @@ export type Database = {
         }
         Relationships: []
       }
+      pending_payments: {
+        Row: {
+          amount: number | null
+          created_at: string
+          orderId: string | null
+          phone: string | null
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string
+          orderId?: string | null
+          phone?: string | null
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string
+          orderId?: string | null
+          phone?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
