@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -44,65 +43,46 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
     }
 
     setProcessing(true);
-    setMessage("Sending M-PESA prompt...");
-
     try {
-      // Create a pending payment record first
-      const { data: paymentRecord, error: paymentError } = await supabase
-        .from('pending_payments')
-        .insert({
-          amount,
+      const { data, error } = await supabase.functions.invoke('mpesa-stk-push', {
+        body: {
           phone: userPhone,
-          orderId: crypto.randomUUID()
-        })
-        .select()
-        .single();
-
-      if (paymentError || !paymentRecord) {
-        throw new Error('Failed to create payment record');
-      }
-
-      // Make POST request to the specified endpoint
-      const response = await fetch('https://tyfsxboxshbkdetweuke.functions.supabase.co/stk-push', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+          amount,
+          till
         },
-        body: JSON.stringify({
-          orderId: paymentRecord.orderId
-        }),
       });
 
-      if (response.status === 200) {
-        setMessage("✅ Payment request sent! Check your phone to complete M-PESA payment.");
-        toast({
-          title: "Payment Prompt Sent!",
-          description: "Check your phone to complete M-PESA payment.",
-          className: "bg-green-600 text-white"
-        });
-        
-        if (onPaymentSuccess) onPaymentSuccess();
-        
-        // After a small delay, redirect to order placed
-        setTimeout(() => {
-          navigate("/order-placed");
-        }, 1500);
-      } else {
-        setMessage("❌ Payment failed. Please try again.");
+      if (error || !data?.ok) {
+        setMessage(data?.error || error?.message || "Payment failed. Try again.");
         toast({
           title: "Payment Error",
-          description: "Payment failed. Please try again.",
+          description: data?.error || error?.message || "Failed to initiate payment.",
           variant: "destructive"
         });
+        setProcessing(false);
+        return;
       }
+
+      setMessage(data.message || "STK Push sent. Complete on your phone.");
+      toast({
+        title: "Payment Prompt Sent!",
+        description: data.message || "Approve payment on your mobile device.",
+        className: "bg-green-600 text-white"
+      });
+      setProcessing(false);
+      if (onPaymentSuccess) onPaymentSuccess();
+      // After a small delay, redirect to order placed
+      setTimeout(() => {
+        navigate("/order-placed");
+      }, 1500);
+
     } catch (err: any) {
-      setMessage("❌ Payment failed. Please try again.");
+      setMessage("Payment failed. Try again later.");
       toast({
         title: "Payment Error",
         description: err?.message || "Failed to initiate payment.",
         variant: "destructive"
       });
-    } finally {
       setProcessing(false);
     }
   };

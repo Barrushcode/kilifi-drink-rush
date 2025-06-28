@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import ProductCatalogHeader from './ProductCatalogHeader';
@@ -45,7 +44,7 @@ const ProductCatalog: React.FC = () => {
   const [showAuditReport, setShowAuditReport] = useState(false);
   const itemsPerPage = 4; // Set to 4 as requested
 
-  // Use optimized products hook with parameters object
+  // Use optimized products hook with manual search term
   const { 
     products, 
     loading, 
