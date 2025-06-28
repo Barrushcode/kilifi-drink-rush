@@ -53,7 +53,7 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
         .insert({
           amount,
           phone: userPhone,
-          status: 'pending'
+          orderId: crypto.randomUUID()
         })
         .select()
         .single();
@@ -69,7 +69,7 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          orderId: paymentRecord.id
+          orderId: paymentRecord.orderId
         }),
       });
 
