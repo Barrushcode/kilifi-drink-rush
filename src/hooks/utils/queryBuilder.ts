@@ -18,43 +18,47 @@ export const buildOrFilters = (searchTerm: string, selectedCategory: string): st
 };
 
 export const buildCountQuery = (orFilters: string[]) => {
-  // Create base query with explicit typing
-  const baseQuery = supabase
+  // Build the query using the raw SQL approach to avoid type complexity
+  let query = supabase
     .from('allthealcoholicproducts')
-    .select('*', { count: 'exact', head: true })
-    .not('Price', 'is', null)
-    .gte('Price', 100)
-    .lte('Price', 500000)
-    .not('"Product image URL"', 'is', null)
-    .neq('"Product image URL"', '');
+    .select('*', { count: 'exact', head: true });
 
-  // Handle OR filters separately to avoid deep type instantiation
-  if (orFilters.length === 0) {
-    return baseQuery;
+  // Apply basic filters
+  query = query.not('Price', 'is', null);
+  query = query.gte('Price', 100);
+  query = query.lte('Price', 500000);
+  query = query.not('"Product image URL"', 'is', null);
+  query = query.neq('"Product image URL"', '');
+
+  // Apply OR filters if they exist
+  if (orFilters.length > 0) {
+    query = query.or(orFilters.join(','));
   }
-  
-  // Apply OR filter as final step
-  return baseQuery.or(orFilters.join(','));
+
+  return query;
 };
 
 export const buildDataQuery = (orFilters: string[], startIndex: number, endIndex: number) => {
-  // Create base query with all standard filters
-  const baseQuery = supabase
+  // Build the query step by step to avoid type complexity
+  let query = supabase
     .from('allthealcoholicproducts')
-    .select('Title, Description, Price, "Product image URL"')
-    .not('Price', 'is', null)
-    .gte('Price', 100)
-    .lte('Price', 500000)
-    .not('"Product image URL"', 'is', null)
-    .neq('"Product image URL"', '');
+    .select('Title, Description, Price, "Product image URL"');
+
+  // Apply basic filters
+  query = query.not('Price', 'is', null);
+  query = query.gte('Price', 100);
+  query = query.lte('Price', 500000);
+  query = query.not('"Product image URL"', 'is', null);
+  query = query.neq('"Product image URL"', '');
 
   // Apply OR filters if they exist
-  const queryWithFilters = orFilters.length > 0 
-    ? baseQuery.or(orFilters.join(','))
-    : baseQuery;
+  if (orFilters.length > 0) {
+    query = query.or(orFilters.join(','));
+  }
 
-  // Apply ordering and pagination as final step
-  return queryWithFilters
-    .order('Title', { ascending: true })
-    .range(startIndex, endIndex);
+  // Apply ordering and pagination
+  query = query.order('Title', { ascending: true });
+  query = query.range(startIndex, endIndex);
+
+  return query;
 };
