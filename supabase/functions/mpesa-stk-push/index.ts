@@ -31,10 +31,10 @@ serve(async (req: Request) => {
     // Get live credentials from environment
     const consumerKey = Deno.env.get("SAFARICOM_CONSUMER_KEY");
     const consumerSecret = Deno.env.get("SAFARICOM_CONSUMER_SECRET");
-    const passkey = "725a276fe2a83f80e47286da61710e4d0648ee8bb803ed8f9b95dd7ebaec1d99"; // Your live passkey
+    const passkey = Deno.env.get("SAFARICOM_PASSKEY");
     const shortCode = "3534039"; // Your live shortcode
 
-    if (!consumerKey || !consumerSecret) {
+    if (!consumerKey || !consumerSecret || !passkey) {
       console.error("Missing Safaricom credentials");
       return new Response(
         JSON.stringify({ ok: false, error: "Safaricom credentials not configured" }),
@@ -42,35 +42,27 @@ serve(async (req: Request) => {
       );
     }
 
-    console.log(`Processing LIVE STK push for phone: ${phone}, amount: ${amount}`);
+    console.log(`Processing STK push for phone: ${phone}, amount: ${amount}`);
 
-    // Get access token from live API
+    // Get access token
     const auth = btoa(`${consumerKey}:${consumerSecret}`);
-    console.log("Making token request to Safaricom...");
-    
     const tokenRes = await fetch("https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials", {
-      method: "GET",
-      headers: { 
-        Authorization: `Basic ${auth}`,
-        "Content-Type": "application/json"
-      }
+      headers: { Authorization: `Basic ${auth}` }
     });
     
     const tokenData = await tokenRes.json();
-    console.log("Token response:", tokenRes.status, tokenData);
-    
     if (!tokenRes.ok || !tokenData.access_token) {
       console.error("Failed to get access token:", tokenData);
       return new Response(
-        JSON.stringify({ ok: false, error: "Failed to acquire Safaricom API token", details: tokenData }),
+        JSON.stringify({ ok: false, error: "Failed to acquire Safaricom API token" }),
         { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
     
     const accessToken = tokenData.access_token;
-    console.log("Live access token acquired successfully");
+    console.log("Access token acquired successfully");
 
-    // Prepare STK push payload for live environment
+    // Prepare STK push payload
     const timestamp = new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14);
     const password = btoa(shortCode + passkey + timestamp);
     
@@ -83,14 +75,14 @@ serve(async (req: Request) => {
       PartyA: phone,
       PartyB: shortCode,
       PhoneNumber: phone,
-      CallBackURL: "https://tyfsxboxshbkdetweuke.supabase.co/functions/v1/mpesa-callback",
+      CallBackURL: "https://barrush.co.ke/mpesa/confirmation",
       AccountReference: name || "Barrush Order",
-      TransactionDesc: "Barrush Purchase - Live Payment"
+      TransactionDesc: "Barrush Purchase"
     };
 
-    console.log("Sending LIVE STK push request with payload:", JSON.stringify(payload, null, 2));
+    console.log("Sending STK push request...");
 
-    // Send STK push request to live API
+    // Send STK push request
     const resp = await fetch("https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest", {
       method: "POST",
       headers: {
@@ -101,21 +93,21 @@ serve(async (req: Request) => {
     });
     
     const result = await resp.json();
-    console.log("Live STK push response:", resp.status, result);
+    console.log("STK push response:", result);
     
     if (!resp.ok || result.ResponseCode !== "0") {
-      console.error("Live STK push failed:", result);
+      console.error("STK push failed:", result);
       return new Response(
         JSON.stringify({ 
           ok: false, 
-          error: result.ResponseDescription || result.errorMessage || "Failed to initiate STK Push",
+          error: result.ResponseDescription || "Failed to initiate STK Push",
           details: result 
         }),
-        { status: resp.ok ? 200 : resp.status, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
-    console.log("Live STK push sent successfully");
+    console.log("STK push sent successfully");
     return new Response(
       JSON.stringify({ 
         ok: true, 
@@ -125,7 +117,7 @@ serve(async (req: Request) => {
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   } catch (err: any) {
-    console.error("Live STK push error:", err);
+    console.error("STK push error:", err);
     return new Response(
       JSON.stringify({ ok: false, error: err?.message ?? "Unexpected error in STK push." }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }

@@ -14,7 +14,7 @@ serve(async (req: Request) => {
 
   try {
     const callbackData = await req.json();
-    console.log("Received LIVE M-PESA callback:", JSON.stringify(callbackData, null, 2));
+    console.log("Received M-PESA callback:", JSON.stringify(callbackData, null, 2));
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -37,8 +37,7 @@ serve(async (req: Request) => {
       result_code: ResultCode,
       result_desc: ResultDesc,
       callback_data: callbackData,
-      created_at: new Date().toISOString(),
-      is_live: true // Mark as live payment
+      created_at: new Date().toISOString()
     };
 
     // If payment was successful, extract additional details
@@ -62,9 +61,9 @@ serve(async (req: Request) => {
         }
       }
       
-      console.log("LIVE Payment successful:", paymentRecord);
+      console.log("Payment successful:", paymentRecord);
     } else {
-      console.log("LIVE Payment failed or cancelled:", ResultDesc);
+      console.log("Payment failed or cancelled:", ResultDesc);
     }
 
     // Store the payment record in database
@@ -73,9 +72,9 @@ serve(async (req: Request) => {
       .insert(paymentRecord);
 
     if (error) {
-      console.error("Error storing live payment record:", error);
+      console.error("Error storing payment record:", error);
     } else {
-      console.log("Live payment record stored successfully");
+      console.log("Payment record stored successfully");
     }
 
     // Always return 200 OK to Safaricom
@@ -85,7 +84,7 @@ serve(async (req: Request) => {
     });
 
   } catch (err: any) {
-    console.error("Live callback processing error:", err);
+    console.error("Callback processing error:", err);
     // Still return 200 OK to avoid Safaricom retries
     return new Response("OK", { 
       status: 200,
