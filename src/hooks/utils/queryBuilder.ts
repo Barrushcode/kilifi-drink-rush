@@ -18,13 +18,30 @@ export const buildOrFilters = (searchTerm: string, selectedCategory: string): st
 };
 
 export const buildCountQuery = (orFilters: string[]) => {
-  // Start with base query
+  // Create base query with explicit typing
   const baseQuery = supabase
     .from('allthealcoholicproducts')
-    .select('*', { count: 'exact', head: true });
+    .select('*', { count: 'exact', head: true })
+    .not('Price', 'is', null)
+    .gte('Price', 100)
+    .lte('Price', 500000)
+    .not('"Product image URL"', 'is', null)
+    .neq('"Product image URL"', '');
 
-  // Apply filters step by step to avoid deep type instantiation
-  const filteredQuery = baseQuery
+  // Handle OR filters separately to avoid deep type instantiation
+  if (orFilters.length === 0) {
+    return baseQuery;
+  }
+  
+  // Apply OR filter as final step
+  return baseQuery.or(orFilters.join(','));
+};
+
+export const buildDataQuery = (orFilters: string[], startIndex: number, endIndex: number) => {
+  // Create base query with all standard filters
+  const baseQuery = supabase
+    .from('allthealcoholicproducts')
+    .select('Title, Description, Price, "Product image URL"')
     .not('Price', 'is', null)
     .gte('Price', 100)
     .lte('Price', 500000)
@@ -32,34 +49,12 @@ export const buildCountQuery = (orFilters: string[]) => {
     .neq('"Product image URL"', '');
 
   // Apply OR filters if they exist
-  if (orFilters.length === 0) {
-    return filteredQuery;
-  }
-  
-  return filteredQuery.or(orFilters.join(','));
-};
+  const queryWithFilters = orFilters.length > 0 
+    ? baseQuery.or(orFilters.join(','))
+    : baseQuery;
 
-export const buildDataQuery = (orFilters: string[], startIndex: number, endIndex: number) => {
-  // Start with base query
-  const baseQuery = supabase
-    .from('allthealcoholicproducts')
-    .select('Title, Description, Price, "Product image URL"');
-
-  // Apply filters step by step
-  const filteredQuery = baseQuery
-    .not('Price', 'is', null)
-    .gte('Price', 100)
-    .lte('Price', 500000)
-    .not('"Product image URL"', 'is', null)
-    .neq('"Product image URL"', '');
-
-  // Handle OR filters
-  const withOrFilters = orFilters.length > 0 
-    ? filteredQuery.or(orFilters.join(','))
-    : filteredQuery;
-
-  // Apply ordering and pagination
-  return withOrFilters
+  // Apply ordering and pagination as final step
+  return queryWithFilters
     .order('Title', { ascending: true })
     .range(startIndex, endIndex);
 };
