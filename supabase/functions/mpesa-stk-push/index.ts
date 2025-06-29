@@ -46,15 +46,23 @@ serve(async (req: Request) => {
 
     // Get access token from live API
     const auth = btoa(`${consumerKey}:${consumerSecret}`);
+    console.log("Making token request to Safaricom...");
+    
     const tokenRes = await fetch("https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials", {
-      headers: { Authorization: `Basic ${auth}` }
+      method: "GET",
+      headers: { 
+        Authorization: `Basic ${auth}`,
+        "Content-Type": "application/json"
+      }
     });
     
     const tokenData = await tokenRes.json();
+    console.log("Token response:", tokenRes.status, tokenData);
+    
     if (!tokenRes.ok || !tokenData.access_token) {
       console.error("Failed to get access token:", tokenData);
       return new Response(
-        JSON.stringify({ ok: false, error: "Failed to acquire Safaricom API token" }),
+        JSON.stringify({ ok: false, error: "Failed to acquire Safaricom API token", details: tokenData }),
         { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
@@ -80,7 +88,7 @@ serve(async (req: Request) => {
       TransactionDesc: "Barrush Purchase - Live Payment"
     };
 
-    console.log("Sending LIVE STK push request...");
+    console.log("Sending LIVE STK push request with payload:", JSON.stringify(payload, null, 2));
 
     // Send STK push request to live API
     const resp = await fetch("https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest", {
@@ -93,17 +101,17 @@ serve(async (req: Request) => {
     });
     
     const result = await resp.json();
-    console.log("Live STK push response:", result);
+    console.log("Live STK push response:", resp.status, result);
     
     if (!resp.ok || result.ResponseCode !== "0") {
       console.error("Live STK push failed:", result);
       return new Response(
         JSON.stringify({ 
           ok: false, 
-          error: result.ResponseDescription || "Failed to initiate STK Push",
+          error: result.ResponseDescription || result.errorMessage || "Failed to initiate STK Push",
           details: result 
         }),
-        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        { status: resp.ok ? 200 : resp.status, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
