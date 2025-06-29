@@ -18,47 +18,51 @@ export const buildOrFilters = (searchTerm: string, selectedCategory: string): st
 };
 
 export const buildCountQuery = (orFilters: string[]) => {
-  // Build the query using the raw SQL approach to avoid type complexity
-  let query = supabase
-    .from('allthealcoholicproducts')
-    .select('*', { count: 'exact', head: true });
-
-  // Apply basic filters
-  query = query.not('Price', 'is', null);
-  query = query.gte('Price', 100);
-  query = query.lte('Price', 500000);
-  query = query.not('"Product image URL"', 'is', null);
-  query = query.neq('"Product image URL"', '');
-
-  // Apply OR filters if they exist
+  // Use rpc or a simpler approach to avoid complex type chaining
+  const baseFilters = [
+    'Price.not.is.null',
+    'Price.gte.100',
+    'Price.lte.500000',
+    '"Product image URL".not.is.null',
+    '"Product image URL".neq.'
+  ];
+  
+  let allFilters = baseFilters;
   if (orFilters.length > 0) {
-    query = query.or(orFilters.join(','));
+    allFilters.push(`or(${orFilters.join(',')})`);
   }
-
-  return query;
+  
+  return supabase
+    .from('allthealcoholicproducts')
+    .select('*', { count: 'exact', head: true })
+    .filter('Price', 'not.is', null)
+    .filter('Price', 'gte', 100)
+    .filter('Price', 'lte', 500000)
+    .filter('"Product image URL"', 'not.is', null)
+    .filter('"Product image URL"', 'neq', '')
+    .modify((query) => {
+      if (orFilters.length > 0) {
+        return query.or(orFilters.join(','));
+      }
+      return query;
+    });
 };
 
 export const buildDataQuery = (orFilters: string[], startIndex: number, endIndex: number) => {
-  // Build the query step by step to avoid type complexity
-  let query = supabase
+  return supabase
     .from('allthealcoholicproducts')
-    .select('Title, Description, Price, "Product image URL"');
-
-  // Apply basic filters
-  query = query.not('Price', 'is', null);
-  query = query.gte('Price', 100);
-  query = query.lte('Price', 500000);
-  query = query.not('"Product image URL"', 'is', null);
-  query = query.neq('"Product image URL"', '');
-
-  // Apply OR filters if they exist
-  if (orFilters.length > 0) {
-    query = query.or(orFilters.join(','));
-  }
-
-  // Apply ordering and pagination
-  query = query.order('Title', { ascending: true });
-  query = query.range(startIndex, endIndex);
-
-  return query;
+    .select('Title, Description, Price, "Product image URL"')
+    .filter('Price', 'not.is', null)
+    .filter('Price', 'gte', 100)
+    .filter('Price', 'lte', 500000)
+    .filter('"Product image URL"', 'not.is', null)
+    .filter('"Product image URL"', 'neq', '')
+    .modify((query) => {
+      if (orFilters.length > 0) {
+        return query.or(orFilters.join(','));
+      }
+      return query;
+    })
+    .order('Title', { ascending: true })
+    .range(startIndex, endIndex);
 };
