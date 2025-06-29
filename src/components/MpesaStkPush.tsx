@@ -17,7 +17,6 @@ interface MpesaStkPushProps {
 const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
   amount,
   phone,
-  till,
   shippingDetails,
   onPaymentSuccess
 }) => {
@@ -28,6 +27,16 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
 
   const isValidPhone = (value: string) => 
     /^(\+254|0)[17]\d{8}$/.test(value);
+
+  const formatPhoneNumber = (phoneInput: string) => {
+    let formatted = phoneInput.trim();
+    if (formatted.startsWith("0")) {
+      formatted = "254" + formatted.slice(1);
+    } else if (formatted.startsWith("+")) {
+      formatted = formatted.slice(1);
+    }
+    return formatted;
+  };
 
   const initiateStkPush = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,18 +55,29 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
     setMessage("Sending M-PESA request...");
 
     try {
-      const response = await fetch('https://tyfsxboxshbkdetweuke.functions.supabase.co/stk-push', {
+      const formattedPhone = formatPhoneNumber(userPhone);
+      const customerName = shippingDetails ? 
+        `${shippingDetails.firstName} ${shippingDetails.lastName}` : 
+        "Customer";
+
+      console.log(`Initiating STK push for ${formattedPhone}, amount: ${amount}`);
+
+      const response = await fetch('https://tyfsxboxshbkdetweuke.functions.supabase.co/mpesa-stk-push', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          phone: formattedPhone,
           amount: amount,
-          phone: userPhone
+          name: customerName
         }),
       });
 
-      if (response.status === 200) {
+      const data = await response.json();
+      console.log('STK push response:', data);
+
+      if (response.ok && data.ok) {
         setMessage("✅ Payment request sent! Check your phone.");
         toast({
           title: "Payment Prompt Sent!",
@@ -67,15 +87,15 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
         
         if (onPaymentSuccess) onPaymentSuccess();
         
-        // After a small delay, redirect to order placed
+        // After a delay, redirect to order placed
         setTimeout(() => {
           navigate("/order-placed");
-        }, 1500);
+        }, 2000);
       } else {
         setMessage("❌ Payment failed. Try again or contact support.");
         toast({
           title: "Payment Error",
-          description: "Failed to send payment request. Please try again.",
+          description: data.error || "Failed to send payment request. Please try again.",
           variant: "destructive"
         });
       }

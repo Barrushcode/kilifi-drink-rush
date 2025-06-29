@@ -18,7 +18,7 @@ export const buildOrFilters = (searchTerm: string, selectedCategory: string): st
 };
 
 export const buildCountQuery = (orFilters: string[]) => {
-  let query = supabase
+  const baseQuery = supabase
     .from('allthealcoholicproducts')
     .select('*', { count: 'exact', head: true })
     .not('Price', 'is', null)
@@ -28,14 +28,14 @@ export const buildCountQuery = (orFilters: string[]) => {
     .neq('"Product image URL"', '');
 
   if (orFilters.length > 0) {
-    query = query.or(orFilters.join(','));
+    return baseQuery.or(orFilters.join(','));
   }
 
-  return query;
+  return baseQuery;
 };
 
 export const buildDataQuery = (orFilters: string[], startIndex: number, endIndex: number) => {
-  let query = supabase
+  const baseQuery = supabase
     .from('allthealcoholicproducts')
     .select('Title, Description, Price, "Product image URL"')
     .not('Price', 'is', null)
@@ -44,11 +44,11 @@ export const buildDataQuery = (orFilters: string[], startIndex: number, endIndex
     .not('"Product image URL"', 'is', null)
     .neq('"Product image URL"', '');
 
-  if (orFilters.length > 0) {
-    query = query.or(orFilters.join(','));
-  }
+  const filteredQuery = orFilters.length > 0 
+    ? baseQuery.or(orFilters.join(','))
+    : baseQuery;
 
-  return query
+  return filteredQuery
     .order('Title', { ascending: true })
     .range(startIndex, endIndex);
 };
