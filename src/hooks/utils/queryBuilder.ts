@@ -1,4 +1,5 @@
 
+
 import { supabase } from '@/integrations/supabase/client';
 
 export const buildOrFilters = (searchTerm: string, selectedCategory: string): string[] => {
@@ -18,51 +19,36 @@ export const buildOrFilters = (searchTerm: string, selectedCategory: string): st
 };
 
 export const buildCountQuery = (orFilters: string[]) => {
-  // Use rpc or a simpler approach to avoid complex type chaining
-  const baseFilters = [
-    'Price.not.is.null',
-    'Price.gte.100',
-    'Price.lte.500000',
-    '"Product image URL".not.is.null',
-    '"Product image URL".neq.'
-  ];
-  
-  let allFilters = baseFilters;
-  if (orFilters.length > 0) {
-    allFilters.push(`or(${orFilters.join(',')})`);
-  }
-  
-  return supabase
+  let query = supabase
     .from('allthealcoholicproducts')
     .select('*', { count: 'exact', head: true })
     .filter('Price', 'not.is', null)
     .filter('Price', 'gte', 100)
     .filter('Price', 'lte', 500000)
     .filter('"Product image URL"', 'not.is', null)
-    .filter('"Product image URL"', 'neq', '')
-    .modify((query) => {
-      if (orFilters.length > 0) {
-        return query.or(orFilters.join(','));
-      }
-      return query;
-    });
+    .filter('"Product image URL"', 'neq', '');
+
+  if (orFilters.length > 0) {
+    query = query.or(orFilters.join(','));
+  }
+
+  return query;
 };
 
 export const buildDataQuery = (orFilters: string[], startIndex: number, endIndex: number) => {
-  return supabase
+  let query = supabase
     .from('allthealcoholicproducts')
     .select('Title, Description, Price, "Product image URL"')
     .filter('Price', 'not.is', null)
     .filter('Price', 'gte', 100)
     .filter('Price', 'lte', 500000)
     .filter('"Product image URL"', 'not.is', null)
-    .filter('"Product image URL"', 'neq', '')
-    .modify((query) => {
-      if (orFilters.length > 0) {
-        return query.or(orFilters.join(','));
-      }
-      return query;
-    })
-    .order('Title', { ascending: true })
-    .range(startIndex, endIndex);
+    .filter('"Product image URL"', 'neq', '');
+
+  if (orFilters.length > 0) {
+    query = query.or(orFilters.join(','));
+  }
+
+  return query.order('Title', { ascending: true }).range(startIndex, endIndex);
 };
+
