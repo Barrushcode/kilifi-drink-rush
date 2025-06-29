@@ -18,47 +18,48 @@ export const buildOrFilters = (searchTerm: string, selectedCategory: string): st
 };
 
 export const buildCountQuery = (orFilters: string[]) => {
-  // Build base query without complex chaining
-  let query = supabase
+  // Start with base query
+  const baseQuery = supabase
     .from('allthealcoholicproducts')
     .select('*', { count: 'exact', head: true });
 
-  // Apply basic filters
-  query = query.not('Price', 'is', null);
-  query = query.gte('Price', 100);
-  query = query.lte('Price', 500000);
-  query = query.not('"Product image URL"', 'is', null);
-  query = query.neq('"Product image URL"', '');
+  // Apply filters step by step to avoid deep type instantiation
+  const filteredQuery = baseQuery
+    .not('Price', 'is', null)
+    .gte('Price', 100)
+    .lte('Price', 500000)
+    .not('"Product image URL"', 'is', null)
+    .neq('"Product image URL"', '');
 
-  // Apply OR filters if any exist
-  if (orFilters.length > 0) {
-    query = query.or(orFilters.join(','));
+  // Apply OR filters if they exist
+  if (orFilters.length === 0) {
+    return filteredQuery;
   }
-
-  return query;
+  
+  return filteredQuery.or(orFilters.join(','));
 };
 
 export const buildDataQuery = (orFilters: string[], startIndex: number, endIndex: number) => {
-  // Build base query without complex chaining
-  let query = supabase
+  // Start with base query
+  const baseQuery = supabase
     .from('allthealcoholicproducts')
     .select('Title, Description, Price, "Product image URL"');
 
-  // Apply basic filters
-  query = query.not('Price', 'is', null);
-  query = query.gte('Price', 100);
-  query = query.lte('Price', 500000);
-  query = query.not('"Product image URL"', 'is', null);
-  query = query.neq('"Product image URL"', '');
+  // Apply filters step by step
+  const filteredQuery = baseQuery
+    .not('Price', 'is', null)
+    .gte('Price', 100)
+    .lte('Price', 500000)
+    .not('"Product image URL"', 'is', null)
+    .neq('"Product image URL"', '');
 
-  // Apply OR filters if any exist
-  if (orFilters.length > 0) {
-    query = query.or(orFilters.join(','));
-  }
+  // Handle OR filters
+  const withOrFilters = orFilters.length > 0 
+    ? filteredQuery.or(orFilters.join(','))
+    : filteredQuery;
 
-  // Apply ordering and range
-  query = query.order('Title', { ascending: true });
-  query = query.range(startIndex, endIndex);
-
-  return query;
+  // Apply ordering and pagination
+  return withOrFilters
+    .order('Title', { ascending: true })
+    .range(startIndex, endIndex);
 };
