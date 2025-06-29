@@ -52,7 +52,7 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
     }
 
     setProcessing(true);
-    setMessage("Sending M-PESA request...");
+    setMessage("Sending LIVE M-PESA request...");
 
     try {
       const formattedPhone = formatPhoneNumber(userPhone);
@@ -60,9 +60,9 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
         `${shippingDetails.firstName} ${shippingDetails.lastName}` : 
         "Customer";
 
-      console.log(`Initiating STK push for ${formattedPhone}, amount: ${amount}`);
+      console.log(`Initiating LIVE STK push for ${formattedPhone}, amount: ${amount}`);
 
-      const response = await fetch('https://tyfsxboxshbkdetweuke.functions.supabase.co/mpesa-stk-push', {
+      const response = await fetch('https://tyfsxboxshbkdetweuke.supabase.co/functions/v1/mpesa-stk-push', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -75,13 +75,13 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
       });
 
       const data = await response.json();
-      console.log('STK push response:', data);
+      console.log('LIVE STK push response:', data);
 
       if (response.ok && data.ok) {
-        setMessage("✅ Payment request sent! Check your phone.");
+        setMessage("✅ LIVE Payment request sent! Check your phone.");
         toast({
-          title: "Payment Prompt Sent!",
-          description: "Check your phone to complete the M-PESA payment.",
+          title: "LIVE Payment Prompt Sent!",
+          description: "Check your phone to complete the M-PESA payment. This is a real transaction.",
           className: "bg-green-600 text-white"
         });
         
@@ -100,7 +100,7 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
         });
       }
     } catch (error) {
-      console.error('Payment error:', error);
+      console.error('LIVE Payment error:', error);
       setMessage("❌ Payment failed. Try again or contact support.");
       toast({
         title: "Payment Error",
@@ -115,7 +115,12 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
   return (
     <Card className="bg-barrush-charcoal/80 border-neon-pink border shadow-lg">
       <CardHeader>
-        <CardTitle className="text-neon-pink text-zinc-50">M-PESA Payment</CardTitle>
+        <CardTitle className="text-neon-pink text-zinc-50">
+          🔴 LIVE M-PESA Payment
+        </CardTitle>
+        <p className="text-sm text-yellow-400 font-semibold">
+          ⚠️ This will process real payments using Safaricom M-PESA
+        </p>
       </CardHeader>
       <CardContent>
         <form onSubmit={initiateStkPush} className="space-y-5">
@@ -138,14 +143,19 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
           <Button
             type="submit"
             disabled={processing || !userPhone}
-            className={`w-full bg-neon-pink hover:bg-neon-pink/90 text-white font-semibold py-6 text-lg transition-all duration-300 ${processing && 'opacity-60 cursor-not-allowed'}`}
+            className={`w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-6 text-lg transition-all duration-300 ${processing && 'opacity-60 cursor-not-allowed'}`}
           >
-            {processing ? 'Sending M-PESA request...' : `Pay KES ${amount.toLocaleString()} via M-PESA`}
+            {processing ? 'Sending LIVE M-PESA request...' : `🔴 PAY KES ${amount.toLocaleString()} via LIVE M-PESA`}
           </Button>
           {message && <div className="mt-3 text-white text-center">{message}</div>}
-          <p className="text-sm text-white/60 text-center mt-2">
-            You will receive an M-PESA pop-up on your phone after clicking pay. Enter your PIN to complete.
-          </p>
+          <div className="bg-yellow-900/50 border border-yellow-600 rounded p-3 mt-4">
+            <p className="text-sm text-yellow-200 text-center font-semibold">
+              🔴 LIVE PAYMENTS ACTIVE
+            </p>
+            <p className="text-xs text-yellow-300 text-center mt-1">
+              You will receive a real M-PESA prompt. Enter your PIN to complete the actual transaction.
+            </p>
+          </div>
         </form>
       </CardContent>
     </Card>

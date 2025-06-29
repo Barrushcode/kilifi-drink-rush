@@ -31,10 +31,10 @@ serve(async (req: Request) => {
     // Get live credentials from environment
     const consumerKey = Deno.env.get("SAFARICOM_CONSUMER_KEY");
     const consumerSecret = Deno.env.get("SAFARICOM_CONSUMER_SECRET");
-    const passkey = Deno.env.get("SAFARICOM_PASSKEY");
+    const passkey = "725a276fe2a83f80e47286da61710e4d0648ee8bb803ed8f9b95dd7ebaec1d99"; // Your live passkey
     const shortCode = "3534039"; // Your live shortcode
 
-    if (!consumerKey || !consumerSecret || !passkey) {
+    if (!consumerKey || !consumerSecret) {
       console.error("Missing Safaricom credentials");
       return new Response(
         JSON.stringify({ ok: false, error: "Safaricom credentials not configured" }),
@@ -42,9 +42,9 @@ serve(async (req: Request) => {
       );
     }
 
-    console.log(`Processing STK push for phone: ${phone}, amount: ${amount}`);
+    console.log(`Processing LIVE STK push for phone: ${phone}, amount: ${amount}`);
 
-    // Get access token
+    // Get access token from live API
     const auth = btoa(`${consumerKey}:${consumerSecret}`);
     const tokenRes = await fetch("https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials", {
       headers: { Authorization: `Basic ${auth}` }
@@ -60,9 +60,9 @@ serve(async (req: Request) => {
     }
     
     const accessToken = tokenData.access_token;
-    console.log("Access token acquired successfully");
+    console.log("Live access token acquired successfully");
 
-    // Prepare STK push payload
+    // Prepare STK push payload for live environment
     const timestamp = new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14);
     const password = btoa(shortCode + passkey + timestamp);
     
@@ -75,14 +75,14 @@ serve(async (req: Request) => {
       PartyA: phone,
       PartyB: shortCode,
       PhoneNumber: phone,
-      CallBackURL: "https://barrush.co.ke/mpesa/confirmation",
+      CallBackURL: "https://tyfsxboxshbkdetweuke.supabase.co/functions/v1/mpesa-callback",
       AccountReference: name || "Barrush Order",
-      TransactionDesc: "Barrush Purchase"
+      TransactionDesc: "Barrush Purchase - Live Payment"
     };
 
-    console.log("Sending STK push request...");
+    console.log("Sending LIVE STK push request...");
 
-    // Send STK push request
+    // Send STK push request to live API
     const resp = await fetch("https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest", {
       method: "POST",
       headers: {
@@ -93,10 +93,10 @@ serve(async (req: Request) => {
     });
     
     const result = await resp.json();
-    console.log("STK push response:", result);
+    console.log("Live STK push response:", result);
     
     if (!resp.ok || result.ResponseCode !== "0") {
-      console.error("STK push failed:", result);
+      console.error("Live STK push failed:", result);
       return new Response(
         JSON.stringify({ 
           ok: false, 
@@ -107,7 +107,7 @@ serve(async (req: Request) => {
       );
     }
 
-    console.log("STK push sent successfully");
+    console.log("Live STK push sent successfully");
     return new Response(
       JSON.stringify({ 
         ok: true, 
@@ -117,7 +117,7 @@ serve(async (req: Request) => {
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   } catch (err: any) {
-    console.error("STK push error:", err);
+    console.error("Live STK push error:", err);
     return new Response(
       JSON.stringify({ ok: false, error: err?.message ?? "Unexpected error in STK push." }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
