@@ -14,6 +14,14 @@ interface Product {
   category: string;
 }
 
+// Explicit type for Supabase query result
+type SupabaseProductRow = {
+  Title: string | null;
+  Description: string | null;
+  Price: number;
+  "Product image URL": string | null;
+};
+
 // Local interface that matches what groupProductsByBaseName actually returns
 interface SearchGroupedProduct {
   id: string;
@@ -60,8 +68,8 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
         const trimmedSearch = searchTerm.trim();
         console.log('🔍 Full-text search for:', trimmedSearch);
 
-        // Perform full-text search across Title and Description
-        const { data, error } = await supabase
+        // Perform full-text search with explicit typing
+        const response = await supabase
           .from('allthealcoholicproducts')
           .select('Title, Description, Price, "Product image URL"')
           .or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`)
@@ -72,6 +80,8 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
           .neq('"Product image URL"', '')
           .order('Title', { ascending: true })
           .limit(50);
+
+        const { data, error } = response as { data: SupabaseProductRow[] | null; error: any };
 
         if (error) throw error;
 
