@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getCategoryFromName } from '@/utils/categoryUtils';
 import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
-import { groupProductsByBaseName, GroupedProduct } from '@/utils/productGroupingUtils';
+import { groupProductsByBaseName } from '@/utils/productGroupingUtils';
 
 interface Product {
   id: number;
@@ -12,6 +12,16 @@ interface Product {
   description: string;
   image: string;
   category: string;
+}
+
+interface GroupedProduct {
+  id: string;
+  baseName: string;
+  category: string;
+  variants: Product[];
+  lowestPrice: number;
+  lowestPriceFormatted: string;
+  representativeImage: string;
 }
 
 interface UseFullTextSearchReturn {
@@ -107,7 +117,7 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
           });
         }
 
-        const groupedProducts = groupProductsByBaseName(processedProducts);
+        const groupedProducts = groupProductsByBaseName(processedProducts) as GroupedProduct[];
         setSearchResults(groupedProducts);
         
         console.log(`✨ Search grouped results: ${groupedProducts.length} products`);
