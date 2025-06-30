@@ -55,7 +55,8 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
     setMessage("Sending M-PESA request...");
 
     try {
-      console.log(`Initiating STK push for ${userPhone}, amount: ${amount}`);
+      const formattedPhone = formatPhoneNumber(userPhone);
+      console.log(`Initiating STK push for ${formattedPhone}, amount: ${amount}`);
 
       const response = await fetch('https://tyfsxboxshbkdetweuke.supabase.co/functions/v1/mpesa-stk-push', {
         method: 'POST',
@@ -63,16 +64,16 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          phoneNumber: "254712345678",
-          amount: 500,
-          accountReference: "OrderPayment"
+          phone: formattedPhone,
+          amount: amount,
+          name: shippingDetails?.firstName ? `${shippingDetails.firstName} ${shippingDetails.lastName}` : "Customer"
         }),
       });
 
       const data = await response.json();
       console.log('STK push response:', data);
 
-      if (response.ok) {
+      if (response.ok && data.ok) {
         setMessage("STK Prompt Sent! Please check your phone.");
         toast({
           title: "STK Prompt Sent!",

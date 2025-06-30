@@ -14,14 +14,6 @@ interface Product {
   category: string;
 }
 
-// Raw data interface from Supabase
-interface RawSupabaseProduct {
-  Title: string | null;
-  Description: string | null;
-  Price: number;
-  "Product image URL": string | null;
-}
-
 // Local interface that matches what groupProductsByBaseName actually returns
 interface SearchGroupedProduct {
   id: string;
@@ -68,7 +60,7 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
         const trimmedSearch = searchTerm.trim();
         console.log('🔍 Full-text search for:', trimmedSearch);
 
-        // Perform full-text search across Title and Description with explicit typing
+        // Perform full-text search across Title and Description
         const { data, error } = await supabase
           .from('allthealcoholicproducts')
           .select('Title, Description, Price, "Product image URL"')
@@ -79,7 +71,7 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
           .not('"Product image URL"', 'is', null)
           .neq('"Product image URL"', '')
           .order('Title', { ascending: true })
-          .limit(50) as { data: RawSupabaseProduct[] | null; error: any };
+          .limit(50);
 
         if (error) throw error;
 
