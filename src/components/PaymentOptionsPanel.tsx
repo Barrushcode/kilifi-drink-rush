@@ -1,7 +1,6 @@
 
 import React from "react";
 import MpesaStkPush from "./MpesaStkPush";
-import MpesaPaymentButton from "./MpesaPaymentButton";
 import PaystackCheckout from "./PaystackCheckout";
 import { CartItem } from "@/contexts/CartContext";
 
@@ -21,12 +20,6 @@ const PaymentOptionsPanel: React.FC<PaymentOptionsPanelProps> = ({
   items
 }) => (
   <div className="w-full max-w-full space-y-4">
-    <MpesaPaymentButton
-      phoneNumber={shippingDetails.phone || "254703320399"}
-      amount={totalAmount}
-      customerName={shippingDetails.firstName ? `${shippingDetails.firstName} ${shippingDetails.lastName}` : "OrderPayment"}
-    />
-    
     <MpesaStkPush
       amount={totalAmount}
       phone={shippingDetails.phone}
@@ -38,7 +31,7 @@ const PaymentOptionsPanel: React.FC<PaymentOptionsPanelProps> = ({
       amount={totalAmount}
       shippingDetails={shippingDetails}
       cartItems={items}
-      onValidationRequired={() => true}
+      onValidationRequired={() => true} // No additional validation, as form is validated already
     />
   </div>
 );

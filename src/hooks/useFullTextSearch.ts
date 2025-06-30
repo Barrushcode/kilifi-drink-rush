@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getCategoryFromName } from '@/utils/categoryUtils';
 import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
-import { groupProductsByBaseName } from '@/utils/productGroupingUtils';
+import { groupProductsByBaseName, GroupedProduct } from '@/utils/productGroupingUtils';
 
 interface Product {
   id: number;
@@ -14,31 +14,15 @@ interface Product {
   category: string;
 }
 
-// Local interface that matches what groupProductsByBaseName actually returns
-interface SearchGroupedProduct {
-  id: string;
-  baseName: string;
-  category: string;
-  variants: Array<{
-    size: string;
-    price: number;
-    priceFormatted: string;
-    originalProduct: Product;
-  }>;
-  lowestPrice: number;
-  lowestPriceFormatted: string;
-  representativeImage?: string;
-}
-
 interface UseFullTextSearchReturn {
-  searchResults: SearchGroupedProduct[];
+  searchResults: GroupedProduct[];
   isSearching: boolean;
   searchError: string | null;
   hasSearched: boolean;
 }
 
 export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300): UseFullTextSearchReturn => {
-  const [searchResults, setSearchResults] = useState<SearchGroupedProduct[]>([]);
+  const [searchResults, setSearchResults] = useState<GroupedProduct[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
@@ -60,7 +44,7 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
         const trimmedSearch = searchTerm.trim();
         console.log('🔍 Full-text search for:', trimmedSearch);
 
-        // Perform full-text search with simplified approach
+        // Perform full-text search across Title and Description
         const { data, error } = await supabase
           .from('allthealcoholicproducts')
           .select('Title, Description, Price, "Product image URL"')
@@ -71,7 +55,7 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
           .not('"Product image URL"', 'is', null)
           .neq('"Product image URL"', '')
           .order('Title', { ascending: true })
-          .limit(50);
+          .limit(50); // Limit search results for performance
 
         if (error) throw error;
 
@@ -88,18 +72,15 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
         for (let index = 0; index < data.length; index++) {
           const product = data[index];
           
-          // Type-safe price handling
-          const rawPrice = product.Price;
-          if (typeof rawPrice !== 'number' || isNaN(rawPrice)) {
+          if (typeof product.Price !== 'number' || isNaN(product.Price)) {
             continue;
           }
 
-          const productPrice = rawPrice;
+          const productPrice = product.Price;
           const description = product.Description || '';
-          const title = product.Title || 'Unknown Product';
 
           // Get Supabase image
-          const storageImage = await getSupabaseProductImageUrl(title);
+          const storageImage = await getSupabaseProductImageUrl(product.Title || 'Unknown Product');
 
           let productImage: string | null = null;
           if (storageImage) {
@@ -114,11 +95,11 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
           }
 
           // Enhanced category detection
-          const category = getCategoryFromName(title, productPrice, description);
+          const category = getCategoryFromName(product.Title || 'Unknown Product', productPrice, description);
 
           processedProducts.push({
             id: index + 1,
-            name: title,
+            name: product.Title || 'Unknown Product',
             price: `KES ${productPrice.toLocaleString()}`,
             description,
             category,
@@ -127,21 +108,9 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
         }
 
         const groupedProducts = groupProductsByBaseName(processedProducts);
+        setSearchResults(groupedProducts);
         
-        // Transform to our local interface
-        const searchGroupedProducts: SearchGroupedProduct[] = groupedProducts.map(group => ({
-          id: group.id,
-          baseName: group.baseName,
-          category: group.category,
-          variants: group.variants,
-          lowestPrice: group.lowestPrice,
-          lowestPriceFormatted: group.lowestPriceFormatted,
-          representativeImage: group.variants[0]?.originalProduct?.image || ''
-        }));
-        
-        setSearchResults(searchGroupedProducts);
-        
-        console.log(`✨ Search grouped results: ${searchGroupedProducts.length} products`);
+        console.log(`✨ Search grouped results: ${groupedProducts.length} products`);
 
       } catch (error) {
         console.error('💥 Search error:', error);
