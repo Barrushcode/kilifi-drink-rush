@@ -17,7 +17,6 @@ interface MpesaStkPushProps {
 const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
   amount,
   phone,
-  till,
   shippingDetails,
   onPaymentSuccess
 }) => {
@@ -28,6 +27,16 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
 
   const isValidPhone = (value: string) => 
     /^(\+254|0)[17]\d{8}$/.test(value);
+
+  const formatPhoneNumber = (phoneInput: string) => {
+    let formatted = phoneInput.trim();
+    if (formatted.startsWith("0")) {
+      formatted = "254" + formatted.slice(1);
+    } else if (formatted.startsWith("+")) {
+      formatted = formatted.slice(1);
+    }
+    return formatted;
+  };
 
   const initiateStkPush = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,39 +52,46 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
     }
 
     setProcessing(true);
-    setMessage("Sending M-PESA prompt...");
+    setMessage("Sending M-PESA request...");
 
     try {
-      const response = await fetch('https://tyfsxboxshbkdetweuke.functions.supabase.co/stk-push', {
+      const formattedPhone = formatPhoneNumber(userPhone);
+      console.log(`Initiating STK push for ${formattedPhone}, amount: ${amount}`);
+
+      const response = await fetch('https://tyfsxboxshbkdetweuke.supabase.co/functions/v1/mpesa-stk-push', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          phone: formattedPhone,
           amount: amount,
-          phone: userPhone
+          name: shippingDetails?.firstName ? `${shippingDetails.firstName} ${shippingDetails.lastName}` : "Customer"
         }),
       });
 
-      if (response.ok) {
-        setMessage("✅ Payment request sent! Check your phone to complete the payment.");
+      const data = await response.json();
+      console.log('STK push response:', data);
+
+      if (response.ok && data.ok) {
+        setMessage("STK Prompt Sent! Please check your phone.");
         toast({
-          title: "Payment Prompt Sent!",
-          description: "Check your phone to complete the M-PESA payment.",
+          title: "STK Prompt Sent!",
+          description: "Please check your phone.",
           className: "bg-green-600 text-white"
         });
         
         if (onPaymentSuccess) onPaymentSuccess();
         
-        // After a small delay, redirect to order placed
+        // After a delay, redirect to order placed
         setTimeout(() => {
           navigate("/order-placed");
-        }, 1500);
+        }, 2000);
       } else {
         setMessage("❌ Payment failed. Try again or contact support.");
         toast({
           title: "Payment Error",
-          description: "Failed to send payment request. Please try again.",
+          description: data.error || "Failed to send payment request. Please try again.",
           variant: "destructive"
         });
       }
@@ -120,7 +136,7 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
             disabled={processing || !userPhone}
             className={`w-full bg-neon-pink hover:bg-neon-pink/90 text-white font-semibold py-6 text-lg transition-all duration-300 ${processing && 'opacity-60 cursor-not-allowed'}`}
           >
-            {processing ? 'Sending M-PESA prompt...' : `Pay KES ${amount.toLocaleString()} via M-PESA`}
+            {processing ? 'Sending M-PESA request...' : `Pay KES ${amount.toLocaleString()} via M-PESA`}
           </Button>
           {message && <div className="mt-3 text-white text-center">{message}</div>}
           <p className="text-sm text-white/60 text-center mt-2">
