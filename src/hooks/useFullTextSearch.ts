@@ -14,14 +14,6 @@ interface Product {
   category: string;
 }
 
-// Explicit type for Supabase query result
-type SupabaseProductRow = {
-  Title: string | null;
-  Description: string | null;
-  Price: number;
-  "Product image URL": string | null;
-};
-
 // Local interface that matches what groupProductsByBaseName actually returns
 interface SearchGroupedProduct {
   id: string;
@@ -68,8 +60,8 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
         const trimmedSearch = searchTerm.trim();
         console.log('🔍 Full-text search for:', trimmedSearch);
 
-        // Perform full-text search with explicit typing
-        const response = await supabase
+        // Perform full-text search with simplified approach
+        const { data, error } = await supabase
           .from('allthealcoholicproducts')
           .select('Title, Description, Price, "Product image URL"')
           .or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`)
@@ -80,8 +72,6 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
           .neq('"Product image URL"', '')
           .order('Title', { ascending: true })
           .limit(50);
-
-        const { data, error } = response as { data: SupabaseProductRow[] | null; error: any };
 
         if (error) throw error;
 
@@ -98,15 +88,18 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
         for (let index = 0; index < data.length; index++) {
           const product = data[index];
           
-          if (typeof product.Price !== 'number' || isNaN(product.Price)) {
+          // Type-safe price handling
+          const rawPrice = product.Price;
+          if (typeof rawPrice !== 'number' || isNaN(rawPrice)) {
             continue;
           }
 
-          const productPrice = product.Price;
+          const productPrice = rawPrice;
           const description = product.Description || '';
+          const title = product.Title || 'Unknown Product';
 
           // Get Supabase image
-          const storageImage = await getSupabaseProductImageUrl(product.Title || 'Unknown Product');
+          const storageImage = await getSupabaseProductImageUrl(title);
 
           let productImage: string | null = null;
           if (storageImage) {
@@ -121,11 +114,11 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
           }
 
           // Enhanced category detection
-          const category = getCategoryFromName(product.Title || 'Unknown Product', productPrice, description);
+          const category = getCategoryFromName(title, productPrice, description);
 
           processedProducts.push({
             id: index + 1,
-            name: product.Title || 'Unknown Product',
+            name: title,
             price: `KES ${productPrice.toLocaleString()}`,
             description,
             category,
