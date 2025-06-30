@@ -117,10 +117,20 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
           });
         }
 
-        const groupedProducts = groupProductsByBaseName(processedProducts) as GroupedProduct[];
-        setSearchResults(groupedProducts);
+        const groupedProducts = groupProductsByBaseName(processedProducts);
+        const typedGroupedProducts: GroupedProduct[] = groupedProducts.map(group => ({
+          id: group.id,
+          baseName: group.baseName,
+          category: group.category,
+          variants: group.variants,
+          lowestPrice: group.lowestPrice,
+          lowestPriceFormatted: group.lowestPriceFormatted,
+          representativeImage: group.representativeImage || group.variants[0]?.image || ''
+        }));
         
-        console.log(`✨ Search grouped results: ${groupedProducts.length} products`);
+        setSearchResults(typedGroupedProducts);
+        
+        console.log(`✨ Search grouped results: ${typedGroupedProducts.length} products`);
 
       } catch (error) {
         console.error('💥 Search error:', error);
