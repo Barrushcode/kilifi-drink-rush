@@ -14,25 +14,31 @@ interface Product {
   category: string;
 }
 
-interface GroupedProduct {
+// Local interface that matches what groupProductsByBaseName actually returns
+interface SearchGroupedProduct {
   id: string;
   baseName: string;
   category: string;
-  variants: Product[];
+  variants: Array<{
+    size: string;
+    price: number;
+    priceFormatted: string;
+    originalProduct: Product;
+  }>;
   lowestPrice: number;
   lowestPriceFormatted: string;
-  representativeImage: string;
+  representativeImage?: string;
 }
 
 interface UseFullTextSearchReturn {
-  searchResults: GroupedProduct[];
+  searchResults: SearchGroupedProduct[];
   isSearching: boolean;
   searchError: string | null;
   hasSearched: boolean;
 }
 
 export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300): UseFullTextSearchReturn => {
-  const [searchResults, setSearchResults] = useState<GroupedProduct[]>([]);
+  const [searchResults, setSearchResults] = useState<SearchGroupedProduct[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
@@ -65,7 +71,7 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
           .not('"Product image URL"', 'is', null)
           .neq('"Product image URL"', '')
           .order('Title', { ascending: true })
-          .limit(50); // Limit search results for performance
+          .limit(50);
 
         if (error) throw error;
 
@@ -118,19 +124,21 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
         }
 
         const groupedProducts = groupProductsByBaseName(processedProducts);
-        const typedGroupedProducts: GroupedProduct[] = groupedProducts.map(group => ({
+        
+        // Transform to our local interface
+        const searchGroupedProducts: SearchGroupedProduct[] = groupedProducts.map(group => ({
           id: group.id,
           baseName: group.baseName,
           category: group.category,
           variants: group.variants,
           lowestPrice: group.lowestPrice,
           lowestPriceFormatted: group.lowestPriceFormatted,
-          representativeImage: group.representativeImage || group.variants[0]?.image || ''
+          representativeImage: group.variants[0]?.originalProduct?.image || ''
         }));
         
-        setSearchResults(typedGroupedProducts);
+        setSearchResults(searchGroupedProducts);
         
-        console.log(`✨ Search grouped results: ${typedGroupedProducts.length} products`);
+        console.log(`✨ Search grouped results: ${searchGroupedProducts.length} products`);
 
       } catch (error) {
         console.error('💥 Search error:', error);
