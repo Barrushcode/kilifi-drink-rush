@@ -134,7 +134,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         product={product}
       />
       <Card
-        className="overflow-hidden h-full min-h-[380px] shadow-xl transition-all duration-300 group hover:scale-105 hover:shadow-2xl bg-barrush-slate border-barrush-steel/30 flex flex-col cursor-pointer"
+        className="overflow-hidden h-full min-h-[320px] shadow-lg transition-all duration-300 group hover:scale-105 bg-barrush-slate border-barrush-steel/30 flex flex-col cursor-pointer"
         onClick={handleCardClick}
         tabIndex={0}
         onKeyDown={e => {
@@ -143,21 +143,21 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         aria-label={`Show details for ${correctedName}`}
         role="button"
       >
-        <CardContent className="p-3 md:p-4 lg:p-5 flex flex-col h-full">
+        <CardContent className="p-2 md:p-4 lg:p-5 flex flex-col h-full">
           <div className="flex flex-col flex-grow">
-            {/* Product Image with priority loading for better performance */}
-            <div className="w-full aspect-square rounded-lg overflow-hidden mb-3 relative bg-barrush-midnight">
+            {/* Product Image with consistent styling */}
+            <div className="w-full aspect-square rounded-lg overflow-hidden mb-2 relative bg-barrush-midnight">
               <ProductImageLoader
                 src={displayImage}
                 alt={correctedName}
                 className="w-full h-full object-cover"
-                priority={true}
+                priority={false}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-barrush-midnight/60 to-transparent group-hover:from-barrush-midnight/40 transition-all duration-300" />
             </div>
             
             {/* Product Name with correction */}
-            <h3 className="text-sm md:text-base lg:text-xl font-bold mb-2 font-iphone line-clamp-2 text-barrush-platinum break-words">
+            <h3 className="text-xs md:text-base lg:text-xl font-bold mb-1 font-iphone line-clamp-2 text-barrush-platinum break-words">
               {correctedName}
             </h3>
             

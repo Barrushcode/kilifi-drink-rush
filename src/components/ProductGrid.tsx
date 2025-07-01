@@ -31,16 +31,14 @@ const ProductGrid: React.FC<ProductGridProps> = ({
   return (
     <>
       {isBeersCategory && (
-        <div className="w-full mb-8 flex justify-center">
-          <div className="bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-800 px-6 py-3 rounded-xl font-bold shadow-lg border-2 border-amber-200 flex items-center gap-3 text-center">
-            <span className="text-2xl">🍺</span>
-            <span className="text-lg font-extrabold">All Beers Come in 6-Packs!</span>
-            <span className="text-2xl">🍻</span>
-          </div>
+        <div className="w-full mb-6 flex justify-center">
+          <span className="bg-yellow-100 text-amber-800 px-4 py-2 text-sm rounded-lg font-semibold shadow font-iphone border border-yellow-300 flex items-center gap-2">
+            All Beers are sold as Six-Packs 🍻
+          </span>
         </div>
       )}
 
-      {/* Enhanced desktop grid layout with optimized spacing */}
+      {/* Enhanced desktop grid layout */}
       <div className="
         grid 
         grid-cols-1
@@ -49,9 +47,9 @@ const ProductGrid: React.FC<ProductGridProps> = ({
         lg:grid-cols-4 
         xl:grid-cols-5
         2xl:grid-cols-6
-        gap-6 
-        lg:gap-8
-        xl:gap-10
+        gap-4 
+        lg:gap-6
+        xl:gap-8
         max-w-full 
         mx-auto
         pb-8
