@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import ProductCatalogHeader from './ProductCatalogHeader';
@@ -44,7 +43,7 @@ const ProductCatalog: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
   const [showAuditReport, setShowAuditReport] = useState(false);
-  const itemsPerPage = 8; // Increased from 4 to 8 for better page loading
+  const itemsPerPage = 4; // Set to 4 as requested
 
   // Fetch dynamic categories from the database
   const { categories, loading: categoriesLoading } = useCategories();
@@ -122,10 +121,6 @@ const ProductCatalog: React.FC = () => {
 
   const showPriceFilter = priceList.length > 1;
 
-  // Check if we're viewing beer category
-  const isBeerCategory = selectedCategory.toLowerCase().includes('beer') || 
-                        priceFilteredProducts.some(p => p.category.toLowerCase().includes('beer'));
-
   // Enhanced debug logging
   console.log('🔍 ProductCatalog Debug:', {
     searchInput,
@@ -138,8 +133,7 @@ const ProductCatalog: React.FC = () => {
     totalPages,
     loading,
     error,
-    categories,
-    itemsPerPage
+    categories
   });
 
   if (loading || categoriesLoading) {
@@ -235,7 +229,6 @@ const ProductCatalog: React.FC = () => {
             searchTerm={searchInput}
             setSearchTerm={setSearchInput}
             setSelectedCategory={setSelectedCategory}
-            isBeerCategory={isBeerCategory}
           />
         </div>
 

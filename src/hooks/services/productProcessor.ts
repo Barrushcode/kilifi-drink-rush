@@ -1,20 +1,12 @@
 
-import { FiltersImageService } from '@/services/filtersImageService';
-import { correctProductName } from '@/utils/nameCorrectionUtils';
+import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
 import { groupProductsByBaseName } from '@/utils/productGroupingUtils';
 import { Product, RawProduct, GroupedProduct } from '../types/productTypes';
-
-let filterImagesCache: any[] = [];
 
 export const processRawProducts = async (
   data: RawProduct[], 
   startIndex: number
 ): Promise<GroupedProduct[]> => {
-  // Load filter images once
-  if (filterImagesCache.length === 0) {
-    filterImagesCache = await FiltersImageService.getAllFilterImages();
-  }
-
   const processedProducts: Product[] = [];
   
   for (let index = 0; index < data.length; index++) {
@@ -29,28 +21,29 @@ export const processRawProducts = async (
     const description = product.Description || '';
     const category = product.Category || 'Uncategorized';
 
-    // Correct product name for typos
-    const correctedName = correctProductName(product.Title || 'Unknown Product');
+    // Get Supabase image
+    const storageImage = await getSupabaseProductImageUrl(product.Title || 'Unknown Product');
 
-    // Find matching image from filters bucket
-    const matchingImage = FiltersImageService.findBestMatch(correctedName, filterImagesCache);
+    let productImage: string | null = null;
+    if (storageImage) {
+      productImage = storageImage;
+    }
 
-    // Skip products without matching images
-    if (!matchingImage) {
-      console.log(`❌ Skipping ${correctedName} - no matching image in filters bucket`);
+    // Skip products without images for now, but you can remove this if you want to show all products
+    if (!productImage) {
+      console.log(`❌ Skipping ${product.Title} - no image available`);
       continue;
     }
 
     processedProducts.push({
       id: startIndex + index + 1,
-      name: correctedName,
+      name: product.Title || 'Unknown Product',
       price: `KES ${productPrice.toLocaleString()}`,
       description,
       category,
-      image: matchingImage
+      image: productImage
     });
   }
 
-  console.log(`✅ Processed ${processedProducts.length} products with matching images`);
   return groupProductsByBaseName(processedProducts);
 };

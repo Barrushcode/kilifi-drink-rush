@@ -5,14 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate } from "react-router-dom";
-import { supabase } from '@/integrations/supabase/client';
 
 interface MpesaStkPushProps {
   amount: number;
   phone?: string;
   till: string;
   shippingDetails?: any;
-  cartItems?: any[];
   onPaymentSuccess?: () => void;
 }
 
@@ -20,7 +18,6 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
   amount,
   phone,
   shippingDetails,
-  cartItems = [],
   onPaymentSuccess
 }) => {
   const [userPhone, setUserPhone] = useState(phone || "");
@@ -39,52 +36,6 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
       formatted = formatted.slice(1);
     }
     return formatted;
-  };
-
-  const sendOrderEmailToBarrush = async (orderData: any) => {
-    try {
-      const orderItemsHtml = cartItems.map(item => `
-        <tr>
-          <td>${item.name}</td>
-          <td>${item.quantity}</td>
-          <td>KES ${(item.price * item.quantity).toLocaleString()}</td>
-        </tr>
-      `).join('');
-
-      const emailHtml = `
-        <h2>New Order Received - ${orderData.reference}</h2>
-        <h3>Customer Details:</h3>
-        <p><strong>Name:</strong> ${shippingDetails.firstName} ${shippingDetails.lastName}</p>
-        <p><strong>Phone:</strong> ${shippingDetails.phone}</p>
-        <p><strong>Email:</strong> ${shippingDetails.email}</p>
-        <p><strong>Address:</strong> ${shippingDetails.street}, ${shippingDetails.area}, ${shippingDetails.city}</p>
-        
-        <h3>Order Items:</h3>
-        <table border="1" style="border-collapse: collapse;">
-          <thead>
-            <tr><th>Product</th><th>Quantity</th><th>Total</th></tr>
-          </thead>
-          <tbody>
-            ${orderItemsHtml}
-          </tbody>
-        </table>
-        
-        <h3>Payment Details:</h3>
-        <p><strong>Total Amount:</strong> KES ${amount.toLocaleString()}</p>
-        <p><strong>Payment Method:</strong> M-PESA</p>
-        <p><strong>Transaction Reference:</strong> ${orderData.reference}</p>
-      `;
-
-      await supabase.functions.invoke('send-order-confirmation', {
-        body: {
-          to: ['barrushdelivery@gmail.com'],
-          subject: `New Order: ${orderData.reference}`,
-          html: emailHtml
-        }
-      });
-    } catch (error) {
-      console.error('Failed to send order email to Barrush:', error);
-    }
   };
 
   const initiateStkPush = async (e: React.FormEvent) => {
@@ -123,29 +74,19 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
       console.log('STK push response:', data);
 
       if (response.ok && data.ok) {
-        setMessage("STK Prompt Sent! Please complete payment on your phone.");
+        setMessage("STK Prompt Sent! Please check your phone.");
         toast({
           title: "STK Prompt Sent!",
-          description: "Please check your phone and complete the payment.",
+          description: "Please check your phone.",
           className: "bg-green-600 text-white"
         });
         
-        // Wait for payment confirmation (simulate for now)
-        setTimeout(async () => {
-          const orderData = {
-            reference: `MP${Date.now()}`,
-            amount,
-            items: cartItems,
-            customer: shippingDetails
-          };
-
-          // Send email to Barrush
-          await sendOrderEmailToBarrush(orderData);
-
-          if (onPaymentSuccess) onPaymentSuccess();
-          navigate("/order-placed");
-        }, 5000); // Wait 5 seconds to simulate payment processing
+        if (onPaymentSuccess) onPaymentSuccess();
         
+        // After a delay, redirect to order placed
+        setTimeout(() => {
+          navigate("/order-placed");
+        }, 2000);
       } else {
         setMessage("❌ Payment failed. Try again or contact support.");
         toast({
@@ -158,8 +99,8 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
       console.error('Payment error:', error);
       setMessage("❌ Payment failed. Try again or contact support.");
       toast({
-        title: "Network Error",
-        description: "Please check your connection and try again.",
+        title: "Payment Error",
+        description: "Network error. Please check your connection and try again.",
         variant: "destructive"
       });
     } finally {
@@ -197,17 +138,9 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
           >
             {processing ? 'Sending M-PESA request...' : `Pay KES ${amount.toLocaleString()} via M-PESA`}
           </Button>
-          {message && (
-            <div className={`mt-3 text-center p-3 rounded ${
-              message.includes('❌') 
-                ? 'text-red-400 bg-red-900/20' 
-                : 'text-green-400 bg-green-900/20'
-            }`}>
-              {message}
-            </div>
-          )}
+          {message && <div className="mt-3 text-white text-center">{message}</div>}
           <p className="text-sm text-white/60 text-center mt-2">
-            You will receive an M-PESA prompt on your phone. Enter your PIN to complete payment.
+            You will receive an M-PESA pop-up on your phone after clicking pay. Enter your PIN to complete.
           </p>
         </form>
       </CardContent>
