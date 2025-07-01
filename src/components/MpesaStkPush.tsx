@@ -106,7 +106,7 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
       const { data, error } = await supabase.functions.invoke('send-order-confirmation', {
         body: {
           to: 'barrushdelivery@gmail.com',
-          subject: `New Order Received - ${orderReference} - KES ${amount.toLocaleRange()}`,
+          subject: `New Order Received - ${orderReference} - KES ${amount.toLocaleString()}`,
           html: orderDetailsHtml
         }
       });
