@@ -1,5 +1,4 @@
 
-import { getCategoryFromName } from '@/utils/categoryUtils';
 import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
 import { groupProductsByBaseName } from '@/utils/productGroupingUtils';
 import { Product, RawProduct, GroupedProduct } from '../types/productTypes';
@@ -20,6 +19,7 @@ export const processRawProducts = async (
 
     const productPrice = product.Price;
     const description = product.Description || '';
+    const category = product.Category || 'Uncategorized';
 
     // Get Supabase image
     const storageImage = await getSupabaseProductImageUrl(product.Title || 'Unknown Product');
@@ -27,18 +27,13 @@ export const processRawProducts = async (
     let productImage: string | null = null;
     if (storageImage) {
       productImage = storageImage;
-    } else if (product["Product image URL"] && typeof product["Product image URL"] === "string" && product["Product image URL"].trim().length > 0) {
-      productImage = product["Product image URL"];
     }
 
-    // Skip products without images
+    // Skip products without images for now, but you can remove this if you want to show all products
     if (!productImage) {
       console.log(`❌ Skipping ${product.Title} - no image available`);
       continue;
     }
-
-    // Enhanced category detection using both name and description
-    const category = getCategoryFromName(product.Title || 'Unknown Product', productPrice, description);
 
     processedProducts.push({
       id: startIndex + index + 1,

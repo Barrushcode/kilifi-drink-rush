@@ -9,6 +9,7 @@ import ProductPriceFilter from './ProductPriceFilter';
 import ProductSearchFeedback from './ProductSearchFeedback';
 import ProductResultsInfo from './ProductResultsInfo';
 import { useOptimizedProducts } from '@/hooks/useOptimizedProducts';
+import { useCategories } from '@/hooks/useCategories';
 
 // Enhanced categories including new description-based ones
 const FIXED_CATEGORIES = [
@@ -43,6 +44,9 @@ const ProductCatalog: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showAuditReport, setShowAuditReport] = useState(false);
   const itemsPerPage = 4; // Set to 4 as requested
+
+  // Fetch dynamic categories from the database
+  const { categories, loading: categoriesLoading } = useCategories();
 
   // Use optimized products hook with manual search term
   const { 
@@ -128,10 +132,11 @@ const ProductCatalog: React.FC = () => {
     totalCount,
     totalPages,
     loading,
-    error
+    error,
+    categories
   });
 
-  if (loading) {
+  if (loading || categoriesLoading) {
     return (
       <section id="products" className="pt-0 pb-0 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 lg:px-16 xl:px-20 2xl:px-0 relative z-10 mt-0 mb-0">
@@ -184,7 +189,7 @@ const ProductCatalog: React.FC = () => {
           setSearchTerm={setSearchInput}
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
-          categories={FIXED_CATEGORIES}
+          categories={categories}
           showAuditReport={showAuditReport}
           setShowAuditReport={setShowAuditReport}
           onSearch={handleSearch}

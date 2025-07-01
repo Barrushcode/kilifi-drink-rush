@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { getCategoryFromName } from '@/utils/categoryUtils';
 import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
 import { groupProductsByBaseName } from '@/utils/productGroupingUtils';
 
@@ -14,7 +13,6 @@ interface Product {
   category: string;
 }
 
-// Local interface that matches what groupProductsByBaseName actually returns
 interface SearchGroupedProduct {
   id: string;
   baseName: string;
@@ -60,16 +58,14 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
         const trimmedSearch = searchTerm.trim();
         console.log('🔍 Full-text search for:', trimmedSearch);
 
-        // Perform full-text search across Title and Description
+        // Perform full-text search across Title and Description using the new table
         const { data, error } = await supabase
-          .from('allthealcoholicproducts')
-          .select('Title, Description, Price, "Product image URL"')
+          .from('Cartegories correct price')
+          .select('Title, Description, Price, Category')
           .or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`)
           .not('Price', 'is', null)
           .gte('Price', 100)
           .lte('Price', 500000)
-          .not('"Product image URL"', 'is', null)
-          .neq('"Product image URL"', '')
           .order('Title', { ascending: true })
           .limit(50);
 
@@ -94,6 +90,7 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
 
           const productPrice = product.Price;
           const description = product.Description || '';
+          const category = product.Category || 'Uncategorized';
 
           // Get Supabase image
           const storageImage = await getSupabaseProductImageUrl(product.Title || 'Unknown Product');
@@ -101,17 +98,12 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
           let productImage: string | null = null;
           if (storageImage) {
             productImage = storageImage;
-          } else if (product["Product image URL"] && typeof product["Product image URL"] === "string" && product["Product image URL"].trim().length > 0) {
-            productImage = product["Product image URL"];
           }
 
-          // Skip products without images
+          // Skip products without images for now
           if (!productImage) {
             continue;
           }
-
-          // Enhanced category detection
-          const category = getCategoryFromName(product.Title || 'Unknown Product', productPrice, description);
 
           processedProducts.push({
             id: index + 1,

@@ -1,12 +1,11 @@
 
-
 import { supabase } from '@/integrations/supabase/client';
 
 export const buildOrFilters = (searchTerm: string, selectedCategory: string): string[] => {
   const orFilters: string[] = [];
   
   if (selectedCategory !== 'All') {
-    orFilters.push(`Description.ilike.%${selectedCategory}%`);
+    orFilters.push(`Category.ilike.%${selectedCategory}%`);
   }
   
   if (searchTerm && searchTerm.trim()) {
@@ -20,13 +19,11 @@ export const buildOrFilters = (searchTerm: string, selectedCategory: string): st
 
 export const buildCountQuery = (orFilters: string[]) => {
   let query = supabase
-    .from('allthealcoholicproducts')
+    .from('Cartegories correct price')
     .select('*', { count: 'exact', head: true })
     .filter('Price', 'not.is', null)
     .filter('Price', 'gte', 100)
-    .filter('Price', 'lte', 500000)
-    .filter('"Product image URL"', 'not.is', null)
-    .filter('"Product image URL"', 'neq', '');
+    .filter('Price', 'lte', 500000);
 
   if (orFilters.length > 0) {
     query = query.or(orFilters.join(','));
@@ -37,13 +34,11 @@ export const buildCountQuery = (orFilters: string[]) => {
 
 export const buildDataQuery = (orFilters: string[], startIndex: number, endIndex: number) => {
   let query = supabase
-    .from('allthealcoholicproducts')
-    .select('Title, Description, Price, "Product image URL"')
+    .from('Cartegories correct price')
+    .select('Title, Description, Price, Category')
     .filter('Price', 'not.is', null)
     .filter('Price', 'gte', 100)
-    .filter('Price', 'lte', 500000)
-    .filter('"Product image URL"', 'not.is', null)
-    .filter('"Product image URL"', 'neq', '');
+    .filter('Price', 'lte', 500000);
 
   if (orFilters.length > 0) {
     query = query.or(orFilters.join(','));
@@ -51,4 +46,3 @@ export const buildDataQuery = (orFilters: string[], startIndex: number, endIndex
 
   return query.order('Title', { ascending: true }).range(startIndex, endIndex);
 };
-
