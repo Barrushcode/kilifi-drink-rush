@@ -26,6 +26,7 @@ const PaymentOptionsPanel: React.FC<PaymentOptionsPanelProps> = ({
       till={TILL_NUMBER}
       shippingDetails={shippingDetails}
       onPaymentSuccess={handleSimulatePayment}
+      items={items}
     />
     <PaystackCheckout
       amount={totalAmount}
