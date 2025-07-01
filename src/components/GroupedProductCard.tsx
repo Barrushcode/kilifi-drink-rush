@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -36,11 +35,12 @@ function isImageAppropriate(url?: string) {
 
 interface GroupedProductCardProps {
   product: GroupedProduct;
+  priority?: boolean;
 }
 
 const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80";
 
-const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
+const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product, priority = false }) => {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(product.variants[0]);
   const [modalOpen, setModalOpen] = useState(false);
   const [supabaseImage, setSupabaseImage] = useState<string | null>(null);
@@ -145,13 +145,13 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
       >
         <CardContent className="p-2 md:p-4 lg:p-5 flex flex-col h-full">
           <div className="flex flex-col flex-grow">
-            {/* Product Image with consistent styling */}
+            {/* Product Image with priority loading for better performance */}
             <div className="w-full aspect-square rounded-lg overflow-hidden mb-2 relative bg-barrush-midnight">
               <ProductImageLoader
                 src={displayImage}
                 alt={correctedName}
                 className="w-full h-full object-cover"
-                priority={false}
+                priority={priority}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-barrush-midnight/60 to-transparent group-hover:from-barrush-midnight/40 transition-all duration-300" />
             </div>

@@ -11,6 +11,7 @@ interface ProductGridProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
   setSelectedCategory: (category: string) => void;
+  isBeerCategory?: boolean;
 }
 
 const ProductGrid: React.FC<ProductGridProps> = ({
@@ -19,34 +20,31 @@ const ProductGrid: React.FC<ProductGridProps> = ({
   loading,
   searchTerm,
   setSearchTerm,
-  setSelectedCategory
+  setSelectedCategory,
+  isBeerCategory = false
 }) => {
-  // Determine if beers category is selected (case-insensitive, future-proof).
-  const isBeersCategory =
-    typeof filteredProducts !== "undefined" &&
-    filteredProducts.length > 0 &&
-    filteredProducts[0].category &&
-    filteredProducts[0].category.toLowerCase().includes("beer");
 
   return (
     <>
-      {isBeersCategory && (
-        <div className="w-full mb-6 flex justify-center">
-          <span className="bg-yellow-100 text-amber-800 px-4 py-2 text-sm rounded-lg font-semibold shadow font-iphone border border-yellow-300 flex items-center gap-2">
-            All Beers are sold as Six-Packs 🍻
-          </span>
+      {isBeerCategory && (
+        <div className="w-full mb-8 flex justify-center">
+          <div className="bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-900 px-6 py-4 rounded-xl font-semibold shadow-lg font-iphone border-2 border-amber-200 flex items-center gap-3 max-w-md">
+            <span className="text-2xl">🍺</span>
+            <span className="text-center">All Beers are sold as Six-Packs</span>
+            <span className="text-2xl">🍻</span>
+          </div>
         </div>
       )}
 
-      {/* Enhanced desktop grid layout */}
+      {/* Enhanced desktop grid layout with faster loading */}
       <div className="
         grid 
         grid-cols-1
         sm:grid-cols-2 
         md:grid-cols-3 
         lg:grid-cols-4 
-        xl:grid-cols-5
-        2xl:grid-cols-6
+        xl:grid-cols-4
+        2xl:grid-cols-4
         gap-4 
         lg:gap-6
         xl:gap-8
@@ -57,10 +55,14 @@ const ProductGrid: React.FC<ProductGridProps> = ({
       "
         style={{ width: '100%' }}
       >
-        {paginatedProducts.map(product => {
+        {paginatedProducts.map((product, index) => {
           console.log('🔧 Rendering product card for:', product.baseName, 'with price:', product.lowestPriceFormatted);
           return (
-            <GroupedProductCard key={product.id} product={product} />
+            <GroupedProductCard 
+              key={product.id} 
+              product={product} 
+              priority={index < 4} // Prioritize first 4 images for faster loading
+            />
           );
         })}
       </div>
@@ -78,11 +80,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
               setSearchTerm('');
               setSelectedCategory('All');
             }}
-            className="font-iphone px-8 py-4 text-lg"
-            style={{
-              backgroundColor: '#e11d48',
-              color: '#ffffff'
-            }}
+            className="font-iphone px-8 py-4 text-lg bg-rose-600 hover:bg-rose-500 text-white"
           >
             Clear Filters
           </Button>
