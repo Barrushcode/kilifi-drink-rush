@@ -1,293 +1,113 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useNavigate } from 'react-router-dom';
-import { ShoppingCart, CreditCard } from 'lucide-react';
-import { GroupedProduct, ProductVariant } from '@/utils/productGroupingUtils';
-import { useCart } from '@/contexts/CartContext';
-import { useToast } from '@/hooks/use-toast';
-import ProductQuickViewModal from './ProductQuickViewModal';
-import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
-import ProductImageLoader from './ProductImageLoader';
-import { correctProductName } from '@/utils/nameCorrectionUtils';
 
-// Utility to determine if the product image is appropriate
-function isImageAppropriate(url?: string) {
-  if (!url) return false;
-  const lowerUrl = url.toLowerCase();
-  const badDomains = [
-    'youtube.com', 'youtu.be', 'pinterest.com', 'facebook.com', 'instagram.com',
-    'twitter.com', 'tiktok.com', 'reddit.com', 'blogspot.com', 'wordpress.com',
-    'wikimedia.org', 'wikipedia.org', 'tumblr.com', 'placeholder', 'no-image',
-    'svg', 'icon', 'logo'
-  ];
-  if (badDomains.some(domain => lowerUrl.includes(domain))) return false;
-  if (
-    lowerUrl.endsWith('.svg') ||
-    /150|default|thumb|generic/i.test(lowerUrl) ||
-    lowerUrl.includes('placeholder')
-  ) return false;
-  if (!/\.(jpg|jpeg|png|webp)$/i.test(lowerUrl)) return false;
-  return true;
-}
+import React from 'react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { useCart } from "@/contexts/CartContext";
+import { toast } from "@/hooks/use-toast";
+import ProductImageLoader from './ProductImageLoader';
+import { GroupedProduct } from '@/utils/productGroupingUtils';
 
 interface GroupedProductCardProps {
   product: GroupedProduct;
   priority?: boolean;
+  className?: string;
 }
 
-const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80";
-
-const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product, priority = false }) => {
-  const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(product.variants[0]);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [supabaseImage, setSupabaseImage] = useState<string | null>(null);
-  const [expanded, setExpanded] = useState(false);
-
-  const navigate = useNavigate();
+const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ 
+  product, 
+  priority = false,
+  className = ""
+}) => {
   const { addItem } = useCart();
-  const { toast } = useToast();
-
-  // Use corrected product name for display
-  const correctedName = correctProductName(product.baseName);
 
   const handleAddToCart = () => {
-    try {
-      const cartItem = {
-        id: `${product.baseName}-${selectedVariant.size}`,
-        name: correctedName,
-        price: selectedVariant.price,
-        priceFormatted: selectedVariant.priceFormatted,
-        size: selectedVariant.size,
+    // Add the main product (first variant) to cart
+    const mainProduct = product.products[0];
+    if (mainProduct) {
+      addItem({
+        id: mainProduct.id,
+        name: product.baseName,
+        price: product.lowestPrice,
+        priceFormatted: product.lowestPriceFormatted,
         image: product.image,
-        category: product.category
-      };
-      addItem(cartItem);
+        size: mainProduct.name.includes('ml') ? 
+          mainProduct.name.match(/\d+ml/)?.[0] || 'Standard' : 
+          'Standard',
+        quantity: 1
+      });
+
       toast({
         title: "Added to Cart",
-        description: `${correctedName} (${selectedVariant.size}) added to cart`,
-        duration: 2000,
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to add item to cart",
-        variant: "destructive",
-        duration: 2000,
+        description: `${product.baseName} has been added to your cart.`,
+        className: "bg-green-600 text-white"
       });
     }
   };
-
-  const handleBuyNow = () => {
-    try {
-      const cartItem = {
-        id: `${product.baseName}-${selectedVariant.size}`,
-        name: correctedName,
-        price: selectedVariant.price,
-        priceFormatted: selectedVariant.priceFormatted,
-        size: selectedVariant.size,
-        image: product.image,
-        category: product.category
-      };
-      addItem(cartItem);
-      navigate('/cart');
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to start checkout",
-        variant: "destructive",
-        duration: 2000,
-      });
-    }
-  };
-
-  const handleVariantChange = (variantIndex: string) => {
-    const variant = product.variants[parseInt(variantIndex)];
-    setSelectedVariant(variant);
-  };
-
-  const handleCardClick = (e: React.MouseEvent) => {
-    const tag = (e.target as HTMLElement).tagName.toLowerCase();
-    if (tag === 'button' || tag === 'svg' || (e.target as HTMLElement).closest('button')) return;
-    setExpanded(prev => !prev);
-  };
-
-  useEffect(() => {
-    let ignore = false;
-    async function fetchImage() {
-      const url = await getSupabaseProductImageUrl(product.baseName);
-      if (!ignore) setSupabaseImage(url);
-    }
-    fetchImage();
-    return () => { ignore = true; };
-  }, [product.baseName]);
-
-  let displayImage = supabaseImage || (isImageAppropriate(product.image) ? product.image : FALLBACK_IMAGE);
 
   return (
-    <>
-      <ProductQuickViewModal
-        open={modalOpen}
-        onOpenChange={setModalOpen}
-        product={product}
-      />
-      <Card
-        className="overflow-hidden h-full min-h-[320px] shadow-lg transition-all duration-300 group hover:scale-105 bg-barrush-slate border-barrush-steel/30 flex flex-col cursor-pointer"
-        onClick={handleCardClick}
-        tabIndex={0}
-        onKeyDown={e => {
-          if (e.key === 'Enter') setExpanded(prev => !prev);
-        }}
-        aria-label={`Show details for ${correctedName}`}
-        role="button"
-      >
-        <CardContent className="p-2 md:p-4 lg:p-5 flex flex-col h-full">
-          <div className="flex flex-col flex-grow">
-            {/* Product Image with priority loading for better performance */}
-            <div className="w-full aspect-square rounded-lg overflow-hidden mb-2 relative bg-barrush-midnight">
-              <ProductImageLoader
-                src={displayImage}
-                alt={correctedName}
-                className="w-full h-full object-cover"
-                priority={priority}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-barrush-midnight/60 to-transparent group-hover:from-barrush-midnight/40 transition-all duration-300" />
-            </div>
-            
-            {/* Product Name with correction */}
-            <h3 className="text-xs md:text-base lg:text-xl font-bold mb-1 font-iphone line-clamp-2 text-barrush-platinum break-words">
-              {correctedName}
-            </h3>
-            
-            {/* Expanded Details */}
-            {expanded && (
-              <>
-                <div className="flex flex-wrap items-center gap-1 md:gap-2 mb-2">
-                  <Badge className="px-2 py-1 text-xs font-iphone bg-barrush-steel/60 text-barrush-platinum border-barrush-steel/80">
-                    {product.category}
-                  </Badge>
-                  {product.variants.length > 1 && (
-                    <Badge variant="outline" className="text-xs font-iphone text-barrush-platinum/70 border-barrush-steel/80">
-                      {product.variants.length} sizes
-                    </Badge>
-                  )}
-                </div>
-                {product.description && (
-                  <p className="mb-2 text-xs md:text-sm font-iphone text-barrush-platinum/80">
-                    {product.description}
-                  </p>
-                )}
-                
-                {/* Size Selector with clear labeling */}
-                {product.variants.length > 1 ? (
-                  <div className="mb-2">
-                    <label className="block text-xs font-medium mb-1 font-iphone text-barrush-platinum/80">
-                      Available Sizes:
-                    </label>
-                    <Select 
-                      value={product.variants.indexOf(selectedVariant).toString()} 
-                      onValueChange={handleVariantChange}
-                    >
-                      <SelectTrigger className="h-10 font-iphone text-xs bg-barrush-midnight border-barrush-steel text-barrush-platinum">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="z-50 bg-barrush-midnight border-barrush-steel">
-                        {product.variants.map((variant, index) => (
-                          <SelectItem 
-                            key={index} 
-                            value={index.toString()}
-                            className="font-iphone text-barrush-platinum hover:!bg-barrush-steel/50 focus:!bg-barrush-steel/50"
-                          >
-                            <div className="flex justify-between items-center w-full">
-                              <span className="text-xs font-medium">{variant.size}</span>
-                              <span className="ml-2 font-bold text-xs text-pink-400">
-                                {variant.priceFormatted}
-                              </span>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                ) : (
-                  <div className="mb-2">
-                    <span className="text-xs font-iphone text-barrush-platinum/80 bg-barrush-steel/30 px-2 py-1 rounded">
-                      Size: {selectedVariant.size}
-                    </span>
-                  </div>
-                )}
-                
-                <div className="flex flex-col">
-                  <span className="text-base md:text-lg lg:text-xl font-bold font-iphone text-barrush-platinum">
-                    {selectedVariant.priceFormatted}
-                  </span>
-                  {product.variants.length > 1 && selectedVariant !== product.variants[0] && (
-                    <span className="text-xs font-iphone text-barrush-platinum/70">
-                      from {product.lowestPriceFormatted}
-                    </span>
-                  )}
-                </div>
-              </>
-            )}
-            
-            {/* Collapsed State */}
-            {!expanded && (
-              <>
-                <div className="flex flex-wrap items-center gap-1 md:gap-2 mb-2">
-                  <Badge className="px-2 py-1 text-xs font-iphone bg-barrush-steel/60 text-barrush-platinum border-barrush-steel/80">
-                    {product.category}
-                  </Badge>
-                  {product.variants.length > 1 && (
-                    <Badge variant="outline" className="text-xs font-iphone text-barrush-platinum/70 border-barrush-steel/80">
-                      {product.variants.length} sizes available
-                    </Badge>
-                  )}
-                </div>
-                {product.description && (
-                  <p className="text-barrush-platinum/80 mb-2 text-xs line-clamp-2 font-iphone">
-                    {product.description}
-                  </p>
-                )}
-                <div className="flex items-center gap-2">
-                  <span className="text-base md:text-lg lg:text-xl font-bold font-iphone text-barrush-platinum">
-                    {product.lowestPriceFormatted}
-                  </span>
-                  {product.variants.length > 1 && (
-                    <span className="text-xs font-iphone text-barrush-platinum/60">
-                      + {product.variants.length - 1} more
-                    </span>
-                  )}
-                </div>
-              </>
-            )}
+    <Card className={`
+      group relative overflow-hidden border-2 border-transparent 
+      hover:border-rose-500/50 hover:shadow-xl transition-all duration-300 
+      bg-gradient-to-br from-barrush-charcoal/80 to-barrush-slate/80 
+      backdrop-blur-sm h-full flex flex-col
+      ${className}
+    `}>
+      <CardContent className="p-3 sm:p-4 lg:p-6 flex flex-col h-full">
+        {/* Image Container - Responsive aspect ratio */}
+        <div className="relative mb-3 lg:mb-4 flex-shrink-0">
+          <div className="aspect-square w-full overflow-hidden rounded-lg bg-barrush-midnight/50">
+            <ProductImageLoader
+              src={product.image}
+              alt={product.baseName}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              priority={priority}
+            />
           </div>
           
-          {/* Action Buttons */}
-          <div className="flex gap-2 mt-4 w-full flex-col sm:flex-row">
-            <Button 
-              onClick={(e) => { e.stopPropagation(); handleAddToCart(); }}
-              className="flex-1 font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-transparent border-2 border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white w-full"
+          {/* Product count badge for mobile */}
+          {product.products.length > 1 && (
+            <div className="absolute top-2 right-2 bg-rose-600 text-white text-xs px-2 py-1 rounded-full font-medium">
+              {product.products.length} sizes
+            </div>
+          )}
+        </div>
+
+        {/* Content Container - Flexible spacing */}
+        <div className="flex flex-col flex-grow">
+          {/* Product Name - Responsive text size */}
+          <h3 className="font-semibold text-sm sm:text-base lg:text-lg text-barrush-platinum mb-2 lg:mb-3 line-clamp-2 group-hover:text-rose-300 transition-colors leading-tight">
+            {product.baseName}
+          </h3>
+
+          {/* Price Display - Responsive sizing */}
+          <div className="mb-3 lg:mb-4">
+            <p className="text-lg sm:text-xl lg:text-2xl font-bold text-rose-400 mb-1">
+              {product.lowestPriceFormatted}
+            </p>
+            {product.products.length > 1 && (
+              <p className="text-xs sm:text-sm text-barrush-platinum/60">
+                From {product.products.length} sizes available
+              </p>
+            )}
+          </div>
+
+          {/* Action Button - Responsive sizing */}
+          <div className="mt-auto">
+            <Button
+              onClick={handleAddToCart}
+              className="
+                w-full bg-rose-600 hover:bg-rose-500 text-white font-semibold 
+                transition-all duration-200 hover:shadow-lg
+                text-sm sm:text-base py-2 sm:py-3 lg:py-4 h-auto
+                rounded-lg
+              "
             >
-              <ShoppingCart className="h-3 w-3 mr-1" />
               Add to Cart
             </Button>
-            <Button 
-              onClick={(e) => { e.stopPropagation(); handleBuyNow(); }}
-              className="flex-1 font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-rose-600 hover:bg-rose-500 text-white border-none shadow-lg w-full"
-              style={{
-                backgroundColor: '#e11d48',
-                color: '#fff',
-              }}
-            >
-              <CreditCard className="h-3 w-3 mr-1" />
-              Buy Now
-            </Button>
           </div>
-        </CardContent>
-      </Card>
-    </>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

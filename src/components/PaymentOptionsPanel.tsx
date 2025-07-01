@@ -25,13 +25,14 @@ const PaymentOptionsPanel: React.FC<PaymentOptionsPanelProps> = ({
       phone={shippingDetails.phone}
       till={TILL_NUMBER}
       shippingDetails={shippingDetails}
+      cartItems={items}
       onPaymentSuccess={handleSimulatePayment}
     />
     <PaystackCheckout
       amount={totalAmount}
       shippingDetails={shippingDetails}
       cartItems={items}
-      onValidationRequired={() => true} // No additional validation, as form is validated already
+      onValidationRequired={() => true}
     />
   </div>
 );
