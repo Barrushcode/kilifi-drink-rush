@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { postToZapierWebhook } from "@/utils/zapierWebhook";
@@ -111,24 +110,38 @@ export function useCheckout(
       const reference = "SIM" + Math.floor(Math.random() * 1000000);
       const { toast } = await import('@/components/ui/use-toast');
       const recipients = [shippingDetails.email, "barrushdelivery@gmail.com"];
+      
+      // Enhanced order details for the email template
+      const orderDetails = {
+        reference,
+        customerName: `${shippingDetails.firstName} ${shippingDetails.lastName}`,
+        customerEmail: shippingDetails.email,
+        customerPhone: shippingDetails.phone,
+        deliveryAddress: {
+          street: shippingDetails.street,
+          building: shippingDetails.building,
+          area: shippingDetails.area,
+          city: shippingDetails.city
+        },
+        deliveryZone: {
+          name: zoneObject?.name || "",
+          fee: deliveryFee
+        },
+        deliveryInstructions: shippingDetails.instructions,
+        items,
+        subtotal,
+        deliveryFee,
+        totalAmount
+      };
+
       const { data, error } = await supabase.functions.invoke('send-order-confirmation', {
         body: {
-          to: recipients, // send to both addresses
+          to: recipients,
           subject: `Order Confirmed! (Simulated): #${reference}`,
-          html: `
-            <div style="font-family: Arial, sans-serif;">
-              <h1 style="color: #10b981">Order Confirmed! (Simulated)</h1>
-              <p><b>This is only a demo confirmation to show what a real customer email would look like.</b></p>
-              <ul>
-                <li><b>Name:</b> ${shippingDetails.firstName} ${shippingDetails.lastName}</li>
-                <li><b>Reference:</b> ${reference}</li>
-                <li><b>Delivery:</b> ${zoneObject?.name} (KES ${deliveryFee})</li>
-                <li><b>Total:</b> KES ${totalAmount.toLocaleString()}</li>
-              </ul>
-            </div>
-          `
+          orderDetails
         }
       });
+      
       if (!error && data && data.ok) {
         // Removed the toast notification here
       } else {
@@ -138,6 +151,7 @@ export function useCheckout(
           variant: "destructive"
         });
       }
+      
       await logOrderToSupabase({
         buyerName: shippingDetails.firstName + " " + shippingDetails.lastName,
         buyerEmail: shippingDetails.email,
