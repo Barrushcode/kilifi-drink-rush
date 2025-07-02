@@ -74,7 +74,8 @@ const generateOrderEmailHTML = (orderDetails: any) => {
       <div style="padding: 20px;">
         <h3 style="color: #374151; margin-bottom: 15px; font-size: 18px; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px;">Delivery Information</h3>
         <div style="background-color: #f0f9ff; padding: 15px; border-radius: 8px; border-left: 4px solid #0ea5e9;">
-          <p style="margin: 5px 0; color: #4b5563;"><strong>Delivery Zone:</strong> ${orderDetails.deliveryZone.name} (KES ${orderDetails.deliveryZone.fee.toLocaleString()})</p>
+          <p style="margin: 5px 0; color: #4b5563;"><strong>Delivery Zone:</strong> ${orderDetails.deliveryZone.name}</p>
+          <p style="margin: 5px 0; color: #4b5563;"><strong>Delivery Fee:</strong> KES ${orderDetails.deliveryZone.fee.toLocaleString()}</p>
           <p style="margin: 5px 0; color: #4b5563;"><strong>Street Address:</strong> ${orderDetails.deliveryAddress.street}</p>
           ${orderDetails.deliveryAddress.building ? `<p style="margin: 5px 0; color: #4b5563;"><strong>Building:</strong> ${orderDetails.deliveryAddress.building}</p>` : ''}
           <p style="margin: 5px 0; color: #4b5563;"><strong>Area:</strong> ${orderDetails.deliveryAddress.area}</p>
@@ -114,7 +115,7 @@ const generateOrderEmailHTML = (orderDetails: any) => {
             <span style="color: #4b5563; font-weight: 600;">KES ${orderDetails.subtotal.toLocaleString()}</span>
           </div>
           <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-            <span style="color: #4b5563;">Delivery Fee:</span>
+            <span style="color: #4b5563;">Delivery Fee (${orderDetails.deliveryZone.name}):</span>
             <span style="color: #4b5563; font-weight: 600;">KES ${orderDetails.deliveryFee.toLocaleString()}</span>
           </div>
           <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 10px 0;">
