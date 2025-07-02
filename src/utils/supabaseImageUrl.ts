@@ -1,70 +1,115 @@
 
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from '@/integrations/supabase/client';
 
-/**
- * Try multiple variants for a product name to improve storage image matching.
- * Now also includes the exact original (untrimmed) input for cases with extra spaces.
- */
-function* generateNameVariants(productName: string) {
-  const base = productName.trim();
-  const original = productName; // Untrimmed, may have trailing/leading spaces
+// Cache for image URLs to avoid repeated lookups
+const imageUrlCache = new Map<string, string | null>();
 
-  // Variants with trimmed name
-  const transformed = [
-    base,
-    base.toUpperCase(),
-    base.toLowerCase(),
-    base.replace(/\s+/g, ""),
-    base.replace(/\s+/g, "-"),
-    base.replace(/\s+/g, "_"),
-    base.replace(/[^a-zA-Z0-9]/g, ""), // Remove non-alphanumeric
-  ];
+// Batch processing for multiple image lookups
+const pendingLookups = new Map<string, Promise<string | null>>();
 
-  // If the original is different from base (thus has extra spaces etc), include it as a variant as well
-  if (original !== base) {
-    transformed.push(original);
-    transformed.push(original.replace(/\s+/g, "-"));
-    transformed.push(original.replace(/\s+/g, "_"));
-    transformed.push(original.replace(/[^a-zA-Z0-9]/g, ""));
+export const getSupabaseProductImageUrl = async (productName: string): Promise<string | null> => {
+  // Check cache first
+  if (imageUrlCache.has(productName)) {
+    return imageUrlCache.get(productName) || null;
   }
 
-  // Deduplicate
-  const set = new Set(transformed);
-  for (const v of set) yield v;
-}
+  // Check if lookup is already in progress
+  if (pendingLookups.has(productName)) {
+    return pendingLookups.get(productName) || null;
+  }
 
-/**
- * Gets a public URL for a given product image in Supabase storage (bucket "pictures").
- * Tries a wide range of file name/extension variations and logs each step.
- */
-export async function getSupabaseProductImageUrl(productName: string): Promise<string | null> {
-  const bucketName = "pictures";
-  const extensions = [
-    ".jpg", ".jpeg", ".png", ".webp",
-    ".JPG", ".JPEG", ".PNG", ".WEBP"
-  ];
-  for (const nameVariant of generateNameVariants(productName)) {
-    for (const ext of extensions) {
-      const filePath = `${nameVariant}${ext}`;
-      // Log what is being checked for debug purposes
-      console.log(`[SUPABASE IMAGE LOOKUP] Trying file:`, filePath);
-      const { data } = supabase.storage.from(bucketName).getPublicUrl(filePath);
-      if (data && data.publicUrl) {
-        try {
-          // HEAD request to confirm file actually exists at public URL
-          const response = await fetch(data.publicUrl, { method: "HEAD" });
+  // Create the lookup promise
+  const lookupPromise = performImageLookup(productName);
+  pendingLookups.set(productName, lookupPromise);
+
+  try {
+    const result = await lookupPromise;
+    imageUrlCache.set(productName, result);
+    return result;
+  } finally {
+    pendingLookups.delete(productName);
+  }
+};
+
+const performImageLookup = async (productName: string): Promise<string | null> => {
+  if (!productName) return null;
+
+  console.log(`[SUPABASE IMAGE LOOKUP] Starting optimized lookup for: ${productName}`);
+
+  // Generate fewer, more targeted filename variations
+  const baseVariations = generateTargetedFilenames(productName);
+  
+  // Try the most likely candidates first (limit to top 5)
+  const primaryCandidates = baseVariations.slice(0, 5);
+  
+  try {
+    // Use Promise.allSettled for parallel requests instead of sequential
+    const results = await Promise.allSettled(
+      primaryCandidates.map(async (filename) => {
+        const { data } = await supabase.storage
+          .from('pictures')
+          .createSignedUrl(filename, 60);
+        
+        if (data?.signedUrl) {
+          // Verify the URL is accessible
+          const response = await fetch(data.signedUrl, { method: 'HEAD' });
           if (response.ok) {
-            console.log(`[SUPABASE IMAGE FOUND]`, data.publicUrl);
-            return data.publicUrl;
+            return data.signedUrl;
           }
-        } catch (err) {
-          // Log error for debugging
-          console.warn(`[SUPABASE IMAGE ERROR] Error fetching HEAD for:`, data.publicUrl, err);
         }
+        return null;
+      })
+    );
+
+    // Return the first successful result
+    for (const result of results) {
+      if (result.status === 'fulfilled' && result.value) {
+        console.log(`[SUPABASE IMAGE FOUND] ${result.value}`);
+        return result.value;
       }
     }
-  }
-  console.log(`[SUPABASE IMAGE LOOKUP] No match found for "${productName}" in bucket "${bucketName}".`);
-  return null;
-}
 
+    console.log(`[SUPABASE IMAGE LOOKUP] No match found for "${productName}" in primary candidates.`);
+    return null;
+
+  } catch (error) {
+    console.error(`[SUPABASE IMAGE ERROR] Failed to lookup image for ${productName}:`, error);
+    return null;
+  }
+};
+
+const generateTargetedFilenames = (productName: string): string[] => {
+  const cleanName = productName.trim();
+  const variations: string[] = [];
+
+  // Most common patterns based on the logs
+  const extensions = ['jpg', 'jpeg', 'png', 'webp'];
+  
+  // Direct matches (most likely)
+  extensions.forEach(ext => {
+    variations.push(`${cleanName}.${ext}`);
+    variations.push(`${cleanName}.${ext.toUpperCase()}`);
+  });
+
+  // Handle spacing variations
+  const noSpaces = cleanName.replace(/\s+/g, '');
+  const withHyphens = cleanName.replace(/\s+/g, '-');
+  const withUnderscores = cleanName.replace(/\s+/g, '_');
+
+  extensions.forEach(ext => {
+    variations.push(`${noSpaces}.${ext}`);
+    variations.push(`${withHyphens}.${ext}`);
+    variations.push(`${withUnderscores}.${ext}`);
+  });
+
+  // Remove duplicates and return limited set
+  return [...new Set(variations)];
+};
+
+// Clear cache periodically to prevent memory issues
+setInterval(() => {
+  if (imageUrlCache.size > 1000) {
+    imageUrlCache.clear();
+    console.log('[SUPABASE IMAGE CACHE] Cache cleared due to size limit');
+  }
+}, 300000); // Clear every 5 minutes if too large

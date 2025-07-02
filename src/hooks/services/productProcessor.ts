@@ -7,43 +7,62 @@ export const processRawProducts = async (
   data: RawProduct[], 
   startIndex: number
 ): Promise<GroupedProduct[]> => {
-  const processedProducts: Product[] = [];
+  console.log(`📦 Processing ${data.length} products with optimized image loading...`);
   
-  for (let index = 0; index < data.length; index++) {
-    const product = data[index];
-    
+  // Process products in parallel with image lookups
+  const productPromises = data.map(async (product, index) => {
     if (typeof product.Price !== 'number' || isNaN(product.Price)) {
       console.warn('[🛑 MISSING OR INVALID PRICE]', product.Title);
-      continue;
+      return null;
     }
 
     const productPrice = product.Price;
     const description = product.Description || '';
     const category = product.Category || 'Uncategorized';
 
-    // Get Supabase image
-    const storageImage = await getSupabaseProductImageUrl(product.Title || 'Unknown Product');
+    // Start image lookup immediately (will be cached/deduplicated)
+    const storageImagePromise = getSupabaseProductImageUrl(product.Title || 'Unknown Product');
+    
+    return {
+      product,
+      productPrice,
+      description,
+      category,
+      index: startIndex + index + 1,
+      storageImagePromise
+    };
+  });
 
-    let productImage: string | null = null;
-    if (storageImage) {
-      productImage = storageImage;
-    }
-
-    // Skip products without images for now, but you can remove this if you want to show all products
-    if (!productImage) {
-      console.log(`❌ Skipping ${product.Title} - no image available`);
+  // Wait for all initial processing
+  const processedData = await Promise.all(productPromises);
+  
+  // Filter out invalid products
+  const validProducts = processedData.filter(Boolean);
+  
+  // Wait for all image lookups to complete
+  const finalProducts: Product[] = [];
+  
+  for (const item of validProducts) {
+    if (!item) continue;
+    
+    const storageImage = await item.storageImagePromise;
+    
+    // Skip products without images for now
+    if (!storageImage) {
+      console.log(`❌ Skipping ${item.product.Title} - no image available`);
       continue;
     }
 
-    processedProducts.push({
-      id: startIndex + index + 1,
-      name: product.Title || 'Unknown Product',
-      price: `KES ${productPrice.toLocaleString()}`,
-      description,
-      category,
-      image: productImage
+    finalProducts.push({
+      id: item.index,
+      name: item.product.Title || 'Unknown Product',
+      price: `KES ${item.productPrice.toLocaleString()}`,
+      description: item.description,
+      category: item.category,
+      image: storageImage
     });
   }
 
-  return groupProductsByBaseName(processedProducts);
+  console.log(`✨ Successfully processed ${finalProducts.length} products with images`);
+  return groupProductsByBaseName(finalProducts);
 };
