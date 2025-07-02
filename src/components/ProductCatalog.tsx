@@ -44,7 +44,7 @@ const ProductCatalog: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
   const [showAuditReport, setShowAuditReport] = useState(false);
-  const itemsPerPage = 12; // Increased from 4 to 12 for better performance
+  const itemsPerPage = 4; // Set to 4 products per page for faster loading
 
   // Fetch dynamic categories from the database
   const { categories, loading: categoriesLoading } = useCategories();

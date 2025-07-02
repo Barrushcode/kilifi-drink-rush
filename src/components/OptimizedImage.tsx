@@ -27,16 +27,17 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   const [error, setError] = useState(false);
   const [imageSrc, setImageSrc] = useState('');
   const [retryCount, setRetryCount] = useState(0);
+  const [imageNaturalSize, setImageNaturalSize] = useState({ width: 0, height: 0 });
 
-  // Optimize image URL for better performance
+  // Optimize image URL for better performance but preserve original dimensions
   const optimizeImageUrl = (url: string): string => {
     // If it's an Unsplash image, add optimization parameters
     if (url.includes('unsplash.com')) {
       const optimizedUrl = new URL(url);
-      optimizedUrl.searchParams.set('w', '400');
       optimizedUrl.searchParams.set('q', '75');
       optimizedUrl.searchParams.set('auto', 'format');
       optimizedUrl.searchParams.set('fit', 'crop');
+      // Don't set width to maintain original proportions
       return optimizedUrl.toString();
     }
     
@@ -57,8 +58,10 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     setRetryCount(0);
   }, [src, bustCache]);
 
-  const handleImageLoad = () => {
-    console.log('✅ Image loaded successfully:', imageSrc);
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    setImageNaturalSize({ width: img.naturalWidth, height: img.naturalHeight });
+    console.log('✅ Image loaded successfully:', imageSrc, `Natural size: ${img.naturalWidth}x${img.naturalHeight}`);
     setLoading(false);
     setError(false);
     onLoad?.();
@@ -81,6 +84,10 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     }
   };
 
+  // Determine if image should use original size (when it's too zoomed out/small)
+  const shouldUseOriginalSize = imageNaturalSize.width > 0 && 
+    (imageNaturalSize.width < 300 || imageNaturalSize.height < 300);
+
   return (
     <div className={`relative overflow-hidden ${className}`}>
       {loading && (
@@ -92,7 +99,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
       <img
         src={imageSrc}
         alt={alt}
-        className={`w-full h-full object-cover transition-opacity duration-500 ${
+        className={`w-full h-full transition-opacity duration-500 ${
           loading ? 'opacity-0' : 'opacity-100'
         }`}
         onLoad={handleImageLoad}
@@ -100,8 +107,15 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
         loading={priority ? "eager" : "lazy"}
         decoding="async"
         style={{
-          objectFit: 'cover',
-          objectPosition: 'center'
+          objectFit: shouldUseOriginalSize ? 'contain' : 'cover',
+          objectPosition: 'center',
+          // Use original dimensions if image is too small to prevent over-zooming
+          ...(shouldUseOriginalSize && {
+            width: `${imageNaturalSize.width}px`,
+            height: `${imageNaturalSize.height}px`,
+            maxWidth: '100%',
+            maxHeight: '100%'
+          })
         }}
       />
       <div 
