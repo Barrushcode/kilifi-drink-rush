@@ -3,6 +3,8 @@ import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
 import { groupProductsByBaseName } from '@/utils/productGroupingUtils';
 import { Product, RawProduct, GroupedProduct } from '../types/productTypes';
 
+const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80";
+
 export const processRawProducts = async (
   data: RawProduct[], 
   startIndex: number
@@ -47,11 +49,8 @@ export const processRawProducts = async (
     
     const storageImage = await item.storageImagePromise;
     
-    // Skip products without images for now
-    if (!storageImage) {
-      console.log(`❌ Skipping ${item.product.Title} - no image available`);
-      continue;
-    }
+    // Use fallback image if no storage image is found
+    const productImage = storageImage || FALLBACK_IMAGE;
 
     finalProducts.push({
       id: item.index,
@@ -59,10 +58,10 @@ export const processRawProducts = async (
       price: `KES ${item.productPrice.toLocaleString()}`,
       description: item.description,
       category: item.category,
-      image: storageImage
+      image: productImage
     });
   }
 
-  console.log(`✨ Successfully processed ${finalProducts.length} products with images`);
+  console.log(`✨ Successfully processed ${finalProducts.length} products (${finalProducts.filter(p => p.image === FALLBACK_IMAGE).length} using fallback images)`);
   return groupProductsByBaseName(finalProducts);
 };
