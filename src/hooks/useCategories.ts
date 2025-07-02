@@ -10,7 +10,7 @@ export const useCategories = () => {
     const fetchCategories = async () => {
       try {
         const { data, error } = await supabase
-          .from('Cartegories correct price')
+          .from('Product Cartegory')
           .select('Category')
           .not('Category', 'is', null);
 
