@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import ProductCatalogHeader from './ProductCatalogHeader';
@@ -43,7 +44,7 @@ const ProductCatalog: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
   const [showAuditReport, setShowAuditReport] = useState(false);
-  const itemsPerPage = 4; // Reduced from 12 to 4 for faster loading
+  const itemsPerPage = 12; // Increased from 4 to 12 for better performance
 
   // Fetch dynamic categories from the database
   const { categories, loading: categoriesLoading } = useCategories();
