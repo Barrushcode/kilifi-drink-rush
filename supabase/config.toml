@@ -1,5 +1,1 @@
-
 project_id = "tyfsxboxshbkdetweuke"
-
-[functions.products-missing-images]
-verify_jwt = false
