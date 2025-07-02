@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -31,25 +30,16 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
   const [message, setMessage] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const isValidPhone = (value: string) => {
-    // More robust phone validation for Kenyan numbers
-    const cleanPhone = value.replace(/\s+/g, '').replace(/[-()]/g, '');
-    return /^(\+254|254|0)[17]\d{8}$/.test(cleanPhone);
-  };
+  const isValidPhone = (value: string) => 
+    /^(\+254|0)[17]\d{8}$/.test(value);
 
   const formatPhoneNumber = (phoneInput: string) => {
-    let formatted = phoneInput.trim().replace(/\s+/g, '').replace(/[-()]/g, '');
-    
-    // Handle different formats
+    let formatted = phoneInput.trim();
     if (formatted.startsWith("0")) {
       formatted = "254" + formatted.slice(1);
-    } else if (formatted.startsWith("+254")) {
+    } else if (formatted.startsWith("+")) {
       formatted = formatted.slice(1);
-    } else if (!formatted.startsWith("254")) {
-      // If it doesn't start with any expected format, assume it's missing country code
-      formatted = "254" + formatted;
     }
-    
     return formatted;
   };
 
@@ -125,13 +115,11 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
 
       if (error) {
         console.error('Failed to send order email:', error);
-        // Don't throw error - email failure shouldn't block the order
       } else {
         console.log('Order confirmation email sent successfully');
       }
     } catch (error) {
       console.error('Error sending order confirmation email:', error);
-      // Don't throw error - email failure shouldn't block the order
     }
   };
 
@@ -139,106 +127,71 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
     e.preventDefault();
     setMessage(null);
 
-    // Validate phone number
-    if (!userPhone || !isValidPhone(userPhone)) {
+    if (!isValidPhone(userPhone)) {
       toast({
         title: "Invalid Phone Number",
-        description: "Please enter a valid Kenyan phone number (07xxxxxxxx or +2547xxxxxxxx)",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // Validate amount
-    if (!amount || amount <= 0) {
-      toast({
-        title: "Invalid Amount",
-        description: "Please ensure the amount is valid",
+        description: "Please enter a valid Kenyan phone number (07... or +2547...)",
         variant: "destructive"
       });
       return;
     }
 
     setProcessing(true);
-    setMessage("Preparing M-PESA request...");
+    setMessage("Sending M-PESA request...");
 
     try {
+      // Submit order details to FormSubmit
+      await submitOrderToFormSubmit(shippingDetails, items, amount, deliveryZone);
+
       const formattedPhone = formatPhoneNumber(userPhone);
-      console.log(`🔄 Initiating STK push for ${formattedPhone}, amount: KES ${amount}`);
+      console.log(`Initiating STK push for ${formattedPhone}, amount: ${amount}`);
 
-      // First submit order details to FormSubmit (non-blocking)
-      try {
-        await submitOrderToFormSubmit(shippingDetails, items, amount, deliveryZone);
-        console.log('✅ Order submitted to FormSubmit successfully');
-      } catch (formSubmitError) {
-        console.error('⚠️ FormSubmit failed, but continuing with payment:', formSubmitError);
-        // Continue with payment even if FormSubmit fails
-      }
-
-      setMessage("Sending payment request to your phone...");
-
-      // Make the STK push request
       const response = await fetch('https://tyfsxboxshbkdetweuke.supabase.co/functions/v1/mpesa-stk-push', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${supabase.supabaseKey}`,
         },
         body: JSON.stringify({
           phone: formattedPhone,
           amount: amount,
-          name: shippingDetails?.firstName ? `${shippingDetails.firstName} ${shippingDetails.lastName}` : "Barrush Customer"
+          name: shippingDetails?.firstName ? `${shippingDetails.firstName} ${shippingDetails.lastName}` : "Customer"
         }),
       });
 
       const data = await response.json();
-      console.log('📱 STK push response:', data);
+      console.log('STK push response:', data);
 
-      if (data.ok) {
-        setMessage("✅ STK prompt sent! Check your phone and enter your M-PESA PIN.");
-        
+      if (response.ok && data.ok) {
+        setMessage("STK Prompt Sent! Please check your phone.");
         toast({
-          title: "Payment Request Sent!",
-          description: "Please check your phone and enter your M-PESA PIN to complete the payment.",
+          title: "STK Prompt Sent!",
+          description: "Please check your phone.",
           className: "bg-green-600 text-white"
         });
         
         // Generate order reference
-        const orderReference = "ORD" + Date.now().toString().slice(-6) + Math.floor(Math.random() * 100);
+        const orderReference = "ORD" + Math.floor(Math.random() * 1000000);
         
-        // Send order confirmation email (non-blocking)
-        setTimeout(() => {
-          sendOrderConfirmationEmail(orderReference);
-        }, 1000);
+        // Send order confirmation email
+        await sendOrderConfirmationEmail(orderReference);
         
-        // Call success callback
-        if (onPaymentSuccess) {
-          onPaymentSuccess();
-        }
+        if (onPaymentSuccess) onPaymentSuccess();
         
-        // Redirect after successful STK push
+        // After a delay, redirect to order placed
         setTimeout(() => {
           navigate("/order-placed");
-        }, 3000);
-        
+        }, 2000);
       } else {
-        const errorMessage = data.error || "Failed to send payment request";
-        console.error('❌ STK push failed:', errorMessage);
-        
-        setMessage(`❌ Payment request failed: ${errorMessage}`);
-        
+        setMessage("❌ Payment failed. Try again or contact support.");
         toast({
-          title: "Payment Request Failed",
-          description: errorMessage,
+          title: "Payment Error",
+          description: data.error || "Failed to send payment request. Please try again.",
           variant: "destructive"
         });
       }
     } catch (error) {
-      console.error('💥 Payment request error:', error);
-      
-      const errorMessage = error instanceof Error ? error.message : "Network error occurred";
-      setMessage(`❌ Payment failed: ${errorMessage}`);
-      
+      console.error('Payment error:', error);
+      setMessage("❌ Payment failed. Try again or contact support.");
       toast({
         title: "Payment Error",
         description: "Network error. Please check your connection and try again.",
@@ -257,66 +210,32 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
       <CardContent>
         <form onSubmit={initiateStkPush} className="space-y-5">
           <div className="space-y-2">
-            <label htmlFor="mpesa-phone" className="text-white text-sm font-semibold">
-              M-PESA Phone Number
-            </label>
+            <label htmlFor="mpesa-phone" className="text-white text-sm font-semibold">M-PESA Phone Number</label>
             <Input
               id="mpesa-phone"
               type="tel"
-              placeholder="e.g. 0712345678 or +254712345678"
+              placeholder="e.g. 0712345678"
               value={userPhone}
-              onChange={e => {
-                setUserPhone(e.target.value);
-                setMessage(null); // Clear any previous messages
-              }}
+              onChange={e => setUserPhone(e.target.value)}
               className="bg-neon-purple/40 border-neon-purple text-white placeholder:text-gray-400"
               required
-              disabled={processing}
             />
-            <p className="text-xs text-white/60">
-              Enter your Safaricom M-PESA number (07xxxxxxxx or 01xxxxxxxx)
-            </p>
           </div>
-          
           <div className="flex justify-between items-center text-white mb-2">
             <span className="text-lg">Total Amount:</span>
             <span className="text-xl font-bold text-neon-pink">KES {amount.toLocaleString()}</span>
           </div>
-          
           <Button
             type="submit"
-            disabled={processing || !userPhone || !isValidPhone(userPhone)}
-            className={`w-full bg-neon-pink hover:bg-neon-pink/90 text-white font-semibold py-6 text-lg transition-all duration-300 ${
-              processing ? 'opacity-60 cursor-not-allowed' : 'hover:scale-105'
-            }`}
+            disabled={processing || !userPhone}
+            className={`w-full bg-neon-pink hover:bg-neon-pink/90 text-white font-semibold py-6 text-lg transition-all duration-300 ${processing && 'opacity-60 cursor-not-allowed'}`}
           >
-            {processing ? (
-              <div className="flex items-center justify-center space-x-2">
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span>Processing...</span>
-              </div>
-            ) : (
-              `Pay KES ${amount.toLocaleString()} via M-PESA`
-            )}
+            {processing ? 'Sending M-PESA request...' : `Pay KES ${amount.toLocaleString()} via M-PESA`}
           </Button>
-          
-          {message && (
-            <div className={`mt-3 p-3 rounded-md text-center font-medium ${
-              message.includes('✅') || message.includes('sent') 
-                ? 'bg-green-600/20 text-green-400 border border-green-600/30' 
-                : message.includes('❌') || message.includes('failed')
-                ? 'bg-red-600/20 text-red-400 border border-red-600/30'
-                : 'bg-blue-600/20 text-blue-400 border border-blue-600/30'
-            }`}>
-              {message}
-            </div>
-          )}
-          
-          <div className="text-sm text-white/60 text-center mt-4 space-y-1">
-            <p>💡 You will receive an M-PESA prompt on your phone</p>
-            <p>🔐 Enter your M-PESA PIN to complete the payment</p>
-            <p>⏰ The prompt may take a few seconds to appear</p>
-          </div>
+          {message && <div className="mt-3 text-white text-center">{message}</div>}
+          <p className="text-sm text-white/60 text-center mt-2">
+            You will receive an M-PESA pop-up on your phone after clicking pay. Enter your PIN to complete.
+          </p>
         </form>
       </CardContent>
     </Card>

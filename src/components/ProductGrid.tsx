@@ -38,13 +38,18 @@ const ProductGrid: React.FC<ProductGridProps> = ({
         </div>
       )}
 
-      {/* Optimized grid layout for exactly 4 products per page */}
+      {/* Enhanced desktop grid layout */}
       <div className="
         grid 
-        grid-cols-2
-        lg:grid-cols-4
+        grid-cols-1
+        sm:grid-cols-2 
+        md:grid-cols-3 
+        lg:grid-cols-4 
+        xl:grid-cols-5
+        2xl:grid-cols-6
         gap-4 
         lg:gap-6
+        xl:gap-8
         max-w-full 
         mx-auto
         pb-8
