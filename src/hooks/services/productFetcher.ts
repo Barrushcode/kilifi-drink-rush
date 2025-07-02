@@ -19,7 +19,7 @@ export const fetchProductsData = async (
   const orFilters = buildOrFilters(searchTerm, selectedCategory);
 
   // Get total count from "Cartegories correct price" table
-  const countQuery = buildCountQuery(orFilters, 'Cartegories correct price');
+  const countQuery = buildCountQuery(orFilters);
   const { count } = await countQuery;
   
   if (isCancelled()) return null;
@@ -30,7 +30,7 @@ export const fetchProductsData = async (
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage - 1;
   
-  const dataQuery = buildDataQuery(orFilters, startIndex, endIndex, 'Cartegories correct price');
+  const dataQuery = buildDataQuery(orFilters, startIndex, endIndex);
   const { data, error: fetchError } = await dataQuery;
 
   if (fetchError) throw fetchError;
@@ -46,7 +46,15 @@ export const fetchProductsData = async (
     };
   }
 
-  const processedProducts = await processRawProducts(data as RawProduct[], startIndex);
+  // Transform data to match RawProduct interface
+  const transformedData: RawProduct[] = data.map(item => ({
+    Title: item.Title || null,
+    Description: item.Description || null,
+    Price: item.Price || 0,
+    Category: item.Category || null
+  }));
+
+  const processedProducts = await processRawProducts(transformedData, startIndex);
   
   if (isCancelled()) return null;
 
