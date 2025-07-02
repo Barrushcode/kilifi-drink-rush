@@ -1,11 +1,9 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { downloadRecipeAsText } from '@/utils/recipeDownloadUtils';
 import OptimizedImage from '@/components/OptimizedImage';
-
 const CocktailRecipesSection: React.FC = () => {
   const classicRecipes = [{
     name: "Old Fashioned",
@@ -50,7 +48,6 @@ const CocktailRecipesSection: React.FC = () => {
     difficulty: "Easy",
     time: "2 mins"
   }];
-
   const modernRecipes = [{
     name: "Mojito",
     image: "/lovable-uploads/d5a394f1-75bd-4021-b1ee-89deaea33ab6.png",
@@ -94,23 +91,17 @@ const CocktailRecipesSection: React.FC = () => {
     difficulty: "Easy",
     time: "3 mins"
   }];
-
   const handleDownload = (recipe: any) => {
     downloadRecipeAsText(recipe);
   };
-
-  const RecipeGrid = ({ recipes }: { recipes: typeof classicRecipes }) => (
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-      {recipes.map((recipe, index) => (
-        <Card key={index} className="bg-glass-effect border-barrush-steel/30 border hover:border-neon-pink/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden">
+  const RecipeGrid = ({
+    recipes
+  }: {
+    recipes: typeof classicRecipes;
+  }) => <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+      {recipes.map((recipe, index) => <Card key={index} className="bg-glass-effect border-barrush-steel/30 border hover:border-neon-pink/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden">
           <div className="h-64 relative overflow-hidden bg-barrush-midnight">
-            <OptimizedImage
-              src={recipe.image}
-              alt={`${recipe.name} cocktail`}
-              className="w-full h-full"
-              fallbackSrc="https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
-              priority={index < 3}
-            />
+            <OptimizedImage src={recipe.image} alt={`${recipe.name} cocktail`} className="w-full h-full" fallbackSrc="https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" priority={index < 3} />
             <div className="absolute top-4 right-4 flex gap-2">
               <span className="bg-barrush-midnight/80 text-barrush-platinum text-xs px-2 py-1 rounded-full backdrop-blur-sm">
                 {recipe.difficulty}
@@ -130,28 +121,19 @@ const CocktailRecipesSection: React.FC = () => {
             <div className="mb-6">
               <h4 className="font-semibold mb-3 text-neon-pink font-iphone">Ingredients:</h4>
               <ul className="text-barrush-platinum/70 space-y-1 text-sm">
-                {recipe.ingredients.map((ingredient, idx) => (
-                  <li key={idx} className="flex items-start">
+                {recipe.ingredients.map((ingredient, idx) => <li key={idx} className="flex items-start">
                     <span className="w-1 h-1 bg-neon-pink rounded-full mr-3 mt-2 flex-shrink-0"></span>
                     <span>{ingredient}</span>
-                  </li>
-                ))}
+                  </li>)}
               </ul>
             </div>
-            <Button 
-              onClick={() => handleDownload(recipe)}
-              className="w-full bg-neon-pink hover:bg-neon-pink-light text-white font-semibold py-3 transition-all duration-300 font-iphone"
-            >
+            <Button onClick={() => handleDownload(recipe)} className="w-full bg-neon-pink hover:bg-neon-pink-light text-white font-semibold py-3 transition-all duration-300 font-iphone">
               Download Recipe
             </Button>
           </CardContent>
-        </Card>
-      ))}
-    </div>
-  );
-
-  return (
-    <section className="py-20 bg-gradient-to-b from-barrush-slate to-barrush-midnight relative min-h-screen">
+        </Card>)}
+    </div>;
+  return <section className="py-20 bg-gradient-to-b from-barrush-slate to-barrush-midnight relative min-h-screen">
       <div className="container mx-auto px-6 relative z-10">
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 font-serif text-barrush-platinum">
@@ -166,16 +148,10 @@ const CocktailRecipesSection: React.FC = () => {
         
         <Tabs defaultValue="classic" className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-12 bg-glass-effect border border-barrush-steel/30 max-w-md mx-auto">
-            <TabsTrigger 
-              value="classic" 
-              className="text-base font-semibold bg-transparent text-barrush-platinum data-[state=active]:bg-neon-pink data-[state=active]:text-white font-iphone transition-all duration-300"
-            >
+            <TabsTrigger value="classic" className="text-base font-semibold bg-transparent text-barrush-platinum data-[state=active]:bg-neon-pink data-[state=active]:text-white font-iphone transition-all duration-300">
               Classic Cocktails
             </TabsTrigger>
-            <TabsTrigger 
-              value="modern" 
-              className="text-base font-semibold bg-transparent text-barrush-platinum data-[state=active]:bg-neon-pink data-[state=active]:text-white font-iphone transition-all duration-300"
-            >
+            <TabsTrigger value="modern" className="text-base font-semibold bg-transparent text-barrush-platinum data-[state=active]:bg-neon-pink data-[state=active]:text-white font-iphone transition-all duration-300">
               Modern Favorites
             </TabsTrigger>
           </TabsList>
@@ -195,14 +171,12 @@ const CocktailRecipesSection: React.FC = () => {
               🍸 Share Your Craft
             </h3>
             <p className="text-barrush-platinum/80 text-lg leading-relaxed font-iphone">
-              Tag <span className="font-bold text-neon-pink">@BarrushDelivery</span> 
+              Tag <span className="font-bold text-neon-pink">@barrushke</span> 
               {" "}and showcase your cocktail mastery using our premium spirits.
             </p>
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default CocktailRecipesSection;
