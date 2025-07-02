@@ -31,8 +31,8 @@ export const useProducts = () => {
 
     while (hasMore) {
       const { data, error } = await supabase
-        .from('allthealcoholicproducts')
-        .select('Title, Description, Price, "Product image URL"')
+        .from('Product Cartegory')
+        .select('Title, Description, Price, Category')
         .order('Title', { ascending: true })
         .range(offset, offset + batchSize - 1);
 
@@ -94,10 +94,7 @@ export const useProducts = () => {
           const storageImage = await getSupabaseProductImageUrl(product.Title || 'Unknown Product');
           if (storageImage) {
             productImage = storageImage;
-          } else if (product["Product image URL"] && typeof product["Product image URL"] === "string" && product["Product image URL"].trim().length > 0) {
-            // Second: Use database URL
-            productImage = product["Product image URL"];
-          }
+           }
 
           // Skip products without any image
           if (!productImage) {
@@ -105,11 +102,11 @@ export const useProducts = () => {
             return null;
           }
 
-          let category = getCategoryFromName(product.Title || 'Unknown Product', productPrice);
+           let category = product.Category || getCategoryFromName(product.Title || 'Unknown Product', productPrice);
 
-          if (description.toLowerCase().includes('beer')) {
-            category = 'Beer';
-          }
+           if (description.toLowerCase().includes('beer')) {
+             category = 'Beer';
+           }
 
           return {
             id: globalIndex + 1,

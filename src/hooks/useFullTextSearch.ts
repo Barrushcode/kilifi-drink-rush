@@ -59,8 +59,8 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
         console.log('🔍 Full-text search for:', trimmedSearch);
 
         // Perform full-text search across Title and Description using the new table
-        const { data, error } = await supabase
-          .from('Cartegories correct price')
+      const { data, error } = await supabase
+        .from('Product Cartegory')
           .select('Title, Description, Price, Category')
           .or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`)
           .not('Price', 'is', null)
