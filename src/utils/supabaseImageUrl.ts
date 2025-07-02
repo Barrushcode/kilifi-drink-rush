@@ -34,28 +34,21 @@ export const getSupabaseProductImageUrl = async (productName: string): Promise<s
 const performImageLookup = async (productName: string): Promise<string | null> => {
   if (!productName) return null;
 
-  console.log(`[SUPABASE IMAGE LOOKUP] Starting optimized lookup for: ${productName}`);
+  console.log(`[SUPABASE IMAGE LOOKUP] Starting fast lookup for: ${productName}`);
 
-  // Generate fewer, more targeted filename variations
-  const baseVariations = generateTargetedFilenames(productName);
-  
-  // Try the most likely candidates first (limit to top 5)
-  const primaryCandidates = baseVariations.slice(0, 5);
+  // Generate targeted filename variations for faster matching
+  const variations = generateFastFilenames(productName);
   
   try {
-    // Use Promise.allSettled for parallel requests instead of sequential
+    // Use Promise.allSettled for parallel requests with limited candidates
     const results = await Promise.allSettled(
-      primaryCandidates.map(async (filename) => {
+      variations.map(async (filename) => {
         const { data } = await supabase.storage
           .from('pictures')
-          .createSignedUrl(filename, 60);
+          .createSignedUrl(filename, 3600); // 1 hour cache
         
         if (data?.signedUrl) {
-          // Verify the URL is accessible
-          const response = await fetch(data.signedUrl, { method: 'HEAD' });
-          if (response.ok) {
-            return data.signedUrl;
-          }
+          return data.signedUrl;
         }
         return null;
       })
@@ -69,7 +62,7 @@ const performImageLookup = async (productName: string): Promise<string | null> =
       }
     }
 
-    console.log(`[SUPABASE IMAGE LOOKUP] No match found for "${productName}" in primary candidates.`);
+    console.log(`[SUPABASE IMAGE LOOKUP] No match found for "${productName}"`);
     return null;
 
   } catch (error) {
@@ -78,38 +71,39 @@ const performImageLookup = async (productName: string): Promise<string | null> =
   }
 };
 
-const generateTargetedFilenames = (productName: string): string[] => {
+const generateFastFilenames = (productName: string): string[] => {
   const cleanName = productName.trim();
   const variations: string[] = [];
 
-  // Most common patterns based on the logs
+  // Most common patterns for fast matching
   const extensions = ['jpg', 'jpeg', 'png', 'webp'];
   
-  // Direct matches (most likely)
+  // Direct matches (most likely to succeed)
   extensions.forEach(ext => {
     variations.push(`${cleanName}.${ext}`);
-    variations.push(`${cleanName}.${ext.toUpperCase()}`);
   });
 
-  // Handle spacing variations
+  // Common variations
   const noSpaces = cleanName.replace(/\s+/g, '');
   const withHyphens = cleanName.replace(/\s+/g, '-');
   const withUnderscores = cleanName.replace(/\s+/g, '_');
+  const lowercase = cleanName.toLowerCase();
 
   extensions.forEach(ext => {
     variations.push(`${noSpaces}.${ext}`);
     variations.push(`${withHyphens}.${ext}`);
     variations.push(`${withUnderscores}.${ext}`);
+    variations.push(`${lowercase}.${ext}`);
   });
 
-  // Remove duplicates and return limited set
-  return [...new Set(variations)];
+  // Return limited set for speed (first 12 most likely matches)
+  return [...new Set(variations)].slice(0, 12);
 };
 
 // Clear cache periodically to prevent memory issues
 setInterval(() => {
-  if (imageUrlCache.size > 1000) {
+  if (imageUrlCache.size > 500) {
     imageUrlCache.clear();
-    console.log('[SUPABASE IMAGE CACHE] Cache cleared due to size limit');
+    console.log('[SUPABASE IMAGE CACHE] Cache cleared for memory optimization');
   }
-}, 300000); // Clear every 5 minutes if too large
+}, 180000); // Clear every 3 minutes if too large

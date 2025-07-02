@@ -18,8 +18,8 @@ export const fetchProductsData = async (
 
   const orFilters = buildOrFilters(searchTerm, selectedCategory);
 
-  // Get total count
-  const countQuery = buildCountQuery(orFilters);
+  // Get total count from "Cartegories correct price" table
+  const countQuery = buildCountQuery(orFilters, 'Cartegories correct price');
   const { count } = await countQuery;
   
   if (isCancelled()) return null;
@@ -30,7 +30,7 @@ export const fetchProductsData = async (
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage - 1;
   
-  const dataQuery = buildDataQuery(orFilters, startIndex, endIndex);
+  const dataQuery = buildDataQuery(orFilters, startIndex, endIndex, 'Cartegories correct price');
   const { data, error: fetchError } = await dataQuery;
 
   if (fetchError) throw fetchError;

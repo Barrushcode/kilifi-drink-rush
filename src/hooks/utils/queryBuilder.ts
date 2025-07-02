@@ -1,29 +1,31 @@
 
 import { supabase } from '@/integrations/supabase/client';
 
-export const buildOrFilters = (searchTerm: string, selectedCategory: string): string[] => {
-  const orFilters: string[] = [];
-  
-  if (selectedCategory !== 'All') {
-    orFilters.push(`Category.ilike.%${selectedCategory}%`);
-  }
+export const buildOrFilters = (searchTerm: string, selectedCategory: string) => {
+  const filters = [];
   
   if (searchTerm && searchTerm.trim()) {
-    const trimmedSearch = searchTerm.trim();
-    orFilters.push(`Title.ilike.%${trimmedSearch}%`);
-    orFilters.push(`Description.ilike.%${trimmedSearch}%`);
+    const term = searchTerm.trim();
+    filters.push(
+      `Title.ilike.%${term}%`,
+      `Description.ilike.%${term}%`,
+      `Category.ilike.%${term}%`
+    );
   }
-
-  return orFilters;
+  
+  if (selectedCategory && selectedCategory !== 'All') {
+    filters.push(`Category.ilike.%${selectedCategory}%`);
+  }
+  
+  return filters;
 };
 
-export const buildCountQuery = (orFilters: string[]) => {
+export const buildCountQuery = (orFilters: string[], tableName: string = 'Cartegories correct price') => {
   let query = supabase
-    .from('Cartegories correct price')
+    .from(tableName)
     .select('*', { count: 'exact', head: true })
-    .filter('Price', 'not.is', null)
-    .filter('Price', 'gte', 100)
-    .filter('Price', 'lte', 500000);
+    .not('Price', 'is', null)
+    .gt('Price', 0);
 
   if (orFilters.length > 0) {
     query = query.or(orFilters.join(','));
@@ -32,17 +34,18 @@ export const buildCountQuery = (orFilters: string[]) => {
   return query;
 };
 
-export const buildDataQuery = (orFilters: string[], startIndex: number, endIndex: number) => {
+export const buildDataQuery = (orFilters: string[], startIndex: number, endIndex: number, tableName: string = 'Cartegories correct price') => {
   let query = supabase
-    .from('Cartegories correct price')
+    .from(tableName)
     .select('Title, Description, Price, Category')
-    .filter('Price', 'not.is', null)
-    .filter('Price', 'gte', 100)
-    .filter('Price', 'lte', 500000);
+    .not('Price', 'is', null)
+    .gt('Price', 0)
+    .order('Title', { ascending: true })
+    .range(startIndex, endIndex);
 
   if (orFilters.length > 0) {
     query = query.or(orFilters.join(','));
   }
 
-  return query.order('Title', { ascending: true }).range(startIndex, endIndex);
+  return query;
 };
