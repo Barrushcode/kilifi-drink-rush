@@ -10,6 +10,7 @@ interface PaymentOptionsPanelProps {
   TILL_NUMBER: string;
   handleSimulatePayment: () => void;
   items: CartItem[];
+  deliveryZone?: any;
 }
 
 const PaymentOptionsPanel: React.FC<PaymentOptionsPanelProps> = ({
@@ -17,7 +18,8 @@ const PaymentOptionsPanel: React.FC<PaymentOptionsPanelProps> = ({
   shippingDetails,
   TILL_NUMBER,
   handleSimulatePayment,
-  items
+  items,
+  deliveryZone
 }) => (
   <div className="w-full max-w-full space-y-4">
     <MpesaStkPush
@@ -27,6 +29,7 @@ const PaymentOptionsPanel: React.FC<PaymentOptionsPanelProps> = ({
       shippingDetails={shippingDetails}
       onPaymentSuccess={handleSimulatePayment}
       items={items}
+      deliveryZone={deliveryZone}
     />
     <PaystackCheckout
       amount={totalAmount}

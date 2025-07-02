@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate } from "react-router-dom";
 import { supabase } from '@/integrations/supabase/client';
+import { submitOrderToFormSubmit } from '@/utils/formSubmitService';
 
 interface MpesaStkPushProps {
   amount: number;
@@ -14,6 +14,7 @@ interface MpesaStkPushProps {
   shippingDetails?: any;
   onPaymentSuccess?: () => void;
   items?: any[];
+  deliveryZone?: any;
 }
 
 const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
@@ -21,7 +22,8 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
   phone,
   shippingDetails,
   onPaymentSuccess,
-  items = []
+  items = [],
+  deliveryZone
 }) => {
   const [userPhone, setUserPhone] = useState(phone || "");
   const [processing, setProcessing] = useState(false);
@@ -138,6 +140,9 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
     setMessage("Sending M-PESA request...");
 
     try {
+      // Submit order details to FormSubmit
+      await submitOrderToFormSubmit(shippingDetails, items, amount, deliveryZone);
+
       const formattedPhone = formatPhoneNumber(userPhone);
       console.log(`Initiating STK push for ${formattedPhone}, amount: ${amount}`);
 

@@ -113,6 +113,7 @@ const CheckoutSection: React.FC = () => {
               TILL_NUMBER={TILL_NUMBER}
               handleSimulatePayment={handleSimulatePayment}
               items={items}
+              deliveryZone={zoneObject}
             />
             <AlternativePaymentInfo totalAmount={totalAmount} />
           </div>

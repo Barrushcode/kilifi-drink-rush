@@ -4,7 +4,6 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 
 interface ShippingDetails {
   firstName: string;
@@ -51,16 +50,7 @@ const ShippingInfoForm: React.FC<ShippingInfoFormProps> = ({
         <CardTitle className="text-neon-pink text-zinc-50">Shipping Information</CardTitle>
       </CardHeader>
       <CardContent>
-        <form action="https://formsubmit.co/barrushdelivery@gmail.com" method="POST" className="space-y-4">
-          {/* FormSubmit configuration */}
-          <input type="hidden" name="_captcha" value="false" />
-          <input type="hidden" name="_next" value="https://lovable.page/thank-you" />
-          <input type="hidden" name="_subject" value="New Checkout Form Submission - Barrush Delivery" />
-          <input type="hidden" name="_template" value="table" />
-          
-          {/* Add cart items as hidden fields */}
-          <input type="hidden" name="orderSummary" value="Checkout form submission" />
-          
+        <div className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="firstName" className="text-white">First Name *</Label>
@@ -190,9 +180,6 @@ const ShippingInfoForm: React.FC<ShippingInfoFormProps> = ({
                 </option>
               ))}
             </select>
-            {/* Hidden inputs to capture delivery zone details */}
-            <input type="hidden" name="deliveryZoneName" value={selectedZoneObj?.name || ''} />
-            <input type="hidden" name="deliveryZoneFee" value={selectedZoneObj?.fee || 0} />
           </div>
 
           <div className="space-y-2">
@@ -206,14 +193,7 @@ const ShippingInfoForm: React.FC<ShippingInfoFormProps> = ({
               className="bg-neon-purple/40 border-neon-purple text-white placeholder:text-gray-400 min-h-[80px] w-full" 
             />
           </div>
-
-          <Button 
-            type="submit" 
-            className="w-full bg-neon-pink hover:bg-neon-pink/90 text-white font-semibold py-3 text-lg"
-          >
-            Submit Order Details
-          </Button>
-        </form>
+        </div>
       </CardContent>
     </Card>
   );
