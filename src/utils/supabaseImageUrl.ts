@@ -2,69 +2,79 @@
 import { supabase } from "@/integrations/supabase/client";
 
 /**
- * Try multiple variants for a product name to improve storage image matching.
- * Now also includes the exact original (untrimmed) input for cases with extra spaces.
+ * Generate optimized name variants for faster image matching
  */
 function* generateNameVariants(productName: string) {
   const base = productName.trim();
-  const original = productName; // Untrimmed, may have trailing/leading spaces
-
-  // Variants with trimmed name
-  const transformed = [
-    base,
-    base.toUpperCase(),
-    base.toLowerCase(),
-    base.replace(/\s+/g, ""),
-    base.replace(/\s+/g, "-"),
-    base.replace(/\s+/g, "_"),
-    base.replace(/[^a-zA-Z0-9]/g, ""), // Remove non-alphanumeric
+  
+  // Only check the most likely variants to speed up lookup
+  const variants = [
+    base,                           // Exact match
+    base.toUpperCase(),            // UPPERCASE
+    base.replace(/\s+/g, " "),     // Normalized spaces
+    base.replace(/\s+/g, "_"),     // Underscore
+    base.replace(/\s+/g, "-"),     // Hyphen
   ];
 
-  // If the original is different from base (thus has extra spaces etc), include it as a variant as well
-  if (original !== base) {
-    transformed.push(original);
-    transformed.push(original.replace(/\s+/g, "-"));
-    transformed.push(original.replace(/\s+/g, "_"));
-    transformed.push(original.replace(/[^a-zA-Z0-9]/g, ""));
-  }
-
-  // Deduplicate
-  const set = new Set(transformed);
+  // Deduplicate and yield
+  const set = new Set(variants);
   for (const v of set) yield v;
 }
 
+// Cache for image URLs to avoid repeated lookups
+const imageCache = new Map<string, string | null>();
+
 /**
  * Gets a public URL for a given product image in Supabase storage (bucket "pictures").
- * Tries a wide range of file name/extension variations and logs each step.
+ * Now optimized with caching and fewer variants for faster loading.
  */
 export async function getSupabaseProductImageUrl(productName: string): Promise<string | null> {
+  // Check cache first
+  if (imageCache.has(productName)) {
+    return imageCache.get(productName) || null;
+  }
+
   const bucketName = "pictures";
-  const extensions = [
-    ".jpg", ".jpeg", ".png", ".webp",
-    ".JPG", ".JPEG", ".PNG", ".WEBP"
-  ];
+  // Reduced extensions for faster lookup
+  const extensions = [".jpg", ".jpeg", ".png", ".webp"];
+  
   for (const nameVariant of generateNameVariants(productName)) {
     for (const ext of extensions) {
       const filePath = `${nameVariant}${ext}`;
-      // Log what is being checked for debug purposes
-      console.log(`[SUPABASE IMAGE LOOKUP] Trying file:`, filePath);
-      const { data } = supabase.storage.from(bucketName).getPublicUrl(filePath);
-      if (data && data.publicUrl) {
-        try {
-          // HEAD request to confirm file actually exists at public URL
-          const response = await fetch(data.publicUrl, { method: "HEAD" });
+      
+      try {
+        const { data } = supabase.storage.from(bucketName).getPublicUrl(filePath);
+        if (data && data.publicUrl) {
+          // Quick HEAD request to confirm file exists
+          const response = await fetch(data.publicUrl, { 
+            method: "HEAD",
+            signal: AbortSignal.timeout(2000) // 2 second timeout
+          });
+          
           if (response.ok) {
             console.log(`[SUPABASE IMAGE FOUND]`, data.publicUrl);
+            // Cache the result
+            imageCache.set(productName, data.publicUrl);
             return data.publicUrl;
           }
-        } catch (err) {
-          // Log error for debugging
-          console.warn(`[SUPABASE IMAGE ERROR] Error fetching HEAD for:`, data.publicUrl, err);
         }
+      } catch (err) {
+        // Continue to next variant on error
+        continue;
       }
     }
   }
-  console.log(`[SUPABASE IMAGE LOOKUP] No match found for "${productName}" in bucket "${bucketName}".`);
+  
+  console.log(`[SUPABASE IMAGE LOOKUP] No match found for "${productName}"`);
+  // Cache the null result to avoid future lookups
+  imageCache.set(productName, null);
   return null;
 }
 
+// Clear cache periodically to prevent memory issues
+setInterval(() => {
+  if (imageCache.size > 1000) {
+    imageCache.clear();
+    console.log('[SUPABASE IMAGE CACHE] Cache cleared');
+  }
+}, 300000); // Clear every 5 minutes if cache gets too large
