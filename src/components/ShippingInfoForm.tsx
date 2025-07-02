@@ -51,12 +51,15 @@ const ShippingInfoForm: React.FC<ShippingInfoFormProps> = ({
         <CardTitle className="text-neon-pink text-zinc-50">Shipping Information</CardTitle>
       </CardHeader>
       <CardContent>
-        <form action="https://formsubmit.co/barrushdelivery@gmail.com" method="POST" className="space-y-4">
+        <form action="https://formsubmit.co/barryshdelivery@gmail.com" method="POST" className="space-y-4">
           {/* FormSubmit configuration */}
           <input type="hidden" name="_captcha" value="false" />
           <input type="hidden" name="_next" value="https://lovable.page/thank-you" />
           <input type="hidden" name="_subject" value="New Checkout Form Submission - Barrush Delivery" />
           <input type="hidden" name="_template" value="table" />
+          
+          {/* Add cart items as hidden fields */}
+          <input type="hidden" name="orderSummary" value="Checkout form submission" />
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
