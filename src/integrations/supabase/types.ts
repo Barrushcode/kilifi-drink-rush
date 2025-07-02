@@ -9,6 +9,150 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      allthealcoholicproducts: {
+        Row: {
+          "Charge tax": string | null
+          "Compare-at price": string | null
+          "Compare-at price / International": string | null
+          "Compare-at price / International_1": string | null
+          "Compare-at price_1": string | null
+          "Continue selling when out of stock": string | null
+          "Cost per item": string | null
+          Description: string
+          "Fulfillment service": string | null
+          "Gift card": string | null
+          "Google Shopping / AdWords Grouping": string | null
+          "Google Shopping / AdWords labels": string | null
+          "Google Shopping / Age group": string | null
+          "Google Shopping / Condition": string | null
+          "Google Shopping / Custom label 0": string | null
+          "Google Shopping / Custom label 1": string | null
+          "Google Shopping / Custom label 2": string | null
+          "Google Shopping / Custom label 3": string | null
+          "Google Shopping / Custom label 4": string | null
+          "Google Shopping / Custom product": string | null
+          "Google Shopping / Gender": string | null
+          "Google Shopping / Google product category": string | null
+          "Google Shopping / MPN": string | null
+          "Image alt text": string | null
+          "Image position": string | null
+          "Inventory quantity": string | null
+          "Inventory tracker": string | null
+          Price: number
+          "Product image URL": string | null
+          "Requires shipping": string | null
+          "SEO description": string | null
+          "SEO title": string | null
+          "Tax code": string | null
+          Title: string
+          "Variant image URL": string | null
+          "Weight unit for display": string | null
+          "Weight value (grams)": string | null
+        }
+        Insert: {
+          "Charge tax"?: string | null
+          "Compare-at price"?: string | null
+          "Compare-at price / International"?: string | null
+          "Compare-at price / International_1"?: string | null
+          "Compare-at price_1"?: string | null
+          "Continue selling when out of stock"?: string | null
+          "Cost per item"?: string | null
+          Description: string
+          "Fulfillment service"?: string | null
+          "Gift card"?: string | null
+          "Google Shopping / AdWords Grouping"?: string | null
+          "Google Shopping / AdWords labels"?: string | null
+          "Google Shopping / Age group"?: string | null
+          "Google Shopping / Condition"?: string | null
+          "Google Shopping / Custom label 0"?: string | null
+          "Google Shopping / Custom label 1"?: string | null
+          "Google Shopping / Custom label 2"?: string | null
+          "Google Shopping / Custom label 3"?: string | null
+          "Google Shopping / Custom label 4"?: string | null
+          "Google Shopping / Custom product"?: string | null
+          "Google Shopping / Gender"?: string | null
+          "Google Shopping / Google product category"?: string | null
+          "Google Shopping / MPN"?: string | null
+          "Image alt text"?: string | null
+          "Image position"?: string | null
+          "Inventory quantity"?: string | null
+          "Inventory tracker"?: string | null
+          Price?: number
+          "Product image URL"?: string | null
+          "Requires shipping"?: string | null
+          "SEO description"?: string | null
+          "SEO title"?: string | null
+          "Tax code"?: string | null
+          Title: string
+          "Variant image URL"?: string | null
+          "Weight unit for display"?: string | null
+          "Weight value (grams)"?: string | null
+        }
+        Update: {
+          "Charge tax"?: string | null
+          "Compare-at price"?: string | null
+          "Compare-at price / International"?: string | null
+          "Compare-at price / International_1"?: string | null
+          "Compare-at price_1"?: string | null
+          "Continue selling when out of stock"?: string | null
+          "Cost per item"?: string | null
+          Description?: string
+          "Fulfillment service"?: string | null
+          "Gift card"?: string | null
+          "Google Shopping / AdWords Grouping"?: string | null
+          "Google Shopping / AdWords labels"?: string | null
+          "Google Shopping / Age group"?: string | null
+          "Google Shopping / Condition"?: string | null
+          "Google Shopping / Custom label 0"?: string | null
+          "Google Shopping / Custom label 1"?: string | null
+          "Google Shopping / Custom label 2"?: string | null
+          "Google Shopping / Custom label 3"?: string | null
+          "Google Shopping / Custom label 4"?: string | null
+          "Google Shopping / Custom product"?: string | null
+          "Google Shopping / Gender"?: string | null
+          "Google Shopping / Google product category"?: string | null
+          "Google Shopping / MPN"?: string | null
+          "Image alt text"?: string | null
+          "Image position"?: string | null
+          "Inventory quantity"?: string | null
+          "Inventory tracker"?: string | null
+          Price?: number
+          "Product image URL"?: string | null
+          "Requires shipping"?: string | null
+          "SEO description"?: string | null
+          "SEO title"?: string | null
+          "Tax code"?: string | null
+          Title?: string
+          "Variant image URL"?: string | null
+          "Weight unit for display"?: string | null
+          "Weight value (grams)"?: string | null
+        }
+        Relationships: []
+      }
+      "Cartegories correct price": {
+        Row: {
+          Category: string | null
+          Description: string | null
+          id: number
+          Price: number | null
+          Title: string
+        }
+        Insert: {
+          Category?: string | null
+          Description?: string | null
+          id?: number
+          Price?: number | null
+          Title: string
+        }
+        Update: {
+          Category?: string | null
+          Description?: string | null
+          id?: number
+          Price?: number | null
+          Title?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           building: string | null
@@ -66,30 +210,6 @@ export type Database = {
           street?: string | null
           subtotal?: number
           total_amount?: number
-        }
-        Relationships: []
-      }
-      "Product Cartegory": {
-        Row: {
-          Category: string | null
-          Description: string | null
-          id: number
-          Price: number | null
-          Title: string
-        }
-        Insert: {
-          Category?: string | null
-          Description?: string | null
-          id?: number
-          Price?: number | null
-          Title: string
-        }
-        Update: {
-          Category?: string | null
-          Description?: string | null
-          id?: number
-          Price?: number | null
-          Title?: string
         }
         Relationships: []
       }

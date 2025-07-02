@@ -19,7 +19,7 @@ export const buildOrFilters = (searchTerm: string, selectedCategory: string): st
 
 export const buildCountQuery = (orFilters: string[]) => {
   let query = supabase
-    .from('Product Cartegory')
+    .from('Cartegories correct price')
     .select('*', { count: 'exact', head: true })
     .filter('Price', 'not.is', null)
     .filter('Price', 'gte', 100)
@@ -34,7 +34,7 @@ export const buildCountQuery = (orFilters: string[]) => {
 
 export const buildDataQuery = (orFilters: string[], startIndex: number, endIndex: number) => {
   let query = supabase
-    .from('Product Cartegory')
+    .from('Cartegories correct price')
     .select('Title, Description, Price, Category')
     .filter('Price', 'not.is', null)
     .filter('Price', 'gte', 100)

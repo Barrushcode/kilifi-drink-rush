@@ -31,8 +31,8 @@ export const useProducts = () => {
 
     while (hasMore) {
       const { data, error } = await supabase
-        .from('Product Cartegory')
-        .select('Title, Description, Price')
+        .from('allthealcoholicproducts')
+        .select('Title, Description, Price, "Product image URL"')
         .order('Title', { ascending: true })
         .range(offset, offset + batchSize - 1);
 
@@ -90,10 +90,13 @@ export const useProducts = () => {
           // Optimized image logic: Check storage first, fallback to database URL
           let productImage: string | null = null;
           
-          // Try storage bucket (with caching consideration)
+          // First: Try storage bucket (with caching consideration)
           const storageImage = await getSupabaseProductImageUrl(product.Title || 'Unknown Product');
           if (storageImage) {
             productImage = storageImage;
+          } else if (product["Product image URL"] && typeof product["Product image URL"] === "string" && product["Product image URL"].trim().length > 0) {
+            // Second: Use database URL
+            productImage = product["Product image URL"];
           }
 
           // Skip products without any image
