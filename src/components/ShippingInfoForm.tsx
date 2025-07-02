@@ -4,7 +4,6 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 
 interface ShippingDetails {
@@ -53,9 +52,11 @@ const ShippingInfoForm: React.FC<ShippingInfoFormProps> = ({
       </CardHeader>
       <CardContent>
         <form action="https://formsubmit.co/barrushdelivery@gmail.com" method="POST" className="space-y-4">
-          {/* FormSubmit hidden fields */}
+          {/* FormSubmit configuration */}
           <input type="hidden" name="_captcha" value="false" />
           <input type="hidden" name="_next" value="https://lovable.page/thank-you" />
+          <input type="hidden" name="_subject" value="New Checkout Form Submission - Barrush Delivery" />
+          <input type="hidden" name="_template" value="table" />
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -186,7 +187,7 @@ const ShippingInfoForm: React.FC<ShippingInfoFormProps> = ({
                 </option>
               ))}
             </select>
-            {/* Hidden input to capture the zone name for email */}
+            {/* Hidden inputs to capture delivery zone details */}
             <input type="hidden" name="deliveryZoneName" value={selectedZoneObj?.name || ''} />
             <input type="hidden" name="deliveryZoneFee" value={selectedZoneObj?.fee || 0} />
           </div>
