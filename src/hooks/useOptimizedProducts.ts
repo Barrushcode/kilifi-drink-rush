@@ -18,21 +18,12 @@ export const useOptimizedProducts = (params: UseOptimizedProductsParams): UseOpt
       try {
         setLoading(true);
         setError(null);
-        
-        // Clear products immediately to show loading state
-        setProducts([]);
-
-        console.log('🚀 Starting optimized product fetch...');
-        const startTime = Date.now();
 
         const result = await fetchProductsData(params, () => isCancelled);
         
         if (result && !isCancelled) {
           setProducts(result.products);
           setTotalCount(result.totalCount);
-          
-          const endTime = Date.now();
-          console.log(`⚡ Products loaded in ${endTime - startTime}ms`);
         }
 
       } catch (error) {

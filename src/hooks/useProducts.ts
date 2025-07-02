@@ -31,10 +31,8 @@ export const useProducts = () => {
 
     while (hasMore) {
       const { data, error } = await supabase
-        .from('Cartegories correct price')
-        .select('Title, Description, Price, Category')
-        .not('Price', 'is', null)
-        .gt('Price', 0)
+        .from('allthealcoholicproducts')
+        .select('Title, Description, Price, "Product image URL"')
         .order('Title', { ascending: true })
         .range(offset, offset + batchSize - 1);
 
@@ -61,17 +59,18 @@ export const useProducts = () => {
     try {
       setLoading(true);
       setError(null);
-      console.log('🚀 Starting to fetch products from "Cartegories correct price" table...');
+      console.log('🚀 Starting to fetch products...');
       
       const allProductsData = await fetchAllProducts();
       const transformedProducts: Product[] = [];
       
-      // Optimized batch processing for faster loading
-      const batchSize = 25; // Smaller batches for faster UI updates
+      // Optimized batch processing - smaller batches for better UX
+      const batchSize = 50; // Reduced from 100
       for (let i = 0; i < allProductsData.length; i += batchSize) {
         const batch = allProductsData.slice(i, i + batchSize);
         console.log(`📦 Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(allProductsData.length / batchSize)}`);
         
+        // Process batch with optimized image checking
         const batchPromises = batch.map(async (product, batchIndex) => {
           const globalIndex = i + batchIndex;
           
@@ -81,14 +80,36 @@ export const useProducts = () => {
           }
 
           const productPrice = product.Price;
-          const description = product.Description || '';
-          const category = product.Category || getCategoryFromName(product.Title || 'Unknown Product', productPrice);
 
-          // Fast image lookup from storage bucket
-          const storageImage = await getSupabaseProductImageUrl(product.Title || 'Unknown Product');
+          if (productPrice < 100 || productPrice > 500000) {
+            console.warn('[⚠️ OUT-OF-BOUNDS PRICE]', product.Title, 'Price:', productPrice);
+          }
+
+          const description = product.Description || '';
           
-          // Use fallback if no storage image found
-          const productImage = storageImage || "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80";
+          // Optimized image logic: Check storage first, fallback to database URL
+          let productImage: string | null = null;
+          
+          // First: Try storage bucket (with caching consideration)
+          const storageImage = await getSupabaseProductImageUrl(product.Title || 'Unknown Product');
+          if (storageImage) {
+            productImage = storageImage;
+          } else if (product["Product image URL"] && typeof product["Product image URL"] === "string" && product["Product image URL"].trim().length > 0) {
+            // Second: Use database URL
+            productImage = product["Product image URL"];
+          }
+
+          // Skip products without any image
+          if (!productImage) {
+            console.log(`❌ Skipping ${product.Title} - no image available`);
+            return null;
+          }
+
+          let category = getCategoryFromName(product.Title || 'Unknown Product', productPrice);
+
+          if (description.toLowerCase().includes('beer')) {
+            category = 'Beer';
+          }
 
           return {
             id: globalIndex + 1,
@@ -103,16 +124,17 @@ export const useProducts = () => {
         const batchResults = await Promise.all(batchPromises);
         transformedProducts.push(...batchResults.filter(Boolean));
         
-        // Smaller delay for faster loading
+        // Add small delay between batches to prevent UI freezing
         if (i + batchSize < allProductsData.length) {
-          await new Promise(resolve => setTimeout(resolve, 5));
+          await new Promise(resolve => setTimeout(resolve, 10));
         }
       }
 
       const groupedProducts = groupProductsByBaseName(transformedProducts);
       const groupedProductsOrdered = groupProductsByBaseName(transformedProducts, true);
 
-      console.log(`✨ Successfully processed ${transformedProducts.length} products from "Cartegories correct price" table`);
+      console.log(`✨ Successfully processed ${transformedProducts.length} products with images`);
+      console.log('🎯 Sample grouped products:', groupedProducts.slice(0, 3));
 
       // Save to cache for faster subsequent loads
       saveToCache(groupedProducts, groupedProductsOrdered);

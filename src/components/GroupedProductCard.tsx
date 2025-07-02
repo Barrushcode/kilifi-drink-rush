@@ -124,8 +124,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
     return () => { ignore = true; };
   }, [product.baseName]);
 
-  // Always use a valid image - either from supabase, product data, or fallback
-  let displayImage = supabaseImage || product.image || FALLBACK_IMAGE;
+  let displayImage = supabaseImage || (isImageAppropriate(product.image) ? product.image : FALLBACK_IMAGE);
 
   return (
     <>

@@ -18,7 +18,7 @@ export const fetchProductsData = async (
 
   const orFilters = buildOrFilters(searchTerm, selectedCategory);
 
-  // Get total count from "Cartegories correct price" table
+  // Get total count
   const countQuery = buildCountQuery(orFilters);
   const { count } = await countQuery;
   
@@ -46,15 +46,7 @@ export const fetchProductsData = async (
     };
   }
 
-  // Transform data to match RawProduct interface
-  const transformedData: RawProduct[] = data.map(item => ({
-    Title: item.Title || null,
-    Description: item.Description || null,
-    Price: item.Price || 0,
-    Category: item.Category || null
-  }));
-
-  const processedProducts = await processRawProducts(transformedData, startIndex);
+  const processedProducts = await processRawProducts(data as RawProduct[], startIndex);
   
   if (isCancelled()) return null;
 
