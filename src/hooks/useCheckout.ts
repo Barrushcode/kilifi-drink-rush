@@ -130,11 +130,7 @@ export function useCheckout(
         }
       });
       if (!error && data && data.ok) {
-        toast({
-          title: "Simulated order email sent!",
-          description: "Check your inbox for the test confirmation.",
-          className: "bg-green-600 text-white"
-        });
+        // Removed the toast notification here
       } else {
         toast({
           title: "Simulation failed!",
@@ -200,4 +196,3 @@ export function useCheckout(
     handleSimulatePayment
   };
 }
-
