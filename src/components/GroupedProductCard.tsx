@@ -300,7 +300,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
               className="w-full font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-green-600 hover:bg-green-500 text-white border-none shadow-lg"
             >
               <MessageCircle className="h-3 w-3 mr-1" />
-              Check Availability on WhatsApp
+              <span className="hidden sm:inline">Check Availability on </span>WhatsApp
             </Button>
           </div>
         </CardContent>
