@@ -103,6 +103,34 @@ const SupportSection: React.FC = () => {
             </Card>
           </div>
         </div>
+
+        {/* Important Disclaimer Section */}
+        <div className="mt-12 max-w-4xl mx-auto">
+          <Card
+            className="bg-red-950/30 border-2 p-0"
+            style={{
+              borderImage: 'linear-gradient(90deg,#dc2626 0%,#b91c1c 100%) 1',
+              boxShadow: '0 0 6px 1px #dc2626cc, 0 0 12px 2px #b91c1ccc',
+            }}
+          >
+            <CardContent className="p-8 bg-slate-950">
+              <h3 className="text-2xl font-bold text-red-400 mb-6 text-center">
+                Important Disclaimer – Product Availability & Refund Policy
+              </h3>
+              <div className="text-zinc-50 space-y-4 text-sm md:text-base leading-relaxed">
+                <p>
+                  Some items listed on our site may be temporarily out of stock from our distributors. We strongly recommend using the "Check Availability on WhatsApp" button before making a payment.
+                </p>
+                <p>
+                  Once payment is made, it is non-refundable. However, if a product is unavailable after payment, you may choose a different drink of equal or lesser value as a replacement.
+                </p>
+                <p>
+                  Our team will assist you promptly via WhatsApp to ensure you get a suitable alternative.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </section>
   );
