@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
-import { ShoppingCart, CreditCard } from 'lucide-react';
+import { ShoppingCart, CreditCard, MessageCircle } from 'lucide-react';
 import { GroupedProduct, ProductVariant } from '@/utils/productGroupingUtils';
 import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
@@ -101,6 +101,13 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         duration: 2000,
       });
     }
+  };
+
+  const handleWhatsAppCheck = () => {
+    const message = `Hi, is ${correctedName} available today?`;
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/254117808024?text=${encodedMessage}`;
+    window.open(whatsappUrl, '_blank');
   };
 
   const handleVariantChange = (variantIndex: string) => {
@@ -283,6 +290,17 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
             >
               <CreditCard className="h-3 w-3 mr-1" />
               Buy Now
+            </Button>
+          </div>
+          
+          {/* WhatsApp Availability Button */}
+          <div className="mt-2 w-full">
+            <Button 
+              onClick={(e) => { e.stopPropagation(); handleWhatsAppCheck(); }}
+              className="w-full font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-green-600 hover:bg-green-500 text-white border-none shadow-lg"
+            >
+              <MessageCircle className="h-3 w-3 mr-1" />
+              Check Availability on WhatsApp
             </Button>
           </div>
         </CardContent>
