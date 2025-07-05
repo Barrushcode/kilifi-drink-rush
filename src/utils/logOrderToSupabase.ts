@@ -20,7 +20,9 @@ export async function logOrderToSupabase({
   deliveryFee,
   totalAmount,
   orderReference,
-  orderSource = "web"
+  orderSource = "web",
+  riderId,
+  distributorId
 }: {
   buyerName: string;
   buyerEmail: string;
@@ -37,8 +39,13 @@ export async function logOrderToSupabase({
   totalAmount: number;
   orderReference: string;
   orderSource?: string;
+  riderId?: number;
+  distributorId?: number;
 }) {
-  const { error } = await supabase.from("orders").insert([
+  // Format products string from items array
+  const productsString = items.map((item: any) => `${item.quantity} ${item.name}`).join(', ');
+  
+  const { data, error } = await supabase.from("orders").insert([
     {
       buyer_email: buyerEmail,
       buyer_name: buyerName,
@@ -54,11 +61,38 @@ export async function logOrderToSupabase({
       delivery_fee: deliveryFee,
       total_amount: totalAmount,
       order_reference: orderReference,
-      order_source: orderSource
+      order_source: orderSource,
+      customer_name: buyerName,
+      customer_phone: buyerPhone || null,
+      products: productsString,
+      location: region,
+      status: "paid",
+      rider_id: riderId || null,
+      distributor_id: distributorId || null
     }
-  ]);
+  ]).select();
+  
   if (error) {
-    // Not blocking the user, but you might want to alert in admin dash if repeated failures.
     console.error("Order logging to Supabase failed:", error.message);
+    throw error;
   }
+
+  // Trigger SMS edge function if order was created successfully
+  if (data && data[0]) {
+    try {
+      const { error: smsError } = await supabase.functions.invoke('send-sms', {
+        body: {
+          order_id: data[0].id
+        }
+      });
+      
+      if (smsError) {
+        console.error("SMS sending failed:", smsError.message);
+      }
+    } catch (smsErr) {
+      console.error("Error calling SMS function:", smsErr);
+    }
+  }
+
+  return data?.[0];
 }

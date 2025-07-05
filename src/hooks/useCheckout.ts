@@ -166,7 +166,9 @@ export function useCheckout(
         deliveryFee,
         totalAmount,
         orderReference: reference,
-        orderSource: "simulated"
+        orderSource: "simulated",
+        riderId: undefined, // Will be added via form dropdown later
+        distributorId: undefined // Will be added via form dropdown later
       });
       if (zapierWebhookUrl) {
         await postToZapierWebhook(zapierWebhookUrl, {
