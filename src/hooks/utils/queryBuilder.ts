@@ -35,7 +35,7 @@ export const buildCountQuery = (orFilters: string[]) => {
 export const buildDataQuery = (orFilters: string[], startIndex: number, endIndex: number) => {
   let query = supabase
     .from('Product Cartegory')
-    .select('Title, Description, Price, Category')
+    .select('Title, Description, Price, Category', { count: 'exact' })
     .filter('Price', 'not.is', null)
     .filter('Price', 'gte', 100)
     .filter('Price', 'lte', 500000);

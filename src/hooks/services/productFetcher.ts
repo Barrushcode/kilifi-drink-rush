@@ -17,26 +17,17 @@ export const fetchProductsData = async (
   });
 
   const orFilters = buildOrFilters(searchTerm, selectedCategory);
-
-  // Get total count
-  const countQuery = buildCountQuery(orFilters);
-  const { count } = await countQuery;
-  
-  if (isCancelled()) return null;
-  
-  console.log(`📊 Total matching products: ${count}`);
-
-  // Get data for current page
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage - 1;
-  
+
+  // Single optimized query that gets both data and count
   const dataQuery = buildDataQuery(orFilters, startIndex, endIndex);
-  const { data, error: fetchError } = await dataQuery;
+  const { data, error: fetchError, count } = await dataQuery;
 
   if (fetchError) throw fetchError;
   if (isCancelled()) return null;
 
-  console.log(`📦 Fetched ${data?.length || 0} products for page ${currentPage}`);
+  console.log(`📦 Fetched ${data?.length || 0} products for page ${currentPage}, total: ${count}`);
 
   if (!data || data.length === 0) {
     console.log('📭 No products found for current criteria');

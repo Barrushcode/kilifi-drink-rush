@@ -36,9 +36,12 @@ const ProductsPagination: React.FC<ProductsPaginationProps> = ({
                 href="#" 
                 onClick={e => {
                   e.preventDefault();
-                  if (hasPreviousPage) setCurrentPage(currentPage - 1);
+                  if (hasPreviousPage) {
+                    setCurrentPage(currentPage - 1);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }
                 }} 
-                className={`${!hasPreviousPage ? 'opacity-50 cursor-not-allowed' : 'text-barrush-platinum hover:text-rose-600'} bg-glass-effect border-barrush-steel/40 font-iphone h-touch px-4 lg:px-6`} 
+                className={`${!hasPreviousPage ? 'opacity-50 cursor-not-allowed' : 'text-barrush-platinum hover:text-rose-600 hover:scale-105 transition-all duration-200'} bg-glass-effect border-barrush-steel/40 font-iphone h-touch px-4 lg:px-6`} 
               />
             </PaginationItem>
             
@@ -53,9 +56,10 @@ const ProductsPagination: React.FC<ProductsPaginationProps> = ({
                       onClick={e => {
                         e.preventDefault();
                         setCurrentPage(page);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                       }} 
                       isActive={isCurrentPage} 
-                      className={`${isCurrentPage ? 'bg-rose-600 text-white border-rose-600' : 'bg-glass-effect border-barrush-steel/40 text-barrush-platinum hover:text-rose-600'} font-iphone h-touch min-w-touch px-4 lg:px-6`}
+                      className={`${isCurrentPage ? 'bg-rose-600 text-white border-rose-600 scale-110' : 'bg-glass-effect border-barrush-steel/40 text-barrush-platinum hover:text-rose-600 hover:scale-105'} font-iphone h-touch min-w-touch px-4 lg:px-6 transition-all duration-200`}
                     >
                       {page}
                     </PaginationLink>
@@ -77,9 +81,12 @@ const ProductsPagination: React.FC<ProductsPaginationProps> = ({
                 href="#" 
                 onClick={e => {
                   e.preventDefault();
-                  if (hasNextPage) setCurrentPage(currentPage + 1);
+                  if (hasNextPage) {
+                    setCurrentPage(currentPage + 1);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }
                 }} 
-                className={`${!hasNextPage ? 'opacity-50 cursor-not-allowed' : 'text-barrush-platinum hover:text-rose-600'} bg-glass-effect border-barrush-steel/40 font-iphone h-touch px-4 lg:px-6`} 
+                className={`${!hasNextPage ? 'opacity-50 cursor-not-allowed' : 'text-barrush-platinum hover:text-rose-600 hover:scale-105 transition-all duration-200'} bg-glass-effect border-barrush-steel/40 font-iphone h-touch px-4 lg:px-6`} 
               />
             </PaginationItem>
           </PaginationContent>
