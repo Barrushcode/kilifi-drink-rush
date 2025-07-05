@@ -14,22 +14,22 @@ export type Database = {
           id: number
           "Job Description": string | null
           Name: string
-          "Phone Number_1": number | null
-          "Phone Number_2": number | null
+          "Phone Number_1": string | null
+          "Phone Number_2": string | null
         }
         Insert: {
           id?: number
           "Job Description"?: string | null
           Name: string
-          "Phone Number_1"?: number | null
-          "Phone Number_2"?: number | null
+          "Phone Number_1"?: string | null
+          "Phone Number_2"?: string | null
         }
         Update: {
           id?: number
           "Job Description"?: string | null
           Name?: string
-          "Phone Number_1"?: number | null
-          "Phone Number_2"?: number | null
+          "Phone Number_1"?: string | null
+          "Phone Number_2"?: string | null
         }
         Relationships: []
       }
