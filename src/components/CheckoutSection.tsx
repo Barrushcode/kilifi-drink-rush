@@ -46,12 +46,8 @@ const CheckoutSection: React.FC = () => {
     zapierWebhookUrl,
     setZapierWebhookUrl,
     selectedZone,
-    selectedRiders,
-    selectedDistributor,
     handleInputChange,
     handleZoneChange,
-    handleRidersChange,
-    handleDistributorChange,
     zoneObject,
     subtotal,
     deliveryFee,
@@ -104,12 +100,8 @@ const CheckoutSection: React.FC = () => {
               errors={errors}
               deliveryZones={DELIVERY_ZONES}
               selectedZone={selectedZone}
-              selectedRiders={selectedRiders}
-              selectedDistributor={selectedDistributor}
               handleInputChange={handleInputChange}
               handleZoneChange={handleZoneChange}
-              handleRidersChange={handleRidersChange}
-              handleDistributorChange={handleDistributorChange}
             />
             <ZapierWebhookInput
               zapierWebhookUrl={zapierWebhookUrl}

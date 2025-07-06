@@ -6,6 +6,7 @@ import { toast } from '@/hooks/use-toast';
 import { useNavigate } from "react-router-dom";
 import { supabase } from '@/integrations/supabase/client';
 import { submitOrderToFormSubmit } from '@/utils/formSubmitService';
+import { logOrderToSupabase } from '@/utils/logOrderToSupabase';
 
 interface MpesaStkPushProps {
   amount: number;
@@ -171,6 +172,28 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
         
         // Generate order reference
         const orderReference = "ORD" + Math.floor(Math.random() * 1000000);
+        
+        // Log order to Supabase
+        try {
+          await logOrderToSupabase({
+            buyerName: `${shippingDetails?.firstName || ''} ${shippingDetails?.lastName || ''}`.trim(),
+            buyerEmail: shippingDetails?.email || '',
+            buyerPhone: userPhone,
+            region: deliveryZone?.name || 'Not specified',
+            city: shippingDetails?.city || '',
+            street: shippingDetails?.street || '',
+            building: shippingDetails?.building || '',
+            instructions: shippingDetails?.instructions || '',
+            items,
+            subtotal: amount - (deliveryZone?.fee || 0),
+            deliveryFee: deliveryZone?.fee || 0,
+            totalAmount: amount,
+            orderReference,
+            orderSource: "mpesa"
+          });
+        } catch (error) {
+          console.error('Failed to log order:', error);
+        }
         
         // Send order confirmation email
         await sendOrderConfirmationEmail(orderReference);

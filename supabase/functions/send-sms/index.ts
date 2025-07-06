@@ -21,8 +21,6 @@ interface Order {
   location: string;
   total_amount: number;
   order_reference: string;
-  rider_ids?: number[];
-  distributor_id?: number;
 }
 
 interface Contact {
@@ -122,11 +120,15 @@ serve(async (req) => {
       }
     }
 
-    // 2. Send SMS to riders
-    if (orderData.rider_ids && orderData.rider_ids.length > 0) {
-      for (const riderId of orderData.rider_ids) {
-        const rider = await getContactById(riderId);
-        if (rider && rider['Phone Number_1']) {
+    // 2. Send SMS to all riders
+    const { data: allRiders, error: ridersError } = await supabase
+      .from('Contacts')
+      .select('*')
+      .ilike('Job Description', '%rider%');
+
+    if (!ridersError && allRiders) {
+      for (const rider of allRiders) {
+        if (rider['Phone Number_1']) {
           const riderMessage = `New delivery assignment! Order #${orderData.order_reference} - Customer: ${orderData.customer_name} (${orderData.customer_phone}). Items: ${orderData.products}. Delivery: ${orderData.location}. Amount: KES ${orderData.total_amount}`;
           
           try {
@@ -139,17 +141,23 @@ serve(async (req) => {
       }
     }
 
-    // 3. Send SMS to distributor
-    if (orderData.distributor_id) {
-      const distributor = await getContactById(orderData.distributor_id);
-      if (distributor && distributor['Phone Number_1']) {
-        const distributorMessage = `Stock Alert! New order #${orderData.order_reference} requires: ${orderData.products}. Customer: ${orderData.customer_name}. Location: ${orderData.location}. Please prepare inventory.`;
-        
-        try {
-          const distributorResult = await sendSMS(distributor['Phone Number_1'], distributorMessage);
-          results.push({ type: 'distributor', success: true, result: distributorResult });
-        } catch (error) {
-          results.push({ type: 'distributor', success: false, error: error.message });
+    // 3. Send SMS to all distributors
+    const { data: allDistributors, error: distributorsError } = await supabase
+      .from('Contacts')
+      .select('*')
+      .ilike('Job Description', '%distributor%');
+
+    if (!distributorsError && allDistributors) {
+      for (const distributor of allDistributors) {
+        if (distributor['Phone Number_1']) {
+          const distributorMessage = `Stock Alert! New order #${orderData.order_reference} requires: ${orderData.products}. Customer: ${orderData.customer_name}. Location: ${orderData.location}. Please prepare inventory.`;
+          
+          try {
+            const distributorResult = await sendSMS(distributor['Phone Number_1'], distributorMessage);
+            results.push({ type: 'distributor', name: distributor.Name, success: true, result: distributorResult });
+          } catch (error) {
+            results.push({ type: 'distributor', name: distributor.Name, success: false, error: error.message });
+          }
         }
       }
     }

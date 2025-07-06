@@ -46,8 +46,6 @@ export function useCheckout(
     instructions: ''
   });
   const [selectedZone, setSelectedZone] = useState(DELIVERY_ZONES[0].value);
-  const [selectedRiders, setSelectedRiders] = useState<number[]>([]);
-  const [selectedDistributor, setSelectedDistributor] = useState<number | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [zapierWebhookUrl, setZapierWebhookUrl] = useState("");
 
@@ -71,14 +69,6 @@ export function useCheckout(
 
   const handleZoneChange = (value: string) => {
     setSelectedZone(value);
-  };
-
-  const handleRidersChange = (riderIds: number[]) => {
-    setSelectedRiders(riderIds);
-  };
-
-  const handleDistributorChange = (distributorId: number | null) => {
-    setSelectedDistributor(distributorId);
   };
 
   const validateForm = () => {
@@ -176,9 +166,7 @@ export function useCheckout(
         deliveryFee,
         totalAmount,
         orderReference: reference,
-        orderSource: "simulated",
-        riderIds: selectedRiders.length > 0 ? selectedRiders : undefined,
-        distributorId: selectedDistributor || undefined
+        orderSource: "simulated"
       });
       if (zapierWebhookUrl) {
         await postToZapierWebhook(zapierWebhookUrl, {
@@ -208,8 +196,6 @@ export function useCheckout(
     setShippingDetails,
     selectedZone,
     setSelectedZone,
-    selectedRiders,
-    selectedDistributor,
     errors,
     setErrors,
     zapierWebhookUrl,
@@ -220,8 +206,6 @@ export function useCheckout(
     totalAmount,
     handleInputChange,
     handleZoneChange,
-    handleRidersChange,
-    handleDistributorChange,
     validateForm,
     handleSimulatePayment
   };

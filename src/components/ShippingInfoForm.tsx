@@ -4,7 +4,6 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useContacts } from "@/hooks/useContacts";
 
 interface ShippingDetails {
   firstName: string;
@@ -31,12 +30,8 @@ interface ShippingInfoFormProps {
   errors: Errors;
   deliveryZones: DeliveryZone[];
   selectedZone: string;
-  selectedRiders: number[];
-  selectedDistributor: number | null;
   handleInputChange: (field: string, value: string) => void;
   handleZoneChange: (value: string) => void;
-  handleRidersChange: (riderIds: number[]) => void;
-  handleDistributorChange: (distributorId: number | null) => void;
 }
 
 const ShippingInfoForm: React.FC<ShippingInfoFormProps> = ({
@@ -44,15 +39,10 @@ const ShippingInfoForm: React.FC<ShippingInfoFormProps> = ({
   errors,
   deliveryZones,
   selectedZone,
-  selectedRiders,
-  selectedDistributor,
   handleInputChange,
-  handleZoneChange,
-  handleRidersChange,
-  handleDistributorChange
+  handleZoneChange
 }) => {
   const selectedZoneObj = deliveryZones.find(zone => zone.value === selectedZone);
-  const { riders, distributors, loading } = useContacts();
 
   return (
     <Card className="bg-barrush-charcoal/80 border-neon-pink border w-full">
@@ -202,59 +192,6 @@ const ShippingInfoForm: React.FC<ShippingInfoFormProps> = ({
               placeholder="Gate code, directions, or special requests (optional)" 
               className="bg-neon-purple/40 border-neon-purple text-white placeholder:text-gray-400 min-h-[80px] w-full" 
             />
-          </div>
-
-          {/* Rider Selection */}
-          <div className="space-y-2">
-            <Label className="text-white">Assign Riders</Label>
-            {loading ? (
-              <p className="text-gray-400">Loading riders...</p>
-            ) : (
-              <div className="space-y-2 max-h-32 overflow-y-auto">
-                {riders.map(rider => (
-                  <label key={rider.id} className="flex items-center space-x-2 text-white">
-                    <input
-                      type="checkbox"
-                      checked={selectedRiders.includes(rider.id)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          handleRidersChange([...selectedRiders, rider.id]);
-                        } else {
-                          handleRidersChange(selectedRiders.filter(id => id !== rider.id));
-                        }
-                      }}
-                      className="w-4 h-4"
-                    />
-                    <span>{rider.Name}</span>
-                  </label>
-                ))}
-                {riders.length === 0 && (
-                  <p className="text-gray-400">No riders available</p>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Distributor Selection */}
-          <div className="space-y-2">
-            <Label htmlFor="distributor" className="text-white">Assign Distributor</Label>
-            {loading ? (
-              <p className="text-gray-400">Loading distributors...</p>
-            ) : (
-              <select 
-                name="distributor"
-                value={selectedDistributor || ''}
-                onChange={(e) => handleDistributorChange(e.target.value ? parseInt(e.target.value) : null)}
-                className="w-full bg-neon-purple/40 border-neon-purple text-white rounded-md p-2"
-              >
-                <option value="" className="text-black">Select a distributor</option>
-                {distributors.map(distributor => (
-                  <option key={distributor.id} value={distributor.id} className="text-black">
-                    {distributor.Name}
-                  </option>
-                ))}
-              </select>
-            )}
           </div>
         </div>
       </CardContent>

@@ -20,9 +20,7 @@ export async function logOrderToSupabase({
   deliveryFee,
   totalAmount,
   orderReference,
-  orderSource = "web",
-  riderIds,
-  distributorId
+  orderSource = "web"
 }: {
   buyerName: string;
   buyerEmail: string;
@@ -39,8 +37,6 @@ export async function logOrderToSupabase({
   totalAmount: number;
   orderReference: string;
   orderSource?: string;
-  riderIds?: number[];
-  distributorId?: number;
 }) {
   // Format products string from items array
   const productsString = items.map((item: any) => `${item.quantity} ${item.name}`).join(', ');
@@ -67,8 +63,8 @@ export async function logOrderToSupabase({
       products: productsString,
       location: region,
       status: "paid",
-      rider_ids: riderIds || null,
-      distributor_id: distributorId || null
+      rider_ids: null,
+      distributor_id: null
     }
   ]).select();
   
