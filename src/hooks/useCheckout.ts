@@ -177,7 +177,7 @@ export function useCheckout(
         totalAmount,
         orderReference: reference,
         orderSource: "simulated",
-        riderId: selectedRiders.length > 0 ? selectedRiders[0] : undefined,
+        riderIds: selectedRiders.length > 0 ? selectedRiders : undefined,
         distributorId: selectedDistributor || undefined
       });
       if (zapierWebhookUrl) {

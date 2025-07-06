@@ -54,7 +54,7 @@ export type Database = {
           order_source: string | null
           products: string | null
           region: string
-          rider_id: number | null
+          rider_ids: number[] | null
           status: string | null
           street: string | null
           subtotal: number
@@ -80,7 +80,7 @@ export type Database = {
           order_source?: string | null
           products?: string | null
           region: string
-          rider_id?: number | null
+          rider_ids?: number[] | null
           status?: string | null
           street?: string | null
           subtotal: number
@@ -106,7 +106,7 @@ export type Database = {
           order_source?: string | null
           products?: string | null
           region?: string
-          rider_id?: number | null
+          rider_ids?: number[] | null
           status?: string | null
           street?: string | null
           subtotal?: number
@@ -116,13 +116,6 @@ export type Database = {
           {
             foreignKeyName: "orders_distributor_id_fkey"
             columns: ["distributor_id"]
-            isOneToOne: false
-            referencedRelation: "Contacts"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "orders_rider_id_fkey"
-            columns: ["rider_id"]
             isOneToOne: false
             referencedRelation: "Contacts"
             referencedColumns: ["id"]

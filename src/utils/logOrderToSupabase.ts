@@ -21,7 +21,7 @@ export async function logOrderToSupabase({
   totalAmount,
   orderReference,
   orderSource = "web",
-  riderId,
+  riderIds,
   distributorId
 }: {
   buyerName: string;
@@ -39,7 +39,7 @@ export async function logOrderToSupabase({
   totalAmount: number;
   orderReference: string;
   orderSource?: string;
-  riderId?: number;
+  riderIds?: number[];
   distributorId?: number;
 }) {
   // Format products string from items array
@@ -67,7 +67,7 @@ export async function logOrderToSupabase({
       products: productsString,
       location: region,
       status: "paid",
-      rider_id: riderId || null,
+      rider_ids: riderIds || null,
       distributor_id: distributorId || null
     }
   ]).select();

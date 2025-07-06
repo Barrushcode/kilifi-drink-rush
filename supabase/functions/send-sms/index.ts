@@ -21,7 +21,7 @@ interface Order {
   location: string;
   total_amount: number;
   order_reference: string;
-  rider_id?: number;
+  rider_ids?: number[];
   distributor_id?: number;
 }
 
@@ -122,17 +122,19 @@ serve(async (req) => {
       }
     }
 
-    // 2. Send SMS to rider
-    if (orderData.rider_id) {
-      const rider = await getContactById(orderData.rider_id);
-      if (rider && rider['Phone Number_1']) {
-        const riderMessage = `New delivery assignment! Order #${orderData.order_reference} - Customer: ${orderData.customer_name} (${orderData.customer_phone}). Items: ${orderData.products}. Delivery: ${orderData.location}. Amount: KES ${orderData.total_amount}`;
-        
-        try {
-          const riderResult = await sendSMS(rider['Phone Number_1'], riderMessage);
-          results.push({ type: 'rider', success: true, result: riderResult });
-        } catch (error) {
-          results.push({ type: 'rider', success: false, error: error.message });
+    // 2. Send SMS to riders
+    if (orderData.rider_ids && orderData.rider_ids.length > 0) {
+      for (const riderId of orderData.rider_ids) {
+        const rider = await getContactById(riderId);
+        if (rider && rider['Phone Number_1']) {
+          const riderMessage = `New delivery assignment! Order #${orderData.order_reference} - Customer: ${orderData.customer_name} (${orderData.customer_phone}). Items: ${orderData.products}. Delivery: ${orderData.location}. Amount: KES ${orderData.total_amount}`;
+          
+          try {
+            const riderResult = await sendSMS(rider['Phone Number_1'], riderMessage);
+            results.push({ type: 'rider', name: rider.Name, success: true, result: riderResult });
+          } catch (error) {
+            results.push({ type: 'rider', name: rider.Name, success: false, error: error.message });
+          }
         }
       }
     }
