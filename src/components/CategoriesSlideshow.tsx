@@ -1,7 +1,9 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { useNavigate } from 'react-router-dom';
+import OptimizedImage from './OptimizedImage';
 
 const categories = [
   {
@@ -77,11 +79,14 @@ const CategoriesSlideshow: React.FC = () => {
                 >
                   <CardContent className="p-0">
                     <div className="relative overflow-hidden rounded-lg">
-                      <img 
-                        src={category.image} 
-                        alt={category.name}
-                        className="w-full h-48 object-cover"
-                      />
+                      <AspectRatio ratio={4/3}>
+                        <OptimizedImage
+                          src={category.image}
+                          alt={category.name}
+                          className="w-full h-full rounded-lg"
+                          priority={false}
+                        />
+                      </AspectRatio>
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                       <div className="absolute bottom-0 left-0 right-0 p-6">
                         <h3 className="text-2xl font-bold text-zinc-50 mb-2">
