@@ -7,37 +7,37 @@ const categories = [
   {
     id: 'whiskey',
     name: 'Whiskey',
-    image: 'https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+    image: 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/BALLANTINE%27S%20WHISKY%20750ML.jpg',
     description: 'Premium whiskeys from around the world'
   },
   {
     id: 'vodka',
     name: 'Vodka',
-    image: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+    image: 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/ABSOLUTE%20BLUE%20VODKA750ML.jpg',
     description: 'Crystal clear premium vodka'
   },
   {
     id: 'wine',
     name: 'Wine',
-    image: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+    image: 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/FINCA%20LAS%20MORAS%20MALBEC%20ARGENTINA%20750ML.jpeg',
     description: 'Fine wines for every occasion'
   },
   {
     id: 'beer',
     name: 'Beer',
-    image: 'https://images.unsplash.com/photo-1500673922987-e212871fec22?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+    image: 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/8.6%20ORIGINAL%20INTENSE%20BLOND%20BEER%20500ML%20CAN.jpg',
     description: 'Refreshing beers and lagers'
   },
   {
     id: 'rum',
     name: 'Rum',
-    image: 'https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+    image: 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/BACARDI%20RUM%208%20ANOS%20700ML.jpg',
     description: 'Caribbean and spiced rums'
   },
   {
     id: 'gin',
     name: 'Gin',
-    image: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+    image: 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/BEEFEATER%20GIN%201LITRE.jpg',
     description: 'Classic and botanical gins'
   }
 ];
