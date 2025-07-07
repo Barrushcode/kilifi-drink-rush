@@ -4,6 +4,7 @@ import HeroSection from '@/components/HeroSection';
 import HowItWorksSection from '@/components/HowItWorksSection';
 import DeliveryZonesSection from '@/components/DeliveryZonesSection';
 import Footer from '@/components/Footer';
+import WhatsAppFloat from '@/components/WhatsAppFloat';
 
 const Index = () => {
   return (
@@ -14,6 +15,7 @@ const Index = () => {
         <DeliveryZonesSection />
         <Footer />
       </div>
+      <WhatsAppFloat />
     </div>
   );
 };
