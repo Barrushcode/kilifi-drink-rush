@@ -7,38 +7,38 @@ const categories = [
   {
     id: 'whiskey',
     name: 'Whiskey',
-    image: 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/BALLANTINE%27S%20WHISKY%20750ML.jpg',
+    image: 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/JOHNNIE%20WALKER%20BLACK%20-750ML.jpeg',
     description: 'Premium whiskeys from around the world'
   },
   {
     id: 'vodka',
     name: 'Vodka',
-    image: 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/ABSOLUTE%20BLUE%20VODKA750ML.jpg',
+    image: 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/GREY%20GOOSE%20VODKA%20750ML.jfif',
     description: 'Crystal clear premium vodka'
   },
   {
     id: 'wine',
     name: 'Wine',
-    image: 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/FINCA%20LAS%20MORAS%20MALBEC%20ARGENTINA%20750ML.jpeg',
-    description: 'Fine wines for every occasion'
+    image: 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/MOET%20%26CHANDON%20IMPERIAL%20BRUT%20750ML.jpeg',
+    description: 'Fine wines and champagnes'
   },
   {
     id: 'beer',
     name: 'Beer',
-    image: 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/8.6%20ORIGINAL%20INTENSE%20BLOND%20BEER%20500ML%20CAN.jpg',
-    description: 'Refreshing beers and lagers'
+    image: 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/HUNTERS%20GOLD%20CIDER%206%20PACK%20330ML%20CANS.jfif',
+    description: 'Refreshing beers and premium ciders'
   },
   {
     id: 'rum',
     name: 'Rum',
-    image: 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/BACARDI%20RUM%208%20ANOS%20700ML.jpg',
+    image: 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/CAPTAIN%20MORGAN%20SPICED%20GOLD-1ltr.jpg',
     description: 'Caribbean and spiced rums'
   },
   {
     id: 'gin',
     name: 'Gin',
-    image: 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/BEEFEATER%20GIN%201LITRE.jpg',
-    description: 'Classic and botanical gins'
+    image: 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/BEEFEATER%2024%20PREMIUM%20GIN%20750ML.jpg',
+    description: 'Premium botanical gins'
   }
 ];
 
