@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { MessageCircle } from 'lucide-react';
 
 const WhatsAppFloat: React.FC = () => {
   const handleWhatsAppClick = () => {
@@ -13,7 +14,7 @@ const WhatsAppFloat: React.FC = () => {
         size="lg"
         className="h-16 w-16 rounded-full bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
       >
-        <div className="text-2xl">💬</div>
+        <MessageCircle className="h-8 w-8" />
       </Button>
     </div>
   );
