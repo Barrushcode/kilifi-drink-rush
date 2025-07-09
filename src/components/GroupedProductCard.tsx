@@ -4,8 +4,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useNavigate } from 'react-router-dom';
-import { ShoppingCart, CreditCard, MessageCircle } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { ShoppingCart, CreditCard, MessageCircle, ExternalLink } from 'lucide-react';
 import { GroupedProduct, ProductVariant } from '@/utils/productGroupingUtils';
 import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
@@ -49,6 +49,11 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
   const navigate = useNavigate();
   const { addItem } = useCart();
   const { toast } = useToast();
+
+  // Generate product URL slug
+  const getProductSlug = (name: string) => {
+    return name.replace(/\s+/g, '-').toLowerCase();
+  };
 
 
   const handleAddToCart = () => {
@@ -300,6 +305,22 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
               <MessageCircle className="h-3 w-3 mr-1" />
               Check Availability
             </Button>
+          </div>
+          
+          {/* View Details Button */}
+          <div className="mt-2 w-full">
+            <Link 
+              to={`/product/${getProductSlug(product.baseName)}`}
+              className="block w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Button 
+                className="w-full font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-transparent border-2 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
+              >
+                <ExternalLink className="h-3 w-3 mr-1" />
+                View Details
+              </Button>
+            </Link>
           </div>
         </CardContent>
       </Card>

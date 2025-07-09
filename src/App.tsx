@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/contexts/CartContext";
 import Index from "./pages/Index";
 import Products from "./pages/Products";
+import ProductDetail from "./pages/ProductDetail";
 import Recipes from "./pages/Recipes";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
@@ -51,6 +52,7 @@ const App = () => {
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/products" element={<Products />} />
+                    <Route path="/product/:id" element={<ProductDetail />} />
                     <Route path="/recipes" element={<Recipes />} />
                     <Route path="/help" element={<Help />} />
                     <Route path="/cart" element={<Cart />} />
