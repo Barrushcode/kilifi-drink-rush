@@ -5,6 +5,7 @@ import { getCategoryFromName } from '@/utils/categoryUtils';
 import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
 import { groupProductsByBaseName, GroupedProduct } from '@/utils/productGroupingUtils';
 import { useProductCache } from './useProductCache';
+import { correctProductName } from '@/utils/nameCorrectionUtils';
 
 interface Product {
   id: number;
@@ -110,7 +111,7 @@ export const useProducts = () => {
 
           return {
             id: globalIndex + 1,
-            name: product.Title || 'Unknown Product',
+            name: correctProductName(product.Title || 'Unknown Product'),
             price: `KES ${productPrice.toLocaleString()}`,
             description,
             category,

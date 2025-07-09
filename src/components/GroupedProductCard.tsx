@@ -12,7 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import ProductQuickViewModal from './ProductQuickViewModal';
 import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
 import ProductImageLoader from './ProductImageLoader';
-import { correctProductName } from '@/utils/nameCorrectionUtils';
+
 
 // Utility to determine if the product image is appropriate
 function isImageAppropriate(url?: string) {
@@ -50,14 +50,12 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
   const { addItem } = useCart();
   const { toast } = useToast();
 
-  // Use corrected product name for display
-  const correctedName = correctProductName(product.baseName);
 
   const handleAddToCart = () => {
     try {
       const cartItem = {
         id: `${product.baseName}-${selectedVariant.size}`,
-        name: correctedName,
+        name: product.baseName,
         price: selectedVariant.price,
         priceFormatted: selectedVariant.priceFormatted,
         size: selectedVariant.size,
@@ -67,7 +65,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
       addItem(cartItem);
       toast({
         title: "Added to Cart",
-        description: `${correctedName} (${selectedVariant.size}) added to cart`,
+        description: `${product.baseName} (${selectedVariant.size}) added to cart`,
         duration: 2000,
       });
     } catch (error) {
@@ -84,7 +82,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
     try {
       const cartItem = {
         id: `${product.baseName}-${selectedVariant.size}`,
-        name: correctedName,
+        name: product.baseName,
         price: selectedVariant.price,
         priceFormatted: selectedVariant.priceFormatted,
         size: selectedVariant.size,
@@ -104,7 +102,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
   };
 
   const handleWhatsAppCheck = () => {
-    const message = `Hi, is ${correctedName} available today?`;
+    const message = `Hi, is ${product.baseName} available today?`;
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/254117808024?text=${encodedMessage}`;
     window.open(whatsappUrl, '_blank');
@@ -147,7 +145,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         onKeyDown={e => {
           if (e.key === 'Enter') setExpanded(prev => !prev);
         }}
-        aria-label={`Show details for ${correctedName}`}
+        aria-label={`Show details for ${product.baseName}`}
         role="button"
       >
         <CardContent className="p-2 md:p-4 lg:p-5 flex flex-col h-full">
@@ -156,7 +154,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
             <div className="w-full aspect-square rounded-lg overflow-hidden mb-2 relative bg-barrush-midnight">
               <ProductImageLoader
                 src={displayImage}
-                alt={correctedName}
+                alt={product.baseName}
                 className="w-full h-full object-cover"
                 priority={false}
               />
@@ -165,7 +163,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
             
             {/* Product Name with correction */}
             <h3 className="text-xs md:text-base lg:text-xl font-bold mb-1 font-iphone line-clamp-2 text-barrush-platinum break-words">
-              {correctedName}
+              {product.baseName}
             </h3>
             
             {/* Expanded Details */}

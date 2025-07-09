@@ -2,6 +2,7 @@
 import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
 import { groupProductsByBaseName } from '@/utils/productGroupingUtils';
 import { Product, RawProduct, GroupedProduct } from '../types/productTypes';
+import { correctProductName } from '@/utils/nameCorrectionUtils';
 
 export const processRawProducts = async (
   data: RawProduct[], 
@@ -37,7 +38,7 @@ export const processRawProducts = async (
 
     processedProducts.push({
       id: startIndex + index + 1,
-      name: product.Title || 'Unknown Product',
+      name: correctProductName(product.Title || 'Unknown Product'),
       price: `KES ${productPrice.toLocaleString()}`,
       description,
       category,
