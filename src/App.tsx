@@ -19,6 +19,7 @@ import Navigation from "./components/Navigation";
 import OrderPlaced from "./pages/OrderPlaced";
 import CartDrawer from "@/components/CartDrawer";
 import AgeVerification from "@/components/AgeVerification";
+import DeliveryNotice from "@/components/DeliveryNotice";
 import { MiniCartDrawerProvider, useMiniCartDrawer } from "@/contexts/CartContext";
 
 const MiniCartDrawerWrapper = () => {
@@ -47,7 +48,8 @@ const App = () => {
             ) : (
               <BrowserRouter>
                 <Navigation />
-                <div className="pt-16 lg:pt-20 min-h-screen bg-background flex flex-col">
+                <DeliveryNotice />
+                <div className="pt-16 lg:pt-20 min-h-screen bg-background flex flex-col safe-top safe-bottom">
                   <MiniCartDrawerWrapper />
                   <Routes>
                     <Route path="/" element={<Index />} />
