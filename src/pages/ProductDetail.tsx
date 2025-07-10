@@ -17,10 +17,10 @@ const ProductDetail = () => {
   const { addItem } = useCart();
   const { toast } = useToast();
   const { products, loading } = useOptimizedProducts({
-    searchTerm: '',
+    searchTerm: id ? id.replace(/-/g, ' ') : '',
     selectedCategory: '',
     currentPage: 1,
-    itemsPerPage: 50
+    itemsPerPage: 10
   });
   
   const [product, setProduct] = useState<GroupedProduct | null>(null);
@@ -29,7 +29,10 @@ const ProductDetail = () => {
 
   useEffect(() => {
     if (products.length > 0 && id) {
-      const foundProduct = products.find(p => p.baseName.replace(/\s+/g, '-').toLowerCase() === id);
+      const foundProduct = products.find(p => 
+        p.baseName.toLowerCase().replace(/\s+/g, '-') === id.toLowerCase() ||
+        p.baseName.toLowerCase().includes(id.replace(/-/g, ' ').toLowerCase())
+      );
       if (foundProduct) {
         setProduct(foundProduct);
         setSelectedVariant(foundProduct.variants[0]);
@@ -38,16 +41,21 @@ const ProductDetail = () => {
   }, [products, id]);
 
   useEffect(() => {
-    if (product) {
+    if (product && !supabaseImage) {
       let ignore = false;
       async function fetchImage() {
-        const url = await getSupabaseProductImageUrl(product.baseName);
-        if (!ignore) setSupabaseImage(url);
+        try {
+          const url = await getSupabaseProductImageUrl(product.baseName);
+          if (!ignore) setSupabaseImage(url);
+        } catch (error) {
+          console.log('Image fetch failed, using fallback');
+          if (!ignore) setSupabaseImage(null);
+        }
       }
       fetchImage();
       return () => { ignore = true; };
     }
-  }, [product]);
+  }, [product, supabaseImage]);
 
   const handleAddToCart = () => {
     if (!product || !selectedVariant) return;
