@@ -20,7 +20,7 @@ const ProductDetail = () => {
     searchTerm: '',
     selectedCategory: '',
     currentPage: 1,
-    itemsPerPage: 1000
+    itemsPerPage: 50
   });
   
   const [product, setProduct] = useState<GroupedProduct | null>(null);
