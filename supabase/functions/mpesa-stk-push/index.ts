@@ -31,7 +31,7 @@ serve(async (req: Request) => {
     // Get live credentials from environment
     const consumerKey = Deno.env.get("SAFARICOM_CONSUMER_KEY");
     const consumerSecret = Deno.env.get("SAFARICOM_CONSUMER_SECRET");
-    const passkey = "725a276fe2a83f80e47286da61710e4d0648ee8bb803ed8f9b95dd7ebaec1d99";
+    const passkey = Deno.env.get("SAFARICOM_PASSKEY") || "725a276fe2a83f80e47286da61710e4d0648ee8bb803ed8f9b95dd7ebaec1d99";
     const shortCode = "3534039"; // Your live shortcode
 
     if (!consumerKey || !consumerSecret) {

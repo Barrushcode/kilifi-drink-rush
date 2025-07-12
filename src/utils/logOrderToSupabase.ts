@@ -63,8 +63,6 @@ export async function logOrderToSupabase({
       products: productsString,
       location: region,
       status: "paid",
-      rider_ids: null,
-      distributor_id: null
     }
   ]).select();
   
