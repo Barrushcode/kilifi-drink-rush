@@ -105,10 +105,11 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
         </div>
       `;
 
-      // Send email to barrushdelivery@gmail.com
+      // Send email to both customer and barrushdelivery@gmail.com
+      const recipients = [shippingDetails?.email, "barrushdelivery@gmail.com"].filter(Boolean);
       const { data, error } = await supabase.functions.invoke('send-order-confirmation', {
         body: {
-          to: 'barrushdelivery@gmail.com',
+          to: recipients,
           subject: `New Order Received - ${orderReference} - KES ${amount.toLocaleString()}`,
           html: orderDetailsHtml
         }
