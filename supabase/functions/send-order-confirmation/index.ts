@@ -172,14 +172,26 @@ serve(async (req: Request) => {
       );
     }
 
-    const response = await resend.emails.send({
-      from: "Barrush Delivery <onboarding@resend.dev>",
-      to: Array.isArray(to) ? to : [to],
-      subject: subject,
-      html: emailHTML,
-    });
+    const recipients = Array.isArray(to) ? to : [to];
+    const results = [];
 
-    return new Response(JSON.stringify({ ok: true, data: response }), {
+    // Send separate emails to each recipient to ensure delivery
+    for (const recipient of recipients) {
+      try {
+        const response = await resend.emails.send({
+          from: "Barrush Delivery <onboarding@resend.dev>",
+          to: [recipient],
+          subject: subject,
+          html: emailHTML,
+        });
+        results.push({ recipient, status: 'sent', data: response });
+      } catch (emailError: any) {
+        console.error(`Failed to send email to ${recipient}:`, emailError);
+        results.push({ recipient, status: 'failed', error: emailError.message });
+      }
+    }
+
+    return new Response(JSON.stringify({ ok: true, results }), {
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
