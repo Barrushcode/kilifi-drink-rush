@@ -31,8 +31,8 @@ export const useProducts = () => {
     const batchSize = 1000;
 
     while (hasMore) {
-      const { data, error } = await supabase
-        .from('Product Cartegory')
+    const { data, error } = await supabase
+      .from('productprice')
         .select('Title, Description, Price, Category')
         .order('Title', { ascending: true })
         .range(offset, offset + batchSize - 1);

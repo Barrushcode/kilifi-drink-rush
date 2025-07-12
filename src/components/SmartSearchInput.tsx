@@ -50,10 +50,10 @@ const SmartSearchInput: React.FC<SmartSearchInputProps> = ({
 
   const handleSuggestionSelect = (suggestion: SearchSuggestion) => {
     if (suggestion.type === 'category') {
-      setSelectedCategory(suggestion.title);
+      setSelectedCategory(suggestion.text);
       setSearchTerm('');
     } else {
-      setSearchTerm(suggestion.title);
+      setSearchTerm(suggestion.text);
       onSearch();
     }
     setShowSuggestions(false);

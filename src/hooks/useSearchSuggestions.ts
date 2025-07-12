@@ -4,7 +4,7 @@ import { useDebouncedSearch } from './useDebouncedSearch';
 
 export interface SearchSuggestion {
   id: string;
-  title: string;
+  text: string;
   type: 'product' | 'category';
   category?: string;
 }
@@ -31,8 +31,8 @@ export const useSearchSuggestions = (query: string, limit: number = 8) => {
       try {
         // Search for products
         const { data: products, error } = await supabase
-          .from('Product Cartegory')
-          .select('id, Title, Category')
+          .from('productprice')
+          .select('id, Title')
           .ilike('Title', `%${debouncedQuery}%`)
           .limit(limit - 2); // Reserve space for category suggestions
 
@@ -40,9 +40,9 @@ export const useSearchSuggestions = (query: string, limit: number = 8) => {
 
         const productSuggestions: SearchSuggestion[] = (products || []).map(product => ({
           id: `product-${product.id}`,
-          title: product.Title,
+          text: product.Title,
           type: 'product' as const,
-          category: product.Category
+          category: 'General'
         }));
 
         // Filter matching categories
@@ -52,7 +52,7 @@ export const useSearchSuggestions = (query: string, limit: number = 8) => {
 
         const categorySuggestions: SearchSuggestion[] = matchingCategories.map(category => ({
           id: `category-${category}`,
-          title: category,
+          text: category,
           type: 'category' as const
         }));
 

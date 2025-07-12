@@ -110,7 +110,7 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
               
               <div className="flex-1 min-w-0">
                 <div className="text-barrush-platinum text-sm font-medium truncate">
-                  {suggestion.title}
+                  {suggestion.text}
                 </div>
                 {suggestion.category && (
                   <div className="text-barrush-platinum/60 text-xs truncate">

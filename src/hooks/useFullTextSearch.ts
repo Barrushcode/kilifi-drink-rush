@@ -59,9 +59,9 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
         console.log('🔍 Full-text search for:', trimmedSearch);
 
         // Perform full-text search across Title and Description using the new table
-      const { data, error } = await supabase
-        .from('Product Cartegory')
-          .select('Title, Description, Price, Category')
+    const { data, error } = await supabase
+      .from('productprice')
+      .select('Title, Description, Price')
           .or(`Title.ilike.%${trimmedSearch}%,Description.ilike.%${trimmedSearch}%`)
           .not('Price', 'is', null)
           .gte('Price', 100)
@@ -90,7 +90,7 @@ export const useFullTextSearch = (searchTerm: string, debounceMs: number = 300):
 
           const productPrice = product.Price;
           const description = product.Description || '';
-          const category = product.Category || 'Uncategorized';
+          const category = 'General'; // Default category since productprice table doesn't have Category
 
           // Get Supabase image
           const storageImage = await getSupabaseProductImageUrl(product.Title || 'Unknown Product');

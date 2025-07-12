@@ -124,30 +124,6 @@ export type Database = {
           },
         ]
       }
-      "Product Cartegory": {
-        Row: {
-          Category: string | null
-          Description: string | null
-          id: number
-          Price: number | null
-          Title: string
-        }
-        Insert: {
-          Category?: string | null
-          Description?: string | null
-          id?: number
-          Price?: number | null
-          Title: string
-        }
-        Update: {
-          Category?: string | null
-          Description?: string | null
-          id?: number
-          Price?: number | null
-          Title?: string
-        }
-        Relationships: []
-      }
       productprice: {
         Row: {
           Category: string | null
