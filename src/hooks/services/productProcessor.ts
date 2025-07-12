@@ -20,7 +20,7 @@ export const processRawProducts = async (
 
     const productPrice = product.Price;
     const description = product.Description || '';
-    const category = product.Category || 'Uncategorized';
+    const category = 'General'; // Default category since we're not fetching it
 
     // Get Supabase image
     const storageImage = await getSupabaseProductImageUrl(product.Title || 'Unknown Product');

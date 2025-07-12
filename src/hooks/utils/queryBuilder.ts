@@ -4,9 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 export const buildOrFilters = (searchTerm: string, selectedCategory: string): string[] => {
   const orFilters: string[] = [];
   
-  if (selectedCategory !== 'All') {
-    orFilters.push(`Category.ilike.%${selectedCategory}%`);
-  }
+  // Note: Category filtering removed since productprice table doesn't include Category
   
   if (searchTerm && searchTerm.trim()) {
     const trimmedSearch = searchTerm.trim();
@@ -19,7 +17,7 @@ export const buildOrFilters = (searchTerm: string, selectedCategory: string): st
 
 export const buildCountQuery = (orFilters: string[]) => {
   let query = supabase
-    .from('Product Cartegory')
+    .from('productprice')
     .select('*', { count: 'exact', head: true })
     .filter('Price', 'not.is', null)
     .filter('Price', 'gte', 100)
@@ -34,8 +32,8 @@ export const buildCountQuery = (orFilters: string[]) => {
 
 export const buildDataQuery = (orFilters: string[], startIndex: number, endIndex: number) => {
   let query = supabase
-    .from('Product Cartegory')
-    .select('Title, Description, Price, Category', { count: 'exact' })
+    .from('productprice')
+    .select('Title, Description, Price', { count: 'exact' })
     .filter('Price', 'not.is', null)
     .filter('Price', 'gte', 100)
     .filter('Price', 'lte', 500000);

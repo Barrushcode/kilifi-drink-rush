@@ -28,7 +28,6 @@ export interface RawProduct {
   Title: string | null;
   Description: string | null;
   Price: number;
-  Category: string | null;
 }
 
 import { GroupedProduct } from '@/utils/productGroupingUtils';

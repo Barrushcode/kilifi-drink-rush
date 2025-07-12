@@ -148,6 +148,42 @@ export type Database = {
         }
         Relationships: []
       }
+      productprice: {
+        Row: {
+          Category: string | null
+          "Cost per item": number | null
+          Description: string | null
+          id: number
+          Price: number | null
+          "Price / International": number | null
+          Profit: number | null
+          Profitpercentage: number | null
+          Title: string
+        }
+        Insert: {
+          Category?: string | null
+          "Cost per item"?: number | null
+          Description?: string | null
+          id?: number
+          Price?: number | null
+          "Price / International"?: number | null
+          Profit?: number | null
+          Profitpercentage?: number | null
+          Title: string
+        }
+        Update: {
+          Category?: string | null
+          "Cost per item"?: number | null
+          Description?: string | null
+          id?: number
+          Price?: number | null
+          "Price / International"?: number | null
+          Profit?: number | null
+          Profitpercentage?: number | null
+          Title?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
