@@ -18,6 +18,9 @@ const DeliveryNotice = () => {
               <div className="mb-2">
                 🕔 <strong>Delivery Hours:</strong> We deliver until 5:00 PM daily
               </div>
+              <div className="mb-2 text-sm bg-amber-100 p-2 rounded-md border border-amber-200">
+                ⚠️ <strong>Important:</strong> Please check product availability before purchase by using the "Check Availability" button on each product
+              </div>
               <div className="flex items-center gap-2 text-sm">
                 <Wrench className="h-4 w-4" />
                 <span>We're working on a 24/7 platform for round-the-clock service!</span>
