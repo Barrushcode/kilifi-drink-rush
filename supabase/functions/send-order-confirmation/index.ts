@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
 
@@ -280,70 +279,106 @@ serve(async (req: Request) => {
     
     const { to, subject, html, orderDetails }: EmailRequest = requestBody;
 
-    // Ensure all required fields are present
-    if (!orderDetails) {
-      console.error("❌ Missing orderDetails");
+    // Handle both old and new calling formats
+    if (orderDetails) {
+      // NEW FORMAT: Send both customer confirmation and business notification
+      console.log("📋 Using new dual-email format with orderDetails");
+      
+      const results = [];
+
+      try {
+        // 1. Send confirmation email to customer
+        console.log(`📤 Sending confirmation email to customer: ${orderDetails.customerEmail}`);
+        const customerEmailHTML = generateOrderEmailHTML(orderDetails);
+        
+        const customerResponse = await resend.emails.send({
+          from: "Barrush Delivery <onboarding@resend.dev>",
+          to: [orderDetails.customerEmail],
+          subject: `🎉 Order Confirmed - #${orderDetails.reference} | Barrush Delivery`,
+          html: customerEmailHTML,
+        });
+        
+        console.log(`✅ Customer confirmation email sent:`, customerResponse);
+        results.push({ 
+          recipient: orderDetails.customerEmail, 
+          type: 'customer_confirmation',
+          status: 'sent', 
+          data: customerResponse 
+        });
+
+        // 2. Send business notification email
+        console.log(`📤 Sending business notification email to: barrushdelivery@gmail.com`);
+        const businessEmailHTML = generateBusinessNotificationHTML(orderDetails);
+        
+        const businessResponse = await resend.emails.send({
+          from: "Barrush Delivery <onboarding@resend.dev>",
+          to: ["barrushdelivery@gmail.com"],
+          subject: `🚨 NEW ORDER #${orderDetails.reference} - ${orderDetails.deliveryZone.name} | ${orderDetails.customerName}`,
+          html: businessEmailHTML,
+        });
+        
+        console.log(`✅ Business notification email sent:`, businessResponse);
+        results.push({ 
+          recipient: "barrushdelivery@gmail.com", 
+          type: 'business_notification',
+          status: 'sent', 
+          data: businessResponse 
+        });
+
+      } catch (emailError: any) {
+        console.error(`❌ Failed to send emails:`, emailError);
+        results.push({ 
+          recipient: 'both', 
+          status: 'failed', 
+          error: emailError.message 
+        });
+      }
+
+      console.log("📊 Final results:", results);
+      return new Response(JSON.stringify({ ok: true, results }), {
+        status: 200,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+
+    } else if (to && subject && html) {
+      // OLD FORMAT: Backward compatibility for existing implementations
+      console.log("📋 Using legacy email format - single email");
+      
+      const recipients = Array.isArray(to) ? to : [to];
+      console.log("📬 Recipients:", recipients);
+      const results = [];
+
+      // Send separate emails to each recipient to ensure delivery
+      for (const recipient of recipients) {
+        try {
+          console.log(`📤 Sending email to: ${recipient}`);
+          const response = await resend.emails.send({
+            from: "Barrush Delivery <onboarding@resend.dev>",
+            to: [recipient],
+            subject: subject,
+            html: html,
+          });
+          console.log(`✅ Email sent successfully to ${recipient}:`, response);
+          results.push({ recipient, status: 'sent', data: response });
+        } catch (emailError: any) {
+          console.error(`❌ Failed to send email to ${recipient}:`, emailError);
+          results.push({ recipient, status: 'failed', error: emailError.message });
+        }
+      }
+
+      console.log("📊 Final results:", results);
+      return new Response(JSON.stringify({ ok: true, results }), {
+        status: 200,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+
+    } else {
+      console.error("❌ Missing required fields");
       return new Response(
-        JSON.stringify({ ok: false, error: "orderDetails are required." }),
+        JSON.stringify({ ok: false, error: "Missing required fields. Provide either 'orderDetails' or 'to, subject, html'." }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
-
-    const results = [];
-
-    try {
-      // 1. Send confirmation email to customer
-      console.log(`📤 Sending confirmation email to customer: ${orderDetails.customerEmail}`);
-      const customerEmailHTML = generateOrderEmailHTML(orderDetails);
-      
-      const customerResponse = await resend.emails.send({
-        from: "Barrush Delivery <onboarding@resend.dev>",
-        to: [orderDetails.customerEmail],
-        subject: `🎉 Order Confirmed - #${orderDetails.reference} | Barrush Delivery`,
-        html: customerEmailHTML,
-      });
-      
-      console.log(`✅ Customer confirmation email sent:`, customerResponse);
-      results.push({ 
-        recipient: orderDetails.customerEmail, 
-        type: 'customer_confirmation',
-        status: 'sent', 
-        data: customerResponse 
-      });
-
-      // 2. Send business notification email
-      console.log(`📤 Sending business notification email to: barrushdelivery@gmail.com`);
-      const businessEmailHTML = generateBusinessNotificationHTML(orderDetails);
-      
-      const businessResponse = await resend.emails.send({
-        from: "Barrush Delivery <onboarding@resend.dev>",
-        to: ["barrushdelivery@gmail.com"],
-        subject: `🚨 NEW ORDER #${orderDetails.reference} - ${orderDetails.deliveryZone.name} | ${orderDetails.customerName}`,
-        html: businessEmailHTML,
-      });
-      
-      console.log(`✅ Business notification email sent:`, businessResponse);
-      results.push({ 
-        recipient: "barrushdelivery@gmail.com", 
-        type: 'business_notification',
-        status: 'sent', 
-        data: businessResponse 
-      });
-
-    } catch (emailError: any) {
-      console.error(`❌ Failed to send emails:`, emailError);
-      results.push({ 
-        recipient: 'both', 
-        status: 'failed', 
-        error: emailError.message 
-      });
-    }
-
-    console.log("📊 Final results:", results);
-    return new Response(JSON.stringify({ ok: true, results }), {
-      status: 200,
-      headers: { "Content-Type": "application/json", ...corsHeaders },
-    });
   } catch (err: any) {
     console.error("💥 Fatal error in email function:", err);
     return new Response(

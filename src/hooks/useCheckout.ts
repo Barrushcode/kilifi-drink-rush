@@ -134,11 +134,9 @@ export function useCheckout(
         totalAmount
       };
 
-      // Send order confirmation to customer only
+      // Send order confirmation emails (both customer and business)
       const { data, error } = await supabase.functions.invoke('send-order-confirmation', {
         body: {
-          to: [shippingDetails.email],
-          subject: `Order Confirmed! #${reference}`,
           orderDetails
         }
       });
