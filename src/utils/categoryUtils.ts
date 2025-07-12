@@ -25,7 +25,7 @@ export const getCategoryFromName = (name: string, price: number, description?: s
   
   // Beer categories
   if (lowerName.includes('beer') || lowerName.includes('lager') || lowerName.includes('ale')) {
-    return 'Beer';
+    return 'Beer (6-Packs)';
   }
   
   // Wine categories  

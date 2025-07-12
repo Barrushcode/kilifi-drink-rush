@@ -5,7 +5,7 @@ import { GroupedProduct } from '@/utils/productGroupingUtils';
 const FIXED_CATEGORIES = [
   'Whisky',
   'Wine',
-  'Beer',
+  'Beer (6-Packs)',
   'Champagne', 
   'Liqueur',
   'Tequila',
@@ -24,9 +24,9 @@ const CATEGORY_MAPPING: Record<string, string> = {
   'whisky': 'Whisky', 
   'wine': 'Wine',
   'wines': 'Wine',
-  'beer': 'Beer',
-  'beers': 'Beer',
-  '6 pack': 'Beer',
+  'beer': 'Beer (6-Packs)',
+  'beers': 'Beer (6-Packs)',
+  '6 pack': 'Beer (6-Packs)',
   'liqueurs': 'Liqueur',
   'liqueur': 'Liqueur',
   'mixer': 'Mixer',
@@ -62,7 +62,12 @@ export const useProductFilters = (products: GroupedProduct[], searchTerm: string
       const normalizedProductCategory = normalizeCategory(product.category);
       const normalizedSelectedCategory = normalizeCategory(selectedCategory);
       
+      // Handle Beer (6-Packs) special case - match if selected category contains "Beer" and product is beer
+      const isBeerMatch = selectedCategory.includes('Beer') && 
+        (normalizedProductCategory.toLowerCase().includes('beer') || product.category.toLowerCase().includes('beer'));
+      
       const matchesCategory = 
+        isBeerMatch ||
         normalizedProductCategory.toLowerCase() === normalizedSelectedCategory.toLowerCase() ||
         normalizedProductCategory.toLowerCase().includes(normalizedSelectedCategory.toLowerCase()) ||
         normalizedSelectedCategory.toLowerCase().includes(normalizedProductCategory.toLowerCase());
