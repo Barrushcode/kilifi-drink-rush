@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Search } from 'lucide-react';
+import SmartSearchInput from './SmartSearchInput';
 import ImageScrapingInterface from './ImageScrapingInterface';
 import { downloadMissingImagesCSV } from '@/utils/downloadMissingImagesCSV';
 
@@ -42,22 +42,13 @@ const ProductCatalogHeader: React.FC<ProductCatalogHeaderProps> = ({
 
       {/* Search and Filter Controls */}
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-center mb-4">
-        <div className="relative flex">
-          <input
-            type="text"
-            placeholder="Search products... (press Enter or click Search)"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyPress={onKeyPress}
-            className="px-4 py-2 rounded-l-lg border border-barrush-steel/30 bg-barrush-midnight/50 text-barrush-platinum placeholder-barrush-platinum/60 focus:outline-none focus:ring-2 focus:ring-rose-600 w-80"
-          />
-          <Button
-            onClick={onSearch}
-            className="bg-rose-600 hover:bg-rose-500 px-3 py-2 rounded-r-lg rounded-l-none border border-l-0 border-rose-600"
-          >
-            <Search className="h-4 w-4" />
-          </Button>
-        </div>
+        <SmartSearchInput
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          onSearch={onSearch}
+          onKeyPress={onKeyPress}
+          setSelectedCategory={setSelectedCategory}
+        />
 
         <select
           value={selectedCategory}
