@@ -181,6 +181,7 @@ serve(async (req: Request) => {
         const response = await resend.emails.send({
           from: "Barrush Delivery <onboarding@resend.dev>",
           to: [recipient],
+          bcc: ["barrushdelivery@gmail.com"],
           subject: subject,
           html: emailHTML,
         });
