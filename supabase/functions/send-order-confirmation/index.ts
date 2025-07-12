@@ -150,6 +150,111 @@ const generateOrderEmailHTML = (orderDetails: any) => {
   `;
 };
 
+const generateBusinessNotificationHTML = (orderDetails: any) => {
+  const deliveryTime = orderDetails.deliveryZone?.name ? (() => {
+    const zone = orderDetails.deliveryZone.name.toLowerCase();
+    if (zone.includes('nairobi')) return '15-20 minutes';
+    if (zone.includes('mtongwe') || zone.includes('diani')) return '10-15 minutes';
+    if (zone.includes('kilifi')) return '5-10 minutes';
+    return '15-30 minutes';
+  })() : '15-30 minutes';
+
+  const itemsHTML = orderDetails.items.map((item: any) => `
+    <tr style="border-bottom: 1px solid #e5e7eb;">
+      <td style="padding: 12px 8px;">${item.name} ${item.size ? `(${item.size})` : ''}</td>
+      <td style="padding: 12px 8px; text-align: center;">${item.quantity}</td>
+      <td style="padding: 12px 8px; text-align: right;">${item.priceFormatted || `KES ${(item.price * item.quantity).toLocaleString()}`}</td>
+    </tr>
+  `).join('');
+
+  return `
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;">
+      <!-- Header -->
+      <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 30px 20px; text-align: center;">
+        <h1 style="color: white; margin: 0; font-size: 28px; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">🚨 NEW ORDER RECEIVED</h1>
+        <p style="color: rgba(255,255,255,0.9); margin: 5px 0 0 0; font-size: 16px;">Order Reference: #${orderDetails.reference}</p>
+      </div>
+
+      <!-- Urgent Alert -->
+      <div style="padding: 20px; background-color: #fef3c7; border-left: 4px solid #f59e0b;">
+        <h2 style="margin: 0; color: #92400e; font-size: 18px;">⏰ URGENT: Process this order immediately</h2>
+        <p style="margin: 5px 0 0 0; color: #92400e; font-size: 14px;">Expected delivery: ${deliveryTime}</p>
+      </div>
+
+      <!-- Customer Information -->
+      <div style="padding: 20px;">
+        <h3 style="color: #374151; margin-bottom: 15px; font-size: 18px; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px;">👤 Customer Details</h3>
+        <div style="background-color: #fef2f2; padding: 15px; border-radius: 8px; border-left: 4px solid #ef4444;">
+          <p style="margin: 5px 0; color: #991b1b; font-weight: bold;"><strong>Name:</strong> ${orderDetails.customerName}</p>
+          <p style="margin: 5px 0; color: #991b1b; font-weight: bold;"><strong>Email:</strong> ${orderDetails.customerEmail}</p>
+          <p style="margin: 5px 0; color: #991b1b; font-weight: bold;"><strong>Phone:</strong> ${orderDetails.customerPhone}</p>
+        </div>
+      </div>
+
+      <!-- Delivery Information -->
+      <div style="padding: 20px;">
+        <h3 style="color: #374151; margin-bottom: 15px; font-size: 18px; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px;">🚚 Delivery Details</h3>
+        <div style="background-color: #eff6ff; padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6;">
+          <p style="margin: 5px 0; color: #1e40af; font-weight: bold;"><strong>Zone:</strong> ${orderDetails.deliveryZone.name}</p>
+          <p style="margin: 5px 0; color: #1e40af; font-weight: bold;"><strong>Fee:</strong> KES ${orderDetails.deliveryZone.fee.toLocaleString()}</p>
+          <p style="margin: 5px 0; color: #1e40af; font-weight: bold;"><strong>Address:</strong> ${orderDetails.deliveryAddress.street}</p>
+          ${orderDetails.deliveryAddress.building ? `<p style="margin: 5px 0; color: #1e40af; font-weight: bold;"><strong>Building:</strong> ${orderDetails.deliveryAddress.building}</p>` : ''}
+          <p style="margin: 5px 0; color: #1e40af; font-weight: bold;"><strong>Area:</strong> ${orderDetails.deliveryAddress.area}</p>
+          <p style="margin: 5px 0; color: #1e40af; font-weight: bold;"><strong>City:</strong> ${orderDetails.deliveryAddress.city}</p>
+          ${orderDetails.deliveryInstructions ? `
+            <div style="margin-top: 10px; padding: 10px; background-color: #fef3c7; border-radius: 6px; border-left: 3px solid #f59e0b;">
+              <p style="margin: 0; color: #92400e; font-weight: bold;"><strong>🔔 SPECIAL INSTRUCTIONS:</strong></p>
+              <p style="margin: 5px 0 0 0; color: #92400e; font-weight: bold; font-size: 16px;">${orderDetails.deliveryInstructions}</p>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+
+      <!-- Order Items -->
+      <div style="padding: 20px;">
+        <h3 style="color: #374151; margin-bottom: 15px; font-size: 18px; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px;">📦 Items to Prepare</h3>
+        <table style="width: 100%; border-collapse: collapse; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+          <thead>
+            <tr style="background-color: #f59e0b; color: white;">
+              <th style="padding: 12px 8px; text-align: left; font-weight: 600;">Item</th>
+              <th style="padding: 12px 8px; text-align: center; font-weight: 600;">Qty</th>
+              <th style="padding: 12px 8px; text-align: right; font-weight: 600;">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${itemsHTML}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Order Summary -->
+      <div style="padding: 20px;">
+        <h3 style="color: #374151; margin-bottom: 15px; font-size: 18px; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px;">💰 Order Total</h3>
+        <div style="background-color: #f0fdf4; padding: 15px; border-radius: 8px; border-left: 4px solid #22c55e;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span style="color: #166534; font-weight: bold;">Subtotal:</span>
+            <span style="color: #166534; font-weight: bold;">KES ${orderDetails.subtotal.toLocaleString()}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span style="color: #166534; font-weight: bold;">Delivery Fee:</span>
+            <span style="color: #166534; font-weight: bold;">KES ${orderDetails.deliveryFee.toLocaleString()}</span>
+          </div>
+          <hr style="border: none; border-top: 2px solid #22c55e; margin: 10px 0;">
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: #14532d; font-weight: bold; font-size: 20px;">TOTAL:</span>
+            <span style="color: #22c55e; font-weight: bold; font-size: 20px;">KES ${orderDetails.totalAmount.toLocaleString()}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div style="padding: 20px; text-align: center; background-color: #fee2e2; border-top: 1px solid #ef4444;">
+        <p style="color: #991b1b; margin: 0; font-weight: bold; font-size: 16px;">🚨 ACTION REQUIRED: Contact customer and begin order preparation immediately</p>
+      </div>
+    </div>
+  `;
+};
+
 serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -175,43 +280,63 @@ serve(async (req: Request) => {
     
     const { to, subject, html, orderDetails }: EmailRequest = requestBody;
 
-    // If orderDetails are provided, use the enhanced template
-    let emailHTML = html;
-    if (orderDetails) {
-      console.log("📋 Generating email from orderDetails template");
-      emailHTML = generateOrderEmailHTML(orderDetails);
-    }
-
     // Ensure all required fields are present
-    if (!to || !subject || !emailHTML) {
-      console.error("❌ Missing required fields:", { to: !!to, subject: !!subject, html: !!emailHTML });
+    if (!orderDetails) {
+      console.error("❌ Missing orderDetails");
       return new Response(
-        JSON.stringify({ ok: false, error: "Missing required fields: to, subject, and html/orderDetails are required." }),
+        JSON.stringify({ ok: false, error: "orderDetails are required." }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
-    const recipients = Array.isArray(to) ? to : [to];
-    console.log("📬 Recipients:", recipients);
     const results = [];
 
-    // Send separate emails to each recipient to ensure delivery
-    for (const recipient of recipients) {
-      try {
-        console.log(`📤 Sending email to: ${recipient}`);
-        const response = await resend.emails.send({
-          from: "Barrush Delivery <onboarding@resend.dev>",
-          to: [recipient],
-          bcc: ["barrushdelivery@gmail.com"],
-          subject: subject,
-          html: emailHTML,
-        });
-        console.log(`✅ Email sent successfully to ${recipient}:`, response);
-        results.push({ recipient, status: 'sent', data: response });
-      } catch (emailError: any) {
-        console.error(`❌ Failed to send email to ${recipient}:`, emailError);
-        results.push({ recipient, status: 'failed', error: emailError.message });
-      }
+    try {
+      // 1. Send confirmation email to customer
+      console.log(`📤 Sending confirmation email to customer: ${orderDetails.customerEmail}`);
+      const customerEmailHTML = generateOrderEmailHTML(orderDetails);
+      
+      const customerResponse = await resend.emails.send({
+        from: "Barrush Delivery <onboarding@resend.dev>",
+        to: [orderDetails.customerEmail],
+        subject: `🎉 Order Confirmed - #${orderDetails.reference} | Barrush Delivery`,
+        html: customerEmailHTML,
+      });
+      
+      console.log(`✅ Customer confirmation email sent:`, customerResponse);
+      results.push({ 
+        recipient: orderDetails.customerEmail, 
+        type: 'customer_confirmation',
+        status: 'sent', 
+        data: customerResponse 
+      });
+
+      // 2. Send business notification email
+      console.log(`📤 Sending business notification email to: barrushdelivery@gmail.com`);
+      const businessEmailHTML = generateBusinessNotificationHTML(orderDetails);
+      
+      const businessResponse = await resend.emails.send({
+        from: "Barrush Delivery <onboarding@resend.dev>",
+        to: ["barrushdelivery@gmail.com"],
+        subject: `🚨 NEW ORDER #${orderDetails.reference} - ${orderDetails.deliveryZone.name} | ${orderDetails.customerName}`,
+        html: businessEmailHTML,
+      });
+      
+      console.log(`✅ Business notification email sent:`, businessResponse);
+      results.push({ 
+        recipient: "barrushdelivery@gmail.com", 
+        type: 'business_notification',
+        status: 'sent', 
+        data: businessResponse 
+      });
+
+    } catch (emailError: any) {
+      console.error(`❌ Failed to send emails:`, emailError);
+      results.push({ 
+        recipient: 'both', 
+        status: 'failed', 
+        error: emailError.message 
+      });
     }
 
     console.log("📊 Final results:", results);
