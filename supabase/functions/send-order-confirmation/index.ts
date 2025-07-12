@@ -156,16 +156,35 @@ serve(async (req: Request) => {
   }
 
   try {
-    const { to, subject, html, orderDetails }: EmailRequest = await req.json();
+    console.log("=== EMAIL FUNCTION CALLED ===");
+    console.log("Request method:", req.method);
+    console.log("Request headers:", Object.fromEntries(req.headers.entries()));
+    
+    const apiKey = Deno.env.get("RESEND_API_KEY");
+    if (!apiKey) {
+      console.error("❌ RESEND_API_KEY not found in environment variables");
+      return new Response(
+        JSON.stringify({ ok: false, error: "RESEND_API_KEY not configured" }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+    console.log("✅ RESEND_API_KEY found");
+
+    const requestBody = await req.json();
+    console.log("📧 Email request body:", JSON.stringify(requestBody, null, 2));
+    
+    const { to, subject, html, orderDetails }: EmailRequest = requestBody;
 
     // If orderDetails are provided, use the enhanced template
     let emailHTML = html;
     if (orderDetails) {
+      console.log("📋 Generating email from orderDetails template");
       emailHTML = generateOrderEmailHTML(orderDetails);
     }
 
     // Ensure all required fields are present
     if (!to || !subject || !emailHTML) {
+      console.error("❌ Missing required fields:", { to: !!to, subject: !!subject, html: !!emailHTML });
       return new Response(
         JSON.stringify({ ok: false, error: "Missing required fields: to, subject, and html/orderDetails are required." }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
@@ -173,11 +192,13 @@ serve(async (req: Request) => {
     }
 
     const recipients = Array.isArray(to) ? to : [to];
+    console.log("📬 Recipients:", recipients);
     const results = [];
 
     // Send separate emails to each recipient to ensure delivery
     for (const recipient of recipients) {
       try {
+        console.log(`📤 Sending email to: ${recipient}`);
         const response = await resend.emails.send({
           from: "Barrush Delivery <onboarding@resend.dev>",
           to: [recipient],
@@ -185,21 +206,23 @@ serve(async (req: Request) => {
           subject: subject,
           html: emailHTML,
         });
+        console.log(`✅ Email sent successfully to ${recipient}:`, response);
         results.push({ recipient, status: 'sent', data: response });
       } catch (emailError: any) {
-        console.error(`Failed to send email to ${recipient}:`, emailError);
+        console.error(`❌ Failed to send email to ${recipient}:`, emailError);
         results.push({ recipient, status: 'failed', error: emailError.message });
       }
     }
 
+    console.log("📊 Final results:", results);
     return new Response(JSON.stringify({ ok: true, results }), {
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   } catch (err: any) {
-    console.error("Error sending email:", err);
+    console.error("💥 Fatal error in email function:", err);
     return new Response(
-      JSON.stringify({ ok: false, error: err.message }),
+      JSON.stringify({ ok: false, error: err.message, stack: err.stack }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   }
