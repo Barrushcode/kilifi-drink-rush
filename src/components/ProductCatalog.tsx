@@ -9,33 +9,7 @@ import ProductPriceFilter from './ProductPriceFilter';
 import ProductSearchFeedback from './ProductSearchFeedback';
 import ProductResultsInfo from './ProductResultsInfo';
 import { useOptimizedProducts } from '@/hooks/useOptimizedProducts';
-import { useCategories } from '@/hooks/useCategories';
-
-// Enhanced categories including new description-based ones
-const FIXED_CATEGORIES = [
-  'All',
-  'Beer',
-  '6-Packs & Beer Sets',
-  'Wine',
-  'Wine Sets & Collections',
-  'Whiskey',
-  'Whiskey Collections',
-  'Vodka',
-  'Vodka Premium Sets',
-  'Champagne',
-  'Champagne & Sparkling Sets',
-  'Gin',
-  'Gin Premium Collections',
-  'Cognac & Premium Brandy',
-  'Rum',
-  'Rum Collections',
-  'Tequila',
-  'Tequila Premium Sets',
-  'Liqueur',
-  'Juices',
-  'Premium Collection',
-  'Spirits'
-];
+import { useProductFilters } from '@/hooks/useProductFilters';
 
 const ProductCatalog: React.FC = () => {
   const [searchInput, setSearchInput] = useState('');
@@ -44,9 +18,6 @@ const ProductCatalog: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showAuditReport, setShowAuditReport] = useState(false);
   const itemsPerPage = 4; // Set to 4 as requested
-
-  // Fetch dynamic categories from the database
-  const { categories, loading: categoriesLoading } = useCategories();
 
   // Use optimized products hook with manual search term
   const { 
@@ -62,6 +33,9 @@ const ProductCatalog: React.FC = () => {
     currentPage,
     itemsPerPage
   });
+
+  // Use product filters for category management
+  const { categories } = useProductFilters(products, actualSearchTerm, selectedCategory);
 
   // Handle search when user presses Enter or clicks search button
   const handleSearch = () => {
@@ -136,7 +110,7 @@ const ProductCatalog: React.FC = () => {
     categories
   });
 
-  if (loading || categoriesLoading) {
+  if (loading) {
     return (
       <section id="products" className="pt-0 pb-0 bg-gradient-to-b from-barrush-midnight to-barrush-slate relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 lg:px-16 xl:px-20 2xl:px-0 relative z-10 mt-0 mb-0">
