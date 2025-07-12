@@ -124,15 +124,28 @@ const ProductDetail = () => {
     
     const shareData = {
       title: product.baseName,
-      text: `Check out ${product.baseName} at our store!`,
+      text: `Check out ${product.baseName} at Barrush Delivery!`,
       url: window.location.href
     };
 
     try {
-      if (navigator.share) {
+      if ('share' in navigator) {
         await navigator.share(shareData);
+      } else if ((navigator as any).clipboard) {
+        await (navigator as any).clipboard.writeText(window.location.href);
+        toast({
+          title: "Link Copied",
+          description: "Product link copied to clipboard",
+          duration: 2000,
+        });
       } else {
-        await navigator.clipboard.writeText(window.location.href);
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = window.location.href;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
         toast({
           title: "Link Copied",
           description: "Product link copied to clipboard",

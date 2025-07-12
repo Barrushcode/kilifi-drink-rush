@@ -242,3 +242,83 @@
     transform: scale(1);
   }
 }
+
+/* Mobile-specific optimizations for Capacitor apps */
+@media screen and (max-width: 768px) {
+  /* Ensure proper touch targets */
+  button, .clickable {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Improve scrolling performance */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Prevent zoom on input focus */
+  input, select, textarea {
+    font-size: 16px;
+  }
+  
+  /* Optimize for mobile viewport */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* iOS specific styles */
+@supports (-webkit-appearance: none) {
+  /* Safe area insets for notched devices */
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  
+  /* Prevent rubber band scrolling */
+  .main-content {
+    overscroll-behavior: none;
+  }
+}
+
+/* Android specific styles */
+@media screen and (max-width: 768px) and (orientation: portrait) {
+  /* Optimize for Android navigation */
+  .main-container {
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for better mobile support */
+  }
+}
+
+/* Capacitor status bar styles */
+.status-bar-safe-area {
+  height: var(--ion-safe-area-top, 20px);
+  background: var(--primary);
+}
+
+/* Enhanced touch feedback */
+.touch-feedback {
+  -webkit-tap-highlight-color: rgba(236, 72, 153, 0.2);
+  transition: background-color 0.15s ease;
+}
+
+.touch-feedback:active {
+  background-color: rgba(236, 72, 153, 0.1);
+}
+
+/* Improve mobile navigation */
+@media (max-width: 768px) {
+  .mobile-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: white;
+    border-top: 1px solid #e5e7eb;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
