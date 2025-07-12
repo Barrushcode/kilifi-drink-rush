@@ -39,6 +39,17 @@ interface EmailRequest {
 }
 
 const generateOrderEmailHTML = (orderDetails: any) => {
+  // Delivery time estimates based on zone
+  const getDeliveryTime = (zoneName: string) => {
+    const zone = zoneName.toLowerCase();
+    if (zone.includes('nairobi')) return '15-20 minutes';
+    if (zone.includes('mtongwe') || zone.includes('diani')) return '10-15 minutes';
+    if (zone.includes('kilifi')) return '5-10 minutes';
+    return '15-30 minutes'; // default
+  };
+
+  const deliveryTime = getDeliveryTime(orderDetails.deliveryZone.name);
+  
   const itemsHTML = orderDetails.items.map((item: any) => `
     <tr style="border-bottom: 1px solid #e5e7eb;">
       <td style="padding: 12px 8px;">${item.name} ${item.size ? `(${item.size})` : ''}</td>
@@ -48,16 +59,20 @@ const generateOrderEmailHTML = (orderDetails: any) => {
   `).join('');
 
   return `
-    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff;">
-      <!-- Header -->
-      <div style="background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%); padding: 30px 20px; text-align: center;">
-        <h1 style="color: white; margin: 0; font-size: 28px; font-weight: bold;">Order Confirmed!</h1>
-        <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">Thank you for your order with Barrush Delivery</p>
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;">
+      <!-- Header with Logo -->
+      <div style="background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%); padding: 30px 20px; text-align: center; position: relative;">
+        <div style="margin-bottom: 15px;">
+          <img src="https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/lovable-uploads/4c04bd38-2934-4f85-8897-76401cef6d00.png" alt="Barrush Delivery Logo" style="height: 80px; width: auto; margin: 0 auto;" />
+        </div>
+        <h1 style="color: white; margin: 10px 0 0 0; font-size: 28px; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">Order Confirmed!</h1>
+        <p style="color: rgba(255,255,255,0.9); margin: 5px 0 0 0; font-size: 16px;">Your order will be delivered in ${deliveryTime}</p>
       </div>
 
       <!-- Order Reference -->
       <div style="padding: 20px; background-color: #f8fafc; border-left: 4px solid #ec4899;">
-        <h2 style="margin: 0; color: #1f2937; font-size: 18px;">Order Reference: <span style="color: #ec4899;">#${orderDetails.reference}</span></h2>
+        <h2 style="margin: 0; color: #1f2937; font-size: 18px;">Order Reference: <span style="color: #ec4899; font-weight: bold;">#${orderDetails.reference}</span></h2>
+        <p style="margin: 5px 0 0 0; color: #6b7280; font-size: 14px;">Estimated delivery: ${deliveryTime}</p>
       </div>
 
       <!-- Customer Information -->
