@@ -40,89 +40,27 @@ export type Database = {
       }
       orders: {
         Row: {
-          building: string | null
           buyer_email: string
           buyer_gender: string | null
-          buyer_name: string
+          buyer_name: string | null
           buyer_phone: string | null
-          city: string | null
-          created_at: string
-          customer_name: string | null
-          customer_phone: string | null
-          delivery_fee: number
-          distributor_id: number | null
-          id: string
-          instructions: string | null
-          items: Json
-          location: string | null
-          order_reference: string
-          order_source: string | null
-          products: string | null
-          region: string
-          status: string | null
-          street: string | null
-          subtotal: number
-          total_amount: number
+          id: number
         }
         Insert: {
-          building?: string | null
           buyer_email: string
           buyer_gender?: string | null
-          buyer_name: string
+          buyer_name?: string | null
           buyer_phone?: string | null
-          city?: string | null
-          created_at?: string
-          customer_name?: string | null
-          customer_phone?: string | null
-          delivery_fee: number
-          distributor_id?: number | null
-          id?: string
-          instructions?: string | null
-          items: Json
-          location?: string | null
-          order_reference: string
-          order_source?: string | null
-          products?: string | null
-          region: string
-          status?: string | null
-          street?: string | null
-          subtotal: number
-          total_amount: number
+          id?: number
         }
         Update: {
-          building?: string | null
           buyer_email?: string
           buyer_gender?: string | null
-          buyer_name?: string
+          buyer_name?: string | null
           buyer_phone?: string | null
-          city?: string | null
-          created_at?: string
-          customer_name?: string | null
-          customer_phone?: string | null
-          delivery_fee?: number
-          distributor_id?: number | null
-          id?: string
-          instructions?: string | null
-          items?: Json
-          location?: string | null
-          order_reference?: string
-          order_source?: string | null
-          products?: string | null
-          region?: string
-          status?: string | null
-          street?: string | null
-          subtotal?: number
-          total_amount?: number
+          id?: number
         }
-        Relationships: [
-          {
-            foreignKeyName: "orders_distributor_id_fkey"
-            columns: ["distributor_id"]
-            isOneToOne: false
-            referencedRelation: "Contacts"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       productprice: {
         Row: {
