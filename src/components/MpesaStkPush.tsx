@@ -105,26 +105,14 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
         </div>
       `;
 
-      // Send order confirmation to customer
-      const { data: customerData, error: customerError } = await supabase.functions.invoke('send-order-confirmation', {
+      // Send order confirmation to customer only
+      const { data, error } = await supabase.functions.invoke('send-order-confirmation', {
         body: {
           to: [shippingDetails?.email].filter(Boolean),
           subject: `Order Confirmed! - ${orderReference} - KES ${amount.toLocaleString()}`,
           html: orderDetailsHtml
         }
       });
-
-      // Send new order notification to business
-      const { data: businessData, error: businessError } = await supabase.functions.invoke('send-order-confirmation', {
-        body: {
-          to: ["barrushdelivery@gmail.com"],
-          subject: `New Order Received - ${orderReference} - KES ${amount.toLocaleString()}`,
-          html: orderDetailsHtml
-        }
-      });
-
-      const data = customerData;
-      const error = customerError || businessError;
 
       if (error) {
         console.error('Failed to send order email:', error);
