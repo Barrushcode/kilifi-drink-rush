@@ -5,8 +5,8 @@ import { GroupedProduct } from '@/utils/productGroupingUtils';
 const FIXED_CATEGORIES = [
   'Whisky',
   'Wine',
-  'Beers',
-  'Champagne',
+  'Beer',
+  'Champagne', 
   'Liqueur',
   'Tequila',
   'Gin',
@@ -14,8 +14,35 @@ const FIXED_CATEGORIES = [
   'Brandy',
   'Rum',
   'Vodka',
-  'Juices', // Added Juices here
+  'Mixer',
+  'Soft Drinks',
 ];
+
+// Category normalization map
+const CATEGORY_MAPPING: Record<string, string> = {
+  'whiskey': 'Whisky',
+  'whisky': 'Whisky', 
+  'wine': 'Wine',
+  'wines': 'Wine',
+  'beer': 'Beer',
+  'beers': 'Beer',
+  '6 pack': 'Beer',
+  'liqueurs': 'Liqueur',
+  'liqueur': 'Liqueur',
+  'mixer': 'Mixer',
+  'mixers': 'Mixer',
+  'bitters': 'Mixer',
+  'soft drinks': 'Soft Drinks',
+  'ready to drink': 'Soft Drinks',
+  'spirit': 'Liqueur',
+  'bourbon': 'Whisky',
+  'sake': 'Wine',
+};
+
+const normalizeCategory = (category: string): string => {
+  const normalized = CATEGORY_MAPPING[category.toLowerCase()];
+  return normalized || category;
+};
 
 export const useProductFilters = (products: GroupedProduct[], searchTerm: string, selectedCategory: string) => {
   // Only show the fixed categories + All for filtering
@@ -31,12 +58,14 @@ export const useProductFilters = (products: GroupedProduct[], searchTerm: string
       if (selectedCategory === 'All') {
         return matchesSearch;
       }
-      // Enhanced: match if productCategory includes selectedCategory OR selectedCategory includes productCategory (case-insensitive)
-      const productCategoryLC = product.category.toLowerCase();
-      const selectedCategoryLC = selectedCategory.toLowerCase();
-      const matchesCategory =
-        productCategoryLC.includes(selectedCategoryLC) ||
-        selectedCategoryLC.includes(productCategoryLC);
+      // Normalize both categories for comparison
+      const normalizedProductCategory = normalizeCategory(product.category);
+      const normalizedSelectedCategory = normalizeCategory(selectedCategory);
+      
+      const matchesCategory = 
+        normalizedProductCategory.toLowerCase() === normalizedSelectedCategory.toLowerCase() ||
+        normalizedProductCategory.toLowerCase().includes(normalizedSelectedCategory.toLowerCase()) ||
+        normalizedSelectedCategory.toLowerCase().includes(normalizedProductCategory.toLowerCase());
       return matchesSearch && matchesCategory;
     });
   }, [products, searchTerm, selectedCategory]);
