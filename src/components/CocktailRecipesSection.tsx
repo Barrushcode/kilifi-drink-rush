@@ -13,7 +13,7 @@ const CocktailRecipesSection: React.FC = () => {
   // Get image URL from Supabase storage
   const getCocktailImageUrl = (imageName: string) => {
     const { data } = supabase.storage
-      .from('cocktails')
+      .from('cocktail')
       .getPublicUrl(imageName);
     return data.publicUrl;
   };
