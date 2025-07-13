@@ -50,9 +50,7 @@ const DeliveryZonesSection: React.FC = () => {
                 <div className="text-white text-xl font-semibold mb-4">
                   {zone.fee}
                 </div>
-                <p className="text-barrush-cream/80 mb-4 text-zinc-100">
-                  {zone.description}
-                </p>
+                
                 {zone.special}
               </CardContent>
             </Card>)}
