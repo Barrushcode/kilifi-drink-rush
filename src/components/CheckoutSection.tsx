@@ -5,6 +5,7 @@ import ZapierWebhookInput from './ZapierWebhookInput';
 import OrderSummaryCard from './OrderSummaryCard';
 import PaymentOptionsPanel from './PaymentOptionsPanel';
 import AlternativePaymentInfo from './AlternativePaymentInfo';
+import DeliverySpeedPopup from './DeliverySpeedPopup';
 import { useCheckout } from '@/hooks/useCheckout';
 
 const DELIVERY_ZONES = [{
@@ -119,6 +120,7 @@ const CheckoutSection: React.FC = () => {
           </div>
         </div>
       </div>
+      <DeliverySpeedPopup />
     </div>
   );
 };
