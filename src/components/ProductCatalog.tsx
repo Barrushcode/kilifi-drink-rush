@@ -8,6 +8,7 @@ import ProductLoadingSkeleton from './ProductLoadingSkeleton';
 import ProductPriceFilter from './ProductPriceFilter';
 import ProductSearchFeedback from './ProductSearchFeedback';
 import ProductResultsInfo from './ProductResultsInfo';
+import FreeDeliveryBanner from './FreeDeliveryBanner';
 import { useOptimizedProducts } from '@/hooks/useOptimizedProducts';
 import { useProductFilters } from '@/hooks/useProductFilters';
 
@@ -228,6 +229,9 @@ const ProductCatalog: React.FC = () => {
           itemsPerPage={itemsPerPage}
         />
       </div>
+      
+      {/* Free Delivery Banner */}
+      <FreeDeliveryBanner />
     </section>
   );
 };
