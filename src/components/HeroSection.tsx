@@ -22,7 +22,7 @@ const HeroSection: React.FC = () => {
             BARRUSH
           </h1>
           <div className="w-20 h-px mx-auto mb-8 bg-cyan-500 rounded-xl"></div>
-          <p className="text-3xl md:text-4xl text-barrush-platinum mb-6 font-light">You're Guilty Pleasure Courier </p>
+          
           <p className="text-xl text-barrush-platinum/80 mb-16 max-w-3xl mx-auto leading-relaxed">This is for the bold and the softies. Whether you're wildin' on a Friday or chilling with Netflix, we got you.</p>
           
           <Button onClick={handleOrderClick} size="lg" className="font-bold px-16 py-6 text-xl transition-all duration-300 hover:scale-105 shadow-2xl bg-[(#800020] bg-[#800080] text-zinc-50">
