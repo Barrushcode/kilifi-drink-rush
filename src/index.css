@@ -35,6 +35,11 @@
 
     --radius: 0.5rem;
 
+    /* Neon gradient colors */
+    --neon-blue: 220 100% 65%;
+    --neon-pink: 320 100% 70%;
+    --gradient-neon: linear-gradient(135deg, hsl(var(--neon-blue)), hsl(var(--neon-pink)));
+
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;

@@ -17,7 +17,7 @@ const FreeDeliveryBanner: React.FC = () => {
 
   return (
     <div className="fixed bottom-4 right-4 z-50 animate-slide-in-right">
-      <div className="bg-gradient-to-r from-primary to-primary-glow rounded-lg shadow-elegant p-4 max-w-sm text-white border border-white/20">
+      <div className="rounded-lg shadow-elegant p-4 max-w-sm text-white border border-white/20" style={{ background: "var(--gradient-neon)" }}>
         <div className="flex items-start gap-3">
           <div className="bg-white/20 rounded-full p-2 flex-shrink-0">
             <Truck className="h-5 w-5" />
