@@ -5,41 +5,49 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { useNavigate } from 'react-router-dom';
 import OptimizedImage from './OptimizedImage';
 
+// Import category images
+import whiskeyImage from '@/assets/category-whiskey.jpg';
+import vodkaImage from '@/assets/category-vodka.jpg';
+import wineImage from '@/assets/category-wine.jpg';
+import beerImage from '@/assets/category-beer.jpg';
+import rumImage from '@/assets/category-rum.jpg';
+import ginImage from '@/assets/category-gin.jpg';
+
 const categories = [
   {
     id: 'whiskey',
     name: 'Whiskey',
-    image: 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/JOHNNIE%20WALKER%20BLACK%20-750ML.jpeg',
+    image: whiskeyImage,
     description: 'Premium whiskeys from around the world'
   },
   {
     id: 'vodka',
     name: 'Vodka',
-    image: 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/GREY%20GOOSE%20VODKA%20750ML.jfif',
+    image: vodkaImage,
     description: 'Crystal clear premium vodka'
   },
   {
     id: 'wine',
     name: 'Wine',
-    image: 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/MOET%20%26CHANDON%20IMPERIAL%20BRUT%20750ML.jpeg',
+    image: wineImage,
     description: 'Fine wines and champagnes'
   },
   {
     id: 'beer',
     name: 'Beer',
-    image: 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/HUNTERS%20GOLD%20CIDER%206%20PACK%20330ML%20CANS.jfif',
+    image: beerImage,
     description: 'Refreshing beers and premium ciders'
   },
   {
     id: 'rum',
     name: 'Rum',
-    image: 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/CAPTAIN%20MORGAN%20SPICED%20GOLD-1ltr.jpg',
+    image: rumImage,
     description: 'Caribbean and spiced rums'
   },
   {
     id: 'gin',
     name: 'Gin',
-    image: 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/BEEFEATER%2024%20PREMIUM%20GIN%20750ML.jpg',
+    image: ginImage,
     description: 'Premium botanical gins'
   }
 ];
