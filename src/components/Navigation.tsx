@@ -18,9 +18,9 @@ const Navigation = () => {
 
   return (
     <>
-      {/* Enhanced desktop navigation with better spacing */}
-      <nav className="fixed top-0 left-0 right-0 z-40 bg-black border-b border-barrush-steel/30">
-        <div className="max-w-7xl mx-auto px-4 lg:px-8 py-3 bg-black">
+      {/* Enhanced navigation with iOS optimizations */}
+      <nav className="ios-navigation-fix">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 py-3 ios-safe-navigation">
           <div className="flex items-center justify-between">
             {/* Logo with consistent sizing */}
             <Link to="/" className="flex items-center">
@@ -99,12 +99,13 @@ const Navigation = () => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="text-barrush-platinum hover:bg-barrush-steel/20 h-touch w-touch touch-feedback active:scale-95 transition-transform duration-150"
+                    className="ios-touch-target ios-button-feedback text-barrush-platinum hover:bg-barrush-steel/20"
                     style={{ 
                       WebkitTapHighlightColor: 'transparent',
                       touchAction: 'manipulation',
                       WebkitTouchCallout: 'none',
-                      WebkitUserSelect: 'none'
+                      WebkitUserSelect: 'none',
+                      userSelect: 'none'
                     }}
                   >
                     <ShoppingCart className="h-5 w-5" />
@@ -121,14 +122,19 @@ const Navigation = () => {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
+                    // Add haptic feedback for iOS
+                    if ('vibrate' in navigator) {
+                      navigator.vibrate(10);
+                    }
                     setMobileMenuOpen(true);
                   }}
-                  className="text-barrush-platinum hover:bg-barrush-steel/20 h-touch w-touch touch-feedback active:scale-95 transition-transform duration-150"
+                  className="ios-touch-target ios-button-feedback text-barrush-platinum hover:bg-barrush-steel/20"
                   style={{ 
                     WebkitTapHighlightColor: 'transparent',
                     touchAction: 'manipulation',
                     WebkitTouchCallout: 'none',
-                    WebkitUserSelect: 'none'
+                    WebkitUserSelect: 'none',
+                    userSelect: 'none'
                   }}
                 >
                   <Menu className="h-5 w-5" />
