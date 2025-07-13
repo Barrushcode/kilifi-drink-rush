@@ -6,11 +6,11 @@ import { Truck, Clock } from "lucide-react";
 const AnnouncementBar: React.FC = () => {
   return (
     <div
-      className="w-full h-12 flex items-center overflow-hidden shadow-sm border-b border-primary/20 mt-20 lg:mt-24"
+      className="w-full h-12 flex items-center overflow-hidden shadow-sm border-b border-primary/20"
       style={{
         background: "linear-gradient(90deg, hsl(var(--primary)/0.1) 0%, hsl(var(--primary)/0.15) 50%, hsl(var(--primary)/0.1) 100%)",
         color: "hsl(var(--primary))",
-        zIndex: 10,
+        zIndex: 30,
         position: "relative",
         minHeight: "3rem",
       }}
