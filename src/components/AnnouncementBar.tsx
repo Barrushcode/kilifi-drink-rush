@@ -1,15 +1,15 @@
 
 import React from "react";
-import { Truck } from "lucide-react";
+import { Truck, Clock } from "lucide-react";
 
-// Always sits below header, has a strong blue-to-pink gradient and visible content.
+// Subtle but noticeable announcement bar with alternating messages
 const AnnouncementBar: React.FC = () => {
   return (
     <div
-      className="w-full h-12 flex items-center overflow-hidden shadow border-2 border-pink-600"
+      className="w-full h-12 flex items-center overflow-hidden shadow-sm border-b border-primary/20"
       style={{
-        background: "linear-gradient(90deg, #3b82f6 0%, #a78bfa 45%, #ec4899 100%)",
-        color: "white",
+        background: "linear-gradient(90deg, hsl(var(--primary)/0.1) 0%, hsl(var(--primary)/0.15) 50%, hsl(var(--primary)/0.1) 100%)",
+        color: "hsl(var(--primary))",
         zIndex: 30,
         position: "relative",
         minHeight: "3rem",
@@ -17,33 +17,38 @@ const AnnouncementBar: React.FC = () => {
     >
       <div className="relative w-full h-full flex items-center">
         <div
-          className="flex items-center gap-8 animate-marquee whitespace-nowrap min-w-full h-full"
+          className="flex items-center gap-16 animate-marquee whitespace-nowrap min-w-full h-full"
           style={{
-            animation: "marquee-banner 16s linear infinite",
+            animation: "marquee-banner 20s linear infinite",
           }}
         >
-          {/* Changed message for clarity per user request */}
-          <span className="flex items-center text-white text-base font-semibold mr-16 drop-shadow">
+          <span className="flex items-center text-primary text-base font-semibold mr-16">
             <Truck className="h-5 w-5 flex-shrink-0 mr-2" />
             <span>
               🎉 <strong>FREE DELIVERY</strong> for orders above KES 5,000!
             </span>
           </span>
-          <span className="flex items-center text-white text-base font-semibold mr-16 drop-shadow">
+          <span className="flex items-center text-primary text-base font-semibold mr-16">
+            <Clock className="h-5 w-5 flex-shrink-0 mr-2" />
+            <span>
+              ⚡ <strong>98% of deliveries</strong> completed in under 25mins last week and we are only getting faster
+            </span>
+          </span>
+          <span className="flex items-center text-primary text-base font-semibold mr-16">
             <Truck className="h-5 w-5 flex-shrink-0 mr-2" />
             <span>
               🎉 <strong>FREE DELIVERY</strong> for orders above KES 5,000!
             </span>
           </span>
-          <span className="flex items-center text-white text-base font-semibold mr-16 drop-shadow">
-            <Truck className="h-5 w-5 flex-shrink-0 mr-2" />
+          <span className="flex items-center text-primary text-base font-semibold mr-16">
+            <Clock className="h-5 w-5 flex-shrink-0 mr-2" />
             <span>
-              🎉 <strong>FREE DELIVERY</strong> for orders above KES 5,000!
+              ⚡ <strong>98% of deliveries</strong> completed in under 25mins last week and we are only getting faster
             </span>
           </span>
         </div>
         <noscript>
-          <span className="flex items-center text-white text-base font-medium">
+          <span className="flex items-center text-primary text-base font-medium">
             <Truck className="h-5 w-5 flex-shrink-0 mr-2" />
             <span>
               🎉 <strong>FREE DELIVERY</strong> for orders above KES 5,000!
@@ -57,7 +62,7 @@ const AnnouncementBar: React.FC = () => {
             transform: translateX(0%);
           }
           100% {
-            transform: translateX(-33%);
+            transform: translateX(-50%);
           }
         }
         .animate-marquee {
@@ -65,7 +70,7 @@ const AnnouncementBar: React.FC = () => {
         }
         @media (max-width: 640px) {
           .animate-marquee {
-            animation-duration: 28s !important;
+            animation-duration: 32s !important;
           }
         }
       `}</style>
