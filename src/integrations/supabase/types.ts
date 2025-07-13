@@ -40,25 +40,73 @@ export type Database = {
       }
       orders: {
         Row: {
+          building: string | null
           buyer_email: string
           buyer_gender: string | null
           buyer_name: string | null
           buyer_phone: string | null
+          city: string | null
+          customer_name: string | null
+          customer_phone: string | null
+          delivery_fee: number | null
           id: number
+          instructions: string | null
+          items: string | null
+          location: string | null
+          order_reference: string | null
+          order_source: string | null
+          products: string | null
+          region: string | null
+          status: string | null
+          street: string | null
+          subtotal: number | null
+          total_amount: number | null
         }
         Insert: {
+          building?: string | null
           buyer_email: string
           buyer_gender?: string | null
           buyer_name?: string | null
           buyer_phone?: string | null
+          city?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          delivery_fee?: number | null
           id?: number
+          instructions?: string | null
+          items?: string | null
+          location?: string | null
+          order_reference?: string | null
+          order_source?: string | null
+          products?: string | null
+          region?: string | null
+          status?: string | null
+          street?: string | null
+          subtotal?: number | null
+          total_amount?: number | null
         }
         Update: {
+          building?: string | null
           buyer_email?: string
           buyer_gender?: string | null
           buyer_name?: string | null
           buyer_phone?: string | null
+          city?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          delivery_fee?: number | null
           id?: number
+          instructions?: string | null
+          items?: string | null
+          location?: string | null
+          order_reference?: string | null
+          order_source?: string | null
+          products?: string | null
+          region?: string | null
+          status?: string | null
+          street?: string | null
+          subtotal?: number | null
+          total_amount?: number | null
         }
         Relationships: []
       }
