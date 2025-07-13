@@ -23,22 +23,14 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 lg:hidden">
-      {/* Enhanced backdrop with better iOS support */}
+      {/* Backdrop */}
       <div 
-        className="mobile-menu-overlay"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          onClose();
-        }}
-        style={{
-          WebkitTapHighlightColor: 'transparent',
-          touchAction: 'manipulation'
-        }}
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
       />
       
-      {/* Enhanced menu panel with iOS optimizations */}
-      <div className={`mobile-menu-panel ${isOpen ? 'open' : ''}`}>
+      {/* Menu Panel */}
+      <div className="fixed right-0 top-0 h-full w-80 max-w-[85vw] bg-barrush-midnight border-l border-barrush-steel/30 animate-slide-in-right">
         <div className="flex items-center justify-between p-4 border-b border-barrush-steel/30">
           <h2 className="text-lg font-iphone font-semibold text-barrush-platinum">Menu</h2>
           <Button
@@ -47,54 +39,40 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              // Add haptic feedback for iOS
-              if ('vibrate' in navigator) {
-                navigator.vibrate(10);
-              }
               onClose();
             }}
-            className="ios-touch-target ios-button-feedback text-barrush-platinum hover:bg-barrush-steel/20"
+            className="text-barrush-platinum hover:bg-barrush-steel/20 h-touch w-touch touch-feedback active:scale-95 transition-transform duration-150"
             style={{ 
               WebkitTapHighlightColor: 'transparent',
               touchAction: 'manipulation',
               WebkitTouchCallout: 'none',
-              WebkitUserSelect: 'none',
-              userSelect: 'none'
+              WebkitUserSelect: 'none'
             }}
           >
             <X className="h-5 w-5" />
           </Button>
         </div>
         
-        <nav className="p-4 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 80px)' }}>
+        <nav className="p-4">
           <ul className="space-y-2">
-            {menuItems.map((item, index) => (
+            {menuItems.map((item) => (
               <li key={item.name}>
                 <Link
                   to={item.path}
                   onClick={(e) => {
                     e.stopPropagation();
-                    // Add haptic feedback for iOS
-                    if ('vibrate' in navigator) {
-                      navigator.vibrate(5);
-                    }
-                    // Add small delay for better iOS experience
-                    setTimeout(() => {
-                      onClose();
-                    }, 100);
+                    onClose();
                   }}
-                  className="ios-touch-target ios-button-feedback flex items-center px-4 py-4 text-barrush-platinum font-iphone rounded-lg hover:bg-barrush-steel/20 transition-all duration-200"
+                  className="flex items-center h-touch px-4 py-3 text-barrush-platinum font-iphone rounded-lg hover:bg-barrush-steel/20 transition-colors touch-feedback active:scale-95"
                   style={{ 
                     WebkitTapHighlightColor: 'transparent',
                     touchAction: 'manipulation',
                     WebkitTouchCallout: 'none',
-                    WebkitUserSelect: 'none',
-                    userSelect: 'none',
-                    animationDelay: `${index * 50}ms`
+                    WebkitUserSelect: 'none'
                   }}
                 >
                   {item.name === 'Cart' && <ShoppingCart className="h-4 w-4 mr-3" />}
-                  <span className="text-base">{item.name}</span>
+                  {item.name}
                 </Link>
               </li>
             ))}
