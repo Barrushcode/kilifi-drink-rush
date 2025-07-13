@@ -6,10 +6,12 @@ import CategoriesSlideshow from '@/components/CategoriesSlideshow';
 import DeliveryZonesSection from '@/components/DeliveryZonesSection';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
+import DeliveryNotice from '@/components/DeliveryNotice';
 
 const Index = () => {
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-barrush-midnight to-barrush-slate flex flex-col items-center">
+      <DeliveryNotice />
       <div className="w-full max-w-7xl flex flex-col flex-1 min-h-screen">
         <HeroSection />
         <HowItWorksSection />
