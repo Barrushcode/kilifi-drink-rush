@@ -91,7 +91,13 @@ const Navigation = () => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="text-barrush-platinum hover:bg-barrush-steel/20 h-touch w-touch"
+                    className="text-barrush-platinum hover:bg-barrush-steel/20 h-touch w-touch touch-feedback active:scale-95 transition-transform duration-150"
+                    style={{ 
+                      WebkitTapHighlightColor: 'transparent',
+                      touchAction: 'manipulation',
+                      WebkitTouchCallout: 'none',
+                      WebkitUserSelect: 'none'
+                    }}
                   >
                     <ShoppingCart className="h-5 w-5" />
                     {totalItems > 0 && (
@@ -104,8 +110,18 @@ const Navigation = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => setMobileMenuOpen(true)}
-                  className="text-barrush-platinum hover:bg-barrush-steel/20 h-touch w-touch"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setMobileMenuOpen(true);
+                  }}
+                  className="text-barrush-platinum hover:bg-barrush-steel/20 h-touch w-touch touch-feedback active:scale-95 transition-transform duration-150"
+                  style={{ 
+                    WebkitTapHighlightColor: 'transparent',
+                    touchAction: 'manipulation',
+                    WebkitTouchCallout: 'none',
+                    WebkitUserSelect: 'none'
+                  }}
                 >
                   <Menu className="h-5 w-5" />
                 </Button>

@@ -35,8 +35,18 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={onClose}
-            className="text-barrush-platinum hover:bg-barrush-steel/20"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onClose();
+            }}
+            className="text-barrush-platinum hover:bg-barrush-steel/20 h-touch w-touch touch-feedback active:scale-95 transition-transform duration-150"
+            style={{ 
+              WebkitTapHighlightColor: 'transparent',
+              touchAction: 'manipulation',
+              WebkitTouchCallout: 'none',
+              WebkitUserSelect: 'none'
+            }}
           >
             <X className="h-5 w-5" />
           </Button>
@@ -48,8 +58,17 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
               <li key={item.name}>
                 <Link
                   to={item.path}
-                  onClick={onClose}
-                  className="flex items-center h-touch px-4 py-3 text-barrush-platinum font-iphone rounded-lg hover:bg-barrush-steel/20 transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onClose();
+                  }}
+                  className="flex items-center h-touch px-4 py-3 text-barrush-platinum font-iphone rounded-lg hover:bg-barrush-steel/20 transition-colors touch-feedback active:scale-95"
+                  style={{ 
+                    WebkitTapHighlightColor: 'transparent',
+                    touchAction: 'manipulation',
+                    WebkitTouchCallout: 'none',
+                    WebkitUserSelect: 'none'
+                  }}
                 >
                   {item.name === 'Cart' && <ShoppingCart className="h-4 w-4 mr-3" />}
                   {item.name}
