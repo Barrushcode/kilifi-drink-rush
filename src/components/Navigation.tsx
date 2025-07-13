@@ -53,6 +53,14 @@ const Navigation = () => {
                   
                   <NavigationMenuItem>
                     <NavigationMenuLink asChild>
+                      <Link to="/events" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-barrush-platinum hover:text-rose-600 hover:bg-barrush-steel/20 font-iphone px-6 py-3")}>
+                        Events
+                      </Link>
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+                  
+                  <NavigationMenuItem>
+                    <NavigationMenuLink asChild>
                       <Link to="/recipes" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-barrush-platinum hover:text-rose-600 hover:bg-barrush-steel/20 font-iphone px-6 py-3")}>
                         Cocktail Recipes
                       </Link>
