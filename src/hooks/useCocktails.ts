@@ -42,7 +42,7 @@ export const getCocktailImageUrl = (filename: string): string => {
   if (!filename) return '';
   
   const { data } = supabase.storage
-    .from('cocktailimages')
+    .from('cocktails')
     .getPublicUrl(filename);
   
   return data.publicUrl;
