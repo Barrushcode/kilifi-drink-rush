@@ -10,13 +10,13 @@
   "scope": "/",
   "icons": [
     {
-      "src": "/lovable-uploads/160b10ea-fcd2-472b-93ce-fbc961e9af66.png",
+      "src": "/lovable-uploads/4f74a78b-bd7e-4fce-86d5-989cc9ec9472.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/lovable-uploads/817c7ccd-c1cf-4844-8188-1b0d231cd0b9.png",
+      "src": "/lovable-uploads/4f74a78b-bd7e-4fce-86d5-989cc9ec9472.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -29,14 +29,14 @@
       "short_name": "Products",
       "description": "Browse our alcohol selection",
       "url": "/products",
-      "icons": [{ "src": "/lovable-uploads/160b10ea-fcd2-472b-93ce-fbc961e9af66.png", "sizes": "96x96" }]
+      "icons": [{ "src": "/lovable-uploads/4f74a78b-bd7e-4fce-86d5-989cc9ec9472.png", "sizes": "96x96" }]
     },
     {
       "name": "View Cart",
       "short_name": "Cart",
       "description": "View your shopping cart",
       "url": "/cart",
-      "icons": [{ "src": "/lovable-uploads/160b10ea-fcd2-472b-93ce-fbc961e9af66.png", "sizes": "96x96" }]
+      "icons": [{ "src": "/lovable-uploads/4f74a78b-bd7e-4fce-86d5-989cc9ec9472.png", "sizes": "96x96" }]
     }
   ]
 }
