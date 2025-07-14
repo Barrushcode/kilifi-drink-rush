@@ -19,7 +19,7 @@ const Navigation = () => {
   return (
     <>
       {/* Enhanced desktop navigation with better spacing */}
-      <nav className="fixed top-0 left-0 right-0 z-40 bg-black border-b border-barrush-steel/30">
+      <nav className="fixed top-0 left-0 right-0 z-40 bg-black border-b border-barrush-steel/30 safe-top">
         <div className="max-w-7xl mx-auto px-4 lg:px-8 py-3 bg-black">
           <div className="flex items-center justify-between">
             {/* Logo with consistent sizing */}
