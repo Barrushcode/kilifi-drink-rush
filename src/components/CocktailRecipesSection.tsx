@@ -1,27 +1,34 @@
 
-import React, { useState, useEffect } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { downloadRecipeAsText } from '@/utils/recipeDownloadUtils';
-import RecipeGrid from './RecipeGrid';
-import { classicRecipes, modernRecipes } from '@/data/cocktailRecipes';
-import { loadCocktailImages } from '@/services/cocktailImageService';
+import React from 'react';
+import { useCocktails, CocktailData } from '@/hooks/useCocktails';
+import CocktailCard from './CocktailCard';
+import { Loader } from 'lucide-react';
 
 const CocktailRecipesSection: React.FC = () => {
-  const [cocktailImages, setCocktailImages] = useState<Record<string, string>>({});
+  const { cocktails, loading, error } = useCocktails();
 
-  useEffect(() => {
-    setCocktailImages(loadCocktailImages());
-  }, []);
+  const handleDownload = (cocktail: CocktailData) => {
+    const content = `${cocktail.Name}
 
-  const handleDownload = (recipe: any) => {
-    downloadRecipeAsText(recipe);
-  };
+Ingredients:
+${cocktail['Recipe (Ingredients)']}
 
-  const mapRecipesWithImages = (recipes: typeof classicRecipes) => {
-    return recipes.map(recipe => ({
-      ...recipe,
-      image: cocktailImages[recipe.imageKey] || recipe.fallbackImage
-    }));
+Instructions:
+${cocktail.Instructions}
+
+---
+Created with BarrushDelivery Cocktail Recipes
+`;
+
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${cocktail.Name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_recipe.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -38,30 +45,26 @@ const CocktailRecipesSection: React.FC = () => {
           </p>
         </div>
         
-        <Tabs defaultValue="classic" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-12 bg-glass-effect border border-barrush-steel/30 max-w-md mx-auto">
-            <TabsTrigger 
-              value="classic" 
-              className="text-base font-semibold bg-transparent text-barrush-platinum data-[state=active]:bg-neon-pink data-[state=active]:text-white font-iphone transition-all duration-300"
-            >
-              Classic Cocktails
-            </TabsTrigger>
-            <TabsTrigger 
-              value="modern" 
-              className="text-base font-semibold bg-transparent text-barrush-platinum data-[state=active]:bg-neon-pink data-[state=active]:text-white font-iphone transition-all duration-300"
-            >
-              Modern Favorites
-            </TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="classic" className="animate-fade-in">
-            <RecipeGrid recipes={mapRecipesWithImages(classicRecipes)} onDownload={handleDownload} />
-          </TabsContent>
-          
-          <TabsContent value="modern" className="animate-fade-in">
-            <RecipeGrid recipes={mapRecipesWithImages(modernRecipes)} onDownload={handleDownload} />
-          </TabsContent>
-        </Tabs>
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader className="h-8 w-8 animate-spin text-neon-pink" />
+            <span className="ml-2 text-barrush-platinum font-iphone">Loading cocktails...</span>
+          </div>
+        ) : error ? (
+          <div className="text-center py-20">
+            <p className="text-red-400 font-iphone">Error loading cocktails: {error}</p>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto animate-fade-in">
+            {cocktails.map((cocktail, index) => (
+              <CocktailCard 
+                key={index}
+                cocktail={cocktail}
+                onDownload={handleDownload}
+              />
+            ))}
+          </div>
+        )}
         
         <div className="text-center mt-20">
           <div className="bg-glass-effect border border-barrush-steel/30 rounded-xl p-8 max-w-2xl mx-auto backdrop-blur-md">
