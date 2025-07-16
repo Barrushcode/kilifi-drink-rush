@@ -21,7 +21,7 @@ export const fetchProductsData = async (
   const endIndex = startIndex + itemsPerPage - 1;
 
   // Single optimized query that gets both data and count
-  const dataQuery = buildDataQuery(orFilters, startIndex, endIndex);
+  const dataQuery = buildDataQuery(orFilters, startIndex, endIndex, selectedCategory);
   const { data, error: fetchError, count } = await dataQuery;
 
   if (fetchError) throw fetchError;
