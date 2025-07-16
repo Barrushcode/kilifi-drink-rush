@@ -9,11 +9,10 @@ export const useCategories = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-    // Since productprice table doesn't have Category column, return static categories
-    const data = [
-      { Category: 'General' }
-    ];
-    const error = null;
+        const { data, error } = await supabase
+          .from('productprice')
+          .select('Category')
+          .not('Category', 'is', null);
 
         if (error) throw error;
 

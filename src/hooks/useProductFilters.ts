@@ -1,22 +1,6 @@
 import { useMemo } from 'react';
 import { GroupedProduct } from '@/utils/productGroupingUtils';
-
-// These are the ONLY categories that will be shown in filters/order
-const FIXED_CATEGORIES = [
-  'Whisky',
-  'Wine',
-  'Beer (6-Packs)',
-  'Champagne', 
-  'Liqueur',
-  'Tequila',
-  'Gin',
-  'Cognac',
-  'Brandy',
-  'Rum',
-  'Vodka',
-  'Mixer',
-  'Soft Drinks',
-];
+import { useCategories } from '@/hooks/useCategories';
 
 // Category normalization map
 const CATEGORY_MAPPING: Record<string, string> = {
@@ -45,8 +29,8 @@ const normalizeCategory = (category: string): string => {
 };
 
 export const useProductFilters = (products: GroupedProduct[], searchTerm: string, selectedCategory: string) => {
-  // Only show the fixed categories + All for filtering
-  const categories = useMemo(() => ['All', ...FIXED_CATEGORIES], []);
+  // Get categories from Supabase
+  const { categories } = useCategories();
 
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
