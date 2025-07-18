@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "name": "Premium Whiskey",
+    "price": 15000,
+    "image": "/lovable-uploads/category-whiskey.jpg"
+  },
+  {
+    "id": 2,
+    "name": "Craft Beer Selection",
+    "price": 2500,
+    "image": "/lovable-uploads/category-beer.jpg"
+  },
+  {
+    "id": 3,
+    "name": "Premium Gin",
+    "price": 12000,
+    "image": "/lovable-uploads/category-gin.jpg"
+  },
+  {
+    "id": 4,
+    "name": "Fine Wine Collection",
+    "price": 8500,
+    "image": "/lovable-uploads/category-wine.jpg"
+  },
+  {
+    "id": 5,
+    "name": "Premium Vodka",
+    "price": 10000,
+    "image": "/lovable-uploads/category-vodka.jpg"
+  },
+  {
+    "id": 6,
+    "name": "Dark Rum",
+    "price": 11500,
+    "image": "/lovable-uploads/category-rum.jpg"
+  }
+]
