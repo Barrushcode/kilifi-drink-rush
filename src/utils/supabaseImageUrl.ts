@@ -39,8 +39,6 @@ function* generateNameVariants(productName: string) {
  */
 export async function getSupabaseProductImageUrl(productName: string): Promise<string | null> {
   const bucketName = "pictures";
-  // Prioritize most common extensions first for faster lookup
-  const extensions = [".jpg", ".png", ".jpeg", ".webp"];
   
   // Cache for failed lookups to avoid repeated attempts
   const cacheKey = `image_lookup_${productName}`;
@@ -48,32 +46,66 @@ export async function getSupabaseProductImageUrl(productName: string): Promise<s
     return null;
   }
 
-  for (const nameVariant of generateNameVariants(productName)) {
-    for (const ext of extensions) {
-      const filePath = `${nameVariant}${ext}`;
-      const { data } = supabase.storage.from(bucketName).getPublicUrl(filePath);
-      
-      if (data && data.publicUrl) {
-        try {
-          // Use a faster timeout for image checks
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 3000);
-          
-          const response = await fetch(data.publicUrl, { 
-            method: "HEAD",
-            signal: controller.signal
-          });
-          
-          clearTimeout(timeoutId);
-          
-          if (response.ok) {
-            console.log(`[SUPABASE IMAGE FOUND]`, data.publicUrl);
-            return data.publicUrl;
-          }
-        } catch (err) {
-          // Continue to next variant if this one fails
-          continue;
+  // First try exact match with common extensions
+  const exactMatches = [
+    `${productName}.jpg`,
+    `${productName}.jpeg`,
+    `${productName}.png`,
+    `${productName}.webp`
+  ];
+
+  for (const filePath of exactMatches) {
+    const { data } = supabase.storage.from(bucketName).getPublicUrl(filePath);
+    if (data && data.publicUrl) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2000);
+        
+        const response = await fetch(data.publicUrl, { 
+          method: "HEAD",
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (response.ok) {
+          console.log(`[SUPABASE IMAGE FOUND]`, data.publicUrl);
+          return data.publicUrl;
         }
+      } catch (err) {
+        continue;
+      }
+    }
+  }
+
+  // If exact match fails, try with (1), (2) variations for multiple images
+  const variationMatches = [
+    `${productName} (1).jpg`,
+    `${productName} (2).jpg`,
+    `${productName} (1).jpeg`,
+    `${productName} (2).jpeg`
+  ];
+
+  for (const filePath of variationMatches) {
+    const { data } = supabase.storage.from(bucketName).getPublicUrl(filePath);
+    if (data && data.publicUrl) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2000);
+        
+        const response = await fetch(data.publicUrl, { 
+          method: "HEAD",
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (response.ok) {
+          console.log(`[SUPABASE IMAGE FOUND]`, data.publicUrl);
+          return data.publicUrl;
+        }
+      } catch (err) {
+        continue;
       }
     }
   }
