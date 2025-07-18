@@ -39,31 +39,47 @@ function* generateNameVariants(productName: string) {
  */
 export async function getSupabaseProductImageUrl(productName: string): Promise<string | null> {
   const bucketName = "pictures";
-  const extensions = [
-    ".jpg", ".jpeg", ".png", ".webp",
-    ".JPG", ".JPEG", ".PNG", ".WEBP"
-  ];
+  // Prioritize most common extensions first for faster lookup
+  const extensions = [".jpg", ".png", ".jpeg", ".webp"];
+  
+  // Cache for failed lookups to avoid repeated attempts
+  const cacheKey = `image_lookup_${productName}`;
+  if (sessionStorage.getItem(cacheKey) === 'not_found') {
+    return null;
+  }
+
   for (const nameVariant of generateNameVariants(productName)) {
     for (const ext of extensions) {
       const filePath = `${nameVariant}${ext}`;
-      // Log what is being checked for debug purposes
-      console.log(`[SUPABASE IMAGE LOOKUP] Trying file:`, filePath);
       const { data } = supabase.storage.from(bucketName).getPublicUrl(filePath);
+      
       if (data && data.publicUrl) {
         try {
-          // HEAD request to confirm file actually exists at public URL
-          const response = await fetch(data.publicUrl, { method: "HEAD" });
+          // Use a faster timeout for image checks
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 3000);
+          
+          const response = await fetch(data.publicUrl, { 
+            method: "HEAD",
+            signal: controller.signal
+          });
+          
+          clearTimeout(timeoutId);
+          
           if (response.ok) {
             console.log(`[SUPABASE IMAGE FOUND]`, data.publicUrl);
             return data.publicUrl;
           }
         } catch (err) {
-          // Log error for debugging
-          console.warn(`[SUPABASE IMAGE ERROR] Error fetching HEAD for:`, data.publicUrl, err);
+          // Continue to next variant if this one fails
+          continue;
         }
       }
     }
   }
+  
+  // Cache failed lookup to avoid repeated attempts
+  sessionStorage.setItem(cacheKey, 'not_found');
   console.log(`[SUPABASE IMAGE LOOKUP] No match found for "${productName}" in bucket "${bucketName}".`);
   return null;
 }
