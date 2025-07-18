@@ -30,10 +30,9 @@ export const processRawProducts = async (
       productImage = storageImage;
     }
 
-    // Skip products without images for now, but you can remove this if you want to show all products
+    // Use placeholder image if no storage image found for faster loading
     if (!productImage) {
-      console.log(`❌ Skipping ${product.Title} - no image available`);
-      continue;
+      productImage = `https://images.unsplash.com/photo-1518770660439-4636190af475?w=300&h=300&fit=crop&crop=center`;
     }
 
     // Clean up description by removing common typos and fixing basic issues
