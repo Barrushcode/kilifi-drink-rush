@@ -56,5 +56,5 @@ export const processRawProducts = async (
     });
   }
 
-  return groupProductsByBaseName(processedProducts);
+  return groupProductsByBaseName(processedProducts, true); // Preserve Supabase order
 };

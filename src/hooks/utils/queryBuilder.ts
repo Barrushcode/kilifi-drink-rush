@@ -50,5 +50,5 @@ export const buildDataQuery = (orFilters: string[], startIndex: number, endIndex
     query = query.or(orFilters.join(','));
   }
 
-  return query.order('Title', { ascending: true }).range(startIndex, endIndex);
+  return query.order('id', { ascending: true }).range(startIndex, endIndex); // Maintain Supabase order
 };
