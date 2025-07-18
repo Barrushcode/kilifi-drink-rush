@@ -140,7 +140,6 @@ export type Database = {
           Price: number | null
           "Price / International": number | null
           Profit: number | null
-          Profitpercentage: number | null
           Title: string
         }
         Insert: {
@@ -151,7 +150,6 @@ export type Database = {
           Price?: number | null
           "Price / International"?: number | null
           Profit?: number | null
-          Profitpercentage?: number | null
           Title: string
         }
         Update: {
@@ -162,7 +160,6 @@ export type Database = {
           Price?: number | null
           "Price / International"?: number | null
           Profit?: number | null
-          Profitpercentage?: number | null
           Title?: string
         }
         Relationships: []
