@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -34,6 +35,7 @@ export const useCocktails = () => {
           throw new Error(`Database error: ${error.message}`);
         }
         
+        console.log('✅ Fetched cocktails data:', data);
         setCocktails(data || []);
       } catch (err) {
         console.error('Error fetching cocktails:', err);
@@ -50,14 +52,22 @@ export const useCocktails = () => {
 };
 
 export const getCocktailImageUrl = (filename: string): string => {
-  if (!filename) return '';
+  if (!filename) {
+    console.log('❌ No filename provided to getCocktailImageUrl');
+    return '';
+  }
   
-  // Ensure the filename has the .jpg extension
+  console.log('🔍 Getting image URL for filename:', filename);
+  
+  // Ensure the filename has the .jpg extension if it doesn't already
   const imageFilename = filename.endsWith('.jpg') ? filename : `${filename}.jpg`;
+  console.log('📝 Final filename with extension:', imageFilename);
   
   const { data } = supabase.storage
     .from('cocktails')
     .getPublicUrl(imageFilename);
+  
+  console.log('🌐 Generated public URL:', data.publicUrl);
   
   return data.publicUrl;
 };

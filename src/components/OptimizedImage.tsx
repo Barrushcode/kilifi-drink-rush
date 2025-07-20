@@ -50,7 +50,9 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   };
 
   useEffect(() => {
+    console.log('🔄 OptimizedImage received src:', src);
     const optimizedSrc = optimizeImageUrl(src);
+    console.log('⚡ Optimized src:', optimizedSrc);
     setImageSrc(optimizedSrc);
     setLoading(true);
     setError(false);
@@ -77,6 +79,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
       setError(false);
       setRetryCount(prev => prev + 1);
     } else {
+      console.log('💥 All image sources failed for alt:', alt);
       onError?.();
     }
   };
