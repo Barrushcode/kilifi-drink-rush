@@ -17,16 +17,27 @@ export const useCocktails = () => {
     const fetchCocktails = async () => {
       try {
         setLoading(true);
+        setError(null);
+        
         const { data, error } = await supabase
           .from('Cocktails page')
-          .select('*')
+          .select(`
+            Name,
+            "Recipe (Ingredients)",
+            Instructions,
+            image_filename
+          `)
           .order('Name');
 
-        if (error) throw error;
+        if (error) {
+          console.error('Supabase error:', error);
+          throw new Error(`Database error: ${error.message}`);
+        }
+        
         setCocktails(data || []);
       } catch (err) {
         console.error('Error fetching cocktails:', err);
-        setError(err instanceof Error ? err.message : 'Unknown error');
+        setError(err instanceof Error ? err.message : 'Failed to load cocktails');
       } finally {
         setLoading(false);
       }
