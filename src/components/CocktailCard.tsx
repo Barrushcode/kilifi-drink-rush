@@ -17,10 +17,25 @@ interface CocktailCardProps {
 const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => {
   const [bundleModalOpen, setBundleModalOpen] = useState(false);
   
-  // Direct storage URL construction
-  const imageUrl = cocktail.image_filename 
-    ? supabase.storage.from('cocktails').getPublicUrl(cocktail.image_filename).data.publicUrl
-    : '';
+  // Use local assets that already exist in the project
+  const getImageUrl = (name: string) => {
+    const nameToAsset: { [key: string]: string } = {
+      'Cosmopolitan': '/src/assets/cosmopolitan.jpg',
+      'Daiquiri': '/src/assets/daiquiri.jpg', 
+      'Espresso Martini': '/src/assets/espresso-martini.jpg',
+      'Manhattan': '/src/assets/manhattan.jpg',
+      'Margarita': '/src/assets/margarita.jpg',
+      'Martini': '/src/assets/martini.jpg',
+      'Mojito': '/src/assets/mojito.jpg',
+      'Moscow Mule': '/src/assets/moscow-mule.jpg',
+      'Negroni': '/src/assets/negroni.jpg',
+      'Pina Colada': '/src/assets/pina-colada.jpg',
+      'Whiskey Sour': '/src/assets/whiskey-sour.jpg'
+    };
+    return nameToAsset[name] || '';
+  };
+  
+  const imageUrl = getImageUrl(cocktail.Name);
   
   return (
     <Card className="group bg-glass-effect border border-barrush-steel/30 hover:border-neon-pink/50 transition-all duration-500 hover:scale-105 hover:shadow-2xl overflow-hidden backdrop-blur-md">
