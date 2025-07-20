@@ -9,15 +9,17 @@ import FeaturedEventsSection from '@/components/FeaturedEventsSection';
 const upcomingEvents = [
   {
     id: 1,
-    title: "Kilifi Beach Festival 2024",
-    description: "Annual beach festival featuring local musicians, food vendors, and cultural performances",
-    date: "2024-08-15",
-    time: "18:00",
-    location: "Bofa Beach, Kilifi",
-    category: "Festival",
-    image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=800&h=600&fit=crop",
-    attendees: "500+",
-    featured: true
+    title: "Saffron Garden Picnic & Paint",
+    description: "Unique painting session filled with fun memories. Bring your stylish picnic basket and join us for art, cocktails, and creativity.",
+    date: "2025-07-27",
+    time: "14:00",
+    location: "Saffron Garden Malindi (Old La Malindino)",
+    category: "Art & Culture",
+    image: "/lovable-uploads/3d290029-10cb-406d-9184-32ccfffb2606.png",
+    attendees: "Limited",
+    featured: true,
+    dressCode: "Happy Bold Colours",
+    pricing: "Adults KES 1900, Kids KES 1500"
   },
   {
     id: 2,
