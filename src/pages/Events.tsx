@@ -3,6 +3,7 @@ import { Calendar, MapPin, Clock, Users, ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import FeaturedEventsSection from '@/components/FeaturedEventsSection';
 
 // Sample events data - this could later come from a database
 const upcomingEvents = [
@@ -156,6 +157,9 @@ const Events: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Featured Events */}
+      <FeaturedEventsSection />
 
       {/* Upcoming Events */}
       <section className="py-16 lg:py-20">
