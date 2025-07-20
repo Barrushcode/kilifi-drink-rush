@@ -38,6 +38,7 @@
     /* Neon gradient colors */
     --neon-blue: 220 100% 65%;
     --neon-pink: 320 100% 70%;
+    --neon-green: 120 100% 50%;
     --gradient-neon: linear-gradient(135deg, hsl(var(--neon-blue)), hsl(var(--neon-pink)));
 
     --sidebar-background: 0 0% 98%;

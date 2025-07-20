@@ -209,7 +209,8 @@ const IngredientBundleModal: React.FC<IngredientBundleModalProps> = ({
                 <Button
                   onClick={addBundleToCart}
                   disabled={getTotalPrice() === 0}
-                  className="flex-1 bg-neon-pink hover:bg-neon-pink/80 text-white"
+                  variant="green"
+                  className="flex-1"
                 >
                   <ShoppingCart className="mr-2 h-4 w-4" />
                   Add Bundle to Cart

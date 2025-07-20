@@ -52,9 +52,12 @@ export const useCocktails = () => {
 export const getCocktailImageUrl = (filename: string): string => {
   if (!filename) return '';
   
+  // Ensure the filename has the .jpg extension
+  const imageFilename = filename.endsWith('.jpg') ? filename : `${filename}.jpg`;
+  
   const { data } = supabase.storage
     .from('cocktails')
-    .getPublicUrl(filename);
+    .getPublicUrl(imageFilename);
   
   return data.publicUrl;
 };
