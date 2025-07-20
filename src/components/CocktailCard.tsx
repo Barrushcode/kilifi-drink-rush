@@ -6,21 +6,7 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Download, Clock, BarChart3, ShoppingCart } from 'lucide-react';
 import OptimizedImage from './OptimizedImage';
 import { CocktailData } from '@/hooks/useCocktails';
-import { supabase } from '@/integrations/supabase/client';
 import IngredientBundleModal from './IngredientBundleModal';
-
-// Import all cocktail images
-import cosmopolitanImg from '@/assets/cosmopolitan.jpg';
-import daiquiriImg from '@/assets/daiquiri.jpg';
-import espressoMartiniImg from '@/assets/espresso-martini.jpg';
-import manhattanImg from '@/assets/manhattan.jpg';
-import margaritaImg from '@/assets/margarita.jpg';
-import martiniImg from '@/assets/martini.jpg';
-import mojitoImg from '@/assets/mojito.jpg';
-import moscowMuleImg from '@/assets/moscow-mule.jpg';
-import negroniImg from '@/assets/negroni.jpg';
-import pinaColadaImg from '@/assets/pina-colada.jpg';
-import whiskeySourImg from '@/assets/whiskey-sour.jpg';
 
 interface CocktailCardProps {
   cocktail: CocktailData;
@@ -30,25 +16,12 @@ interface CocktailCardProps {
 const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => {
   const [bundleModalOpen, setBundleModalOpen] = useState(false);
   
-  // Use imported images that work on all devices including mobile
-  const getImageUrl = (name: string) => {
-    const nameToAsset: { [key: string]: string } = {
-      'Cosmopolitan': cosmopolitanImg,
-      'Daiquiri': daiquiriImg,
-      'Espresso Martini': espressoMartiniImg,
-      'Manhattan': manhattanImg,
-      'Margarita': margaritaImg,
-      'Martini': martiniImg,
-      'Mojito': mojitoImg,
-      'Moscow Mule': moscowMuleImg,
-      'Negroni': negroniImg,
-      'Pina Colada': pinaColadaImg,
-      'Whiskey Sour': whiskeySourImg
-    };
-    return nameToAsset[name] || '';
-  };
+  // Construct image URL from Supabase storage bucket
+  const imageUrl = cocktail.image_filename 
+    ? `https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/Cocktails/${cocktail.image_filename}`
+    : '';
   
-  const imageUrl = getImageUrl(cocktail.Name);
+  const fallbackImage = "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=60";
   
   return (
     <Card className="group bg-glass-effect border border-barrush-steel/30 hover:border-neon-pink/50 transition-all duration-500 hover:scale-105 hover:shadow-2xl overflow-hidden backdrop-blur-md">
@@ -59,7 +32,7 @@ const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => 
             src={imageUrl}
             alt=""
             className="w-full h-full object-cover scale-110 blur-xl opacity-60"
-            fallbackSrc="https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=60"
+            fallbackSrc={fallbackImage}
           />
         </div>
         
@@ -69,7 +42,7 @@ const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => 
             src={imageUrl}
             alt={cocktail.Name}
             className="max-w-full max-h-full object-contain transition-transform duration-500 group-hover:scale-105 rounded-lg shadow-lg"
-            fallbackSrc="https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=60"
+            fallbackSrc={fallbackImage}
           />
         </div>
         
