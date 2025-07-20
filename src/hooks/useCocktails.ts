@@ -51,27 +51,3 @@ export const useCocktails = () => {
   return { cocktails, loading, error };
 };
 
-export const getCocktailImageUrl = (filename: string): string => {
-  if (!filename) {
-    console.log('❌ No filename provided to getCocktailImageUrl');
-    return '';
-  }
-  
-  console.log('🔍 Getting image URL for filename:', filename);
-  
-  // Ensure the filename has the .jpg extension if it doesn't already
-  let imageFilename = filename.endsWith('.jpg') ? filename : `${filename}.jpg`;
-  
-  // Capitalize the first letter to match storage filenames
-  imageFilename = imageFilename.charAt(0).toUpperCase() + imageFilename.slice(1);
-  
-  console.log('📝 Final filename with capitalization:', imageFilename);
-  
-  const { data } = supabase.storage
-    .from('cocktails')
-    .getPublicUrl(imageFilename);
-  
-  console.log('🌐 Generated public URL:', data.publicUrl);
-  
-  return data.publicUrl;
-};

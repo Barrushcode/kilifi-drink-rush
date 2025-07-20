@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Download, Clock, BarChart3, ShoppingCart } from 'lucide-react';
 import OptimizedImage from './OptimizedImage';
-import { CocktailData, getCocktailImageUrl } from '@/hooks/useCocktails';
+import { CocktailData } from '@/hooks/useCocktails';
+import { supabase } from '@/integrations/supabase/client';
 import IngredientBundleModal from './IngredientBundleModal';
 
 interface CocktailCardProps {
@@ -16,10 +17,10 @@ interface CocktailCardProps {
 const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => {
   const [bundleModalOpen, setBundleModalOpen] = useState(false);
   
-  // Use the proper getCocktailImageUrl function with debugging
-  console.log('🍸 Processing cocktail:', cocktail.Name, 'with image_filename:', cocktail.image_filename);
-  const imageUrl = getCocktailImageUrl(cocktail.image_filename);
-  console.log('🖼️ Final image URL for', cocktail.Name, ':', imageUrl);
+  // Direct storage URL construction
+  const imageUrl = cocktail.image_filename 
+    ? supabase.storage.from('cocktails').getPublicUrl(cocktail.image_filename).data.publicUrl
+    : '';
   
   return (
     <Card className="group bg-glass-effect border border-barrush-steel/30 hover:border-neon-pink/50 transition-all duration-500 hover:scale-105 hover:shadow-2xl overflow-hidden backdrop-blur-md">
