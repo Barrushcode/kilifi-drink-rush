@@ -251,7 +251,8 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
           <Button
             type="submit"
             disabled={processing || !userPhone}
-            className={`w-full bg-neon-pink hover:bg-neon-pink/90 text-white font-semibold py-6 text-lg transition-all duration-300 ${processing && 'opacity-60 cursor-not-allowed'}`}
+            variant="green"
+            className={`w-full font-semibold py-6 text-lg transition-all duration-300 ${processing && 'opacity-60 cursor-not-allowed'}`}
           >
             {processing ? 'Sending M-PESA request...' : `Pay KES ${amount.toLocaleString()} via M-PESA`}
           </Button>
