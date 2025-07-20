@@ -22,6 +22,7 @@ const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => 
           src={imageUrl}
           alt={cocktail.Name}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          fallbackSrc="https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=60"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
         <div className="absolute top-4 right-4 flex gap-2">
