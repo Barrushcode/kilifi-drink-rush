@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Download, Clock, BarChart3 } from 'lucide-react';
+import { Download, Clock, BarChart3, ShoppingCart } from 'lucide-react';
 import OptimizedImage from './OptimizedImage';
 import { CocktailData, getCocktailImageUrl } from '@/hooks/useCocktails';
+import IngredientBundleModal from './IngredientBundleModal';
 
 interface CocktailCardProps {
   cocktail: CocktailData;
@@ -11,6 +12,7 @@ interface CocktailCardProps {
 }
 
 const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => {
+  const [bundleModalOpen, setBundleModalOpen] = useState(false);
   const imageUrl = getCocktailImageUrl(cocktail.image_filename);
   
   return (
@@ -55,14 +57,31 @@ const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => 
           </div>
         </div>
         
-        <Button 
-          onClick={() => onDownload(cocktail)}
-          variant="outline" 
-          className="w-full mt-4 bg-transparent border-neon-pink text-neon-pink hover:bg-neon-pink hover:text-white transition-all duration-300 font-iphone"
-        >
-          <Download className="mr-2 h-4 w-4" />
-          Download Recipe
-        </Button>
+        <div className="space-y-2 mt-4">
+          <Button 
+            onClick={() => setBundleModalOpen(true)}
+            className="w-full bg-neon-pink hover:bg-neon-pink/80 text-white transition-all duration-300 font-iphone"
+          >
+            <ShoppingCart className="mr-2 h-4 w-4" />
+            Buy Ingredients as Bundle
+          </Button>
+          
+          <Button 
+            onClick={() => onDownload(cocktail)}
+            variant="outline" 
+            className="w-full bg-transparent border-neon-pink text-neon-pink hover:bg-neon-pink hover:text-white transition-all duration-300 font-iphone"
+          >
+            <Download className="mr-2 h-4 w-4" />
+            Download Recipe
+          </Button>
+        </div>
+
+        <IngredientBundleModal
+          isOpen={bundleModalOpen}
+          onClose={() => setBundleModalOpen(false)}
+          cocktailName={cocktail.Name}
+          ingredientsText={cocktail['Recipe (Ingredients)']}
+        />
       </CardContent>
     </Card>
   );
