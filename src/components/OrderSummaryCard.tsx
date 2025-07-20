@@ -1,10 +1,8 @@
-
 import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trash2, Plus, Minus } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
-
 interface ZoneInfo {
   name: string;
   fee: number;
@@ -28,7 +26,6 @@ interface OrderSummaryCardProps {
   subtotal: number;
   totalAmount: number;
 }
-
 const OrderSummaryCard: React.FC<OrderSummaryCardProps> = ({
   items,
   getTotalItems,
@@ -39,15 +36,13 @@ const OrderSummaryCard: React.FC<OrderSummaryCardProps> = ({
   deliveryFee,
   subtotal,
   totalAmount
-}) => (
-  <Card className="bg-barrush-charcoal/80 border-neon-pink border w-full">
+}) => <Card className="bg-barrush-charcoal/80 border-neon-pink border w-full">
     <CardHeader>
       <CardTitle className="text-neon-pink text-zinc-50">Order Summary</CardTitle>
     </CardHeader>
     <CardContent className="space-y-4">
       <div className="space-y-3 max-h-96 overflow-y-auto">
-        {items.map(item => (
-          <div key={item.id} className="flex items-center space-x-3 p-3 bg-neon-purple/40 rounded-lg">
+        {items.map(item => <div key={item.id} className="flex items-center space-x-3 p-3 bg-neon-purple/40 rounded-lg">
             <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded" />
             <div className="flex-1 min-w-0">
               <h4 className="text-white font-semibold text-sm truncate">{item.name}</h4>
@@ -66,8 +61,7 @@ const OrderSummaryCard: React.FC<OrderSummaryCardProps> = ({
                 <Trash2 className="h-3 w-3" />
               </Button>
             </div>
-          </div>
-        ))}
+          </div>)}
       </div>
       <div className="border-t border-neon-purple pt-4 space-y-2">
         <div className="flex justify-between text-white">
@@ -87,19 +81,7 @@ const OrderSummaryCard: React.FC<OrderSummaryCardProps> = ({
           </div>
         </div>
       </div>
-      <div className="mt-6 pt-6 border-t border-neon-purple">
-        <h4 className="font-semibold text-neon-pink mb-3 text-zinc-50">Payment Options</h4>
-        <p className="text-sm text-white mb-4">
-          Choose your preferred payment method:
-        </p>
-        <div className="space-y-2 text-white">
-          <p>• M-PESA Till Number: <strong className="text-neon-pink">5950470</strong></p>
-          <p>• Card Payment via Paystack</p>
-          <p>• Mobile Money & Apple Pay (Paystack)</p>
-        </div>
-      </div>
+      
     </CardContent>
-  </Card>
-);
-
+  </Card>;
 export default OrderSummaryCard;
