@@ -3,8 +3,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ExternalLink, ShoppingBag } from 'lucide-react';
-import beneathBaobabsImg from '@/assets/beneath-the-baobabs.jpg';
-import kaleidoscopeImg from '@/assets/kaleidoscope-festival.jpg';
 
 interface FeaturedEvent {
   id: string;
@@ -23,7 +21,7 @@ const featuredEvents: FeaturedEvent[] = [
     name: 'Beneath the Baobabs Festival',
     description: "Kilifi's iconic NYE festival held in a baobab forest with DJs, art, and immersive experiences.",
     officialSite: 'https://beneaththebaobabs.com/beneath-the-baobabs-festival/',
-    image: beneathBaobabsImg,
+    image: '/lovable-uploads/d3afdd56-6192-4a8d-86f3-2b0f9b1ed66f.png',
     bundleTitle: '🍾 Shop Baobabs Party Bundle',
     bundleIcon: '🍾',
     themeColor: 'from-amber-500/20 to-orange-600/20'
@@ -33,7 +31,7 @@ const featuredEvents: FeaturedEvent[] = [
     name: 'Kaleidoscope Festival',
     description: "A biannual celebration of music, community, and color in Kilifi's vibrant cultural scene.",
     officialSite: 'https://www.kaleidoscope.wtf/',
-    image: kaleidoscopeImg,
+    image: '/lovable-uploads/f36582da-bc1d-488b-9945-e28d111a4d2d.png',
     bundleTitle: '🍸 Shop Kaleidoscope Glow Bundle',
     bundleIcon: '🍸',
     themeColor: 'from-purple-500/20 to-pink-600/20'
