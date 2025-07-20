@@ -9,6 +9,19 @@ import { CocktailData } from '@/hooks/useCocktails';
 import { supabase } from '@/integrations/supabase/client';
 import IngredientBundleModal from './IngredientBundleModal';
 
+// Import all cocktail images
+import cosmopolitanImg from '@/assets/cosmopolitan.jpg';
+import daiquiriImg from '@/assets/daiquiri.jpg';
+import espressoMartiniImg from '@/assets/espresso-martini.jpg';
+import manhattanImg from '@/assets/manhattan.jpg';
+import margaritaImg from '@/assets/margarita.jpg';
+import martiniImg from '@/assets/martini.jpg';
+import mojitoImg from '@/assets/mojito.jpg';
+import moscowMuleImg from '@/assets/moscow-mule.jpg';
+import negroniImg from '@/assets/negroni.jpg';
+import pinaColadaImg from '@/assets/pina-colada.jpg';
+import whiskeySourImg from '@/assets/whiskey-sour.jpg';
+
 interface CocktailCardProps {
   cocktail: CocktailData;
   onDownload: (cocktail: CocktailData) => void;
@@ -17,20 +30,20 @@ interface CocktailCardProps {
 const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => {
   const [bundleModalOpen, setBundleModalOpen] = useState(false);
   
-  // Use local assets that already exist in the project
+  // Use imported images that work on all devices including mobile
   const getImageUrl = (name: string) => {
     const nameToAsset: { [key: string]: string } = {
-      'Cosmopolitan': '/src/assets/cosmopolitan.jpg',
-      'Daiquiri': '/src/assets/daiquiri.jpg', 
-      'Espresso Martini': '/src/assets/espresso-martini.jpg',
-      'Manhattan': '/src/assets/manhattan.jpg',
-      'Margarita': '/src/assets/margarita.jpg',
-      'Martini': '/src/assets/martini.jpg',
-      'Mojito': '/src/assets/mojito.jpg',
-      'Moscow Mule': '/src/assets/moscow-mule.jpg',
-      'Negroni': '/src/assets/negroni.jpg',
-      'Pina Colada': '/src/assets/pina-colada.jpg',
-      'Whiskey Sour': '/src/assets/whiskey-sour.jpg'
+      'Cosmopolitan': cosmopolitanImg,
+      'Daiquiri': daiquiriImg,
+      'Espresso Martini': espressoMartiniImg,
+      'Manhattan': manhattanImg,
+      'Margarita': margaritaImg,
+      'Martini': martiniImg,
+      'Mojito': mojitoImg,
+      'Moscow Mule': moscowMuleImg,
+      'Negroni': negroniImg,
+      'Pina Colada': pinaColadaImg,
+      'Whiskey Sour': whiskeySourImg
     };
     return nameToAsset[name] || '';
   };
