@@ -16,18 +16,21 @@ export type Database = {
     Tables: {
       "Cocktails page": {
         Row: {
+          id: number
           image_filename: string | null
           Instructions: string | null
           Name: string
           "Recipe (Ingredients)": string | null
         }
         Insert: {
+          id?: number
           image_filename?: string | null
           Instructions?: string | null
           Name: string
           "Recipe (Ingredients)"?: string | null
         }
         Update: {
+          id?: number
           image_filename?: string | null
           Instructions?: string | null
           Name?: string
