@@ -20,11 +20,18 @@ const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => 
   // Get image URL from Supabase storage bucket
   const getImageUrl = (filename: string) => {
     const { data } = supabase.storage.from('cocktails').getPublicUrl(filename);
+    console.log(`Image URL for ${cocktail.Name}:`, data.publicUrl);
     return data.publicUrl;
   };
 
   const imageUrl = cocktail.image_filename ? getImageUrl(cocktail.image_filename) : '';
   const fallbackImage = "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=60";
+  
+  console.log(`Processing ${cocktail.Name}:`, { 
+    image_filename: cocktail.image_filename, 
+    imageUrl,
+    hasImageUrl: !!imageUrl 
+  });
   
   return (
     <Card className="group bg-glass-effect border border-barrush-steel/30 hover:border-neon-pink/50 transition-all duration-500 hover:scale-105 hover:shadow-2xl overflow-hidden backdrop-blur-md">
