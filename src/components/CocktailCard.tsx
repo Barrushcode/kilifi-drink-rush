@@ -21,8 +21,6 @@ const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => 
     ? `https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/cocktails/${cocktail.image_filename}`
     : '';
   
-  console.log('Image URL for', cocktail.Name, ':', imageUrl);
-  
   const fallbackImage = "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=60";
   
   return (
@@ -30,21 +28,23 @@ const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => 
       <AspectRatio ratio={4/5} className="relative overflow-hidden">
         {/* Blurred background */}
         <div className="absolute inset-0">
-          <img
+          <OptimizedImage
             src={imageUrl}
             alt=""
             className="w-full h-full object-cover scale-110 blur-xl opacity-60"
-            loading="lazy"
+            fallbackSrc={fallbackImage}
+            priority={false}
           />
         </div>
         
         {/* Main image */}
         <div className="relative z-10 w-full h-full flex items-center justify-center p-2 sm:p-4">
-          <img
+          <OptimizedImage
             src={imageUrl}
             alt={cocktail.Name}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 rounded-lg shadow-lg"
-            loading="eager"
+            fallbackSrc={fallbackImage}
+            priority={true}
           />
         </div>
         
