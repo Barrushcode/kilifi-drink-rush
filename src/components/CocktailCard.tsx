@@ -21,6 +21,8 @@ const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => 
     ? `https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/cocktails/${cocktail.image_filename}`
     : '';
   
+  console.log('Image URL for', cocktail.Name, ':', imageUrl);
+  
   const fallbackImage = "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=60";
   
   return (
