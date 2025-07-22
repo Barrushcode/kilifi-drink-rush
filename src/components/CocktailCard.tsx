@@ -29,6 +29,14 @@ const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => 
   const imageUrl = cocktail.image_filename ? getImageUrl(cocktail.image_filename) : '';
   const fallbackImage = "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=60";
   
+  // Debug logging
+  console.log('🔍 CocktailCard Debug:', {
+    cocktailName: cocktail.Name,
+    image_filename: cocktail.image_filename,
+    imageUrl: imageUrl,
+    fallbackImage: fallbackImage
+  });
+  
   // Use fallback if no valid image URL
   const finalImageUrl = imageUrl || fallbackImage;
   
