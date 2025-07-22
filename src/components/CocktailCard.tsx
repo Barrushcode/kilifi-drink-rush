@@ -19,6 +19,9 @@ const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => 
   
   // Get image URL from Supabase storage bucket
   const getImageUrl = (filename: string) => {
+    if (!filename) {
+      return '';
+    }
     const { data } = supabase.storage.from('cocktails').getPublicUrl(filename);
     return data.publicUrl;
   };
@@ -26,13 +29,16 @@ const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => 
   const imageUrl = cocktail.image_filename ? getImageUrl(cocktail.image_filename) : '';
   const fallbackImage = "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=60";
   
+  // Use fallback if no valid image URL
+  const finalImageUrl = imageUrl || fallbackImage;
+  
   return (
     <Card className="group bg-glass-effect border border-barrush-steel/30 hover:border-neon-pink/50 transition-all duration-500 hover:scale-105 hover:shadow-2xl overflow-hidden backdrop-blur-md">
       <AspectRatio ratio={4/5} className="relative overflow-hidden">
         {/* Blurred background */}
         <div className="absolute inset-0">
           <OptimizedImage
-            src={imageUrl}
+            src={finalImageUrl}
             alt=""
             className="w-full h-full object-cover scale-110 blur-xl opacity-60"
             fallbackSrc={fallbackImage}
@@ -43,7 +49,7 @@ const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => 
         {/* Main image */}
         <div className="relative z-10 w-full h-full flex items-center justify-center p-2 sm:p-4">
           <OptimizedImage
-            src={imageUrl}
+            src={finalImageUrl}
             alt={cocktail.Name}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 rounded-lg shadow-lg"
             fallbackSrc={fallbackImage}
