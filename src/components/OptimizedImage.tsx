@@ -30,6 +30,11 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
   // Optimize image URL for better performance
   const optimizeImageUrl = (url: string): string => {
+    // If it's a Supabase storage URL, return as-is (they're already optimized)
+    if (url.includes('supabase.co/storage')) {
+      return url;
+    }
+    
     // If it's an Unsplash image, add optimization parameters
     if (url.includes('unsplash.com')) {
       const optimizedUrl = new URL(url);
