@@ -9,6 +9,19 @@ import FeaturedEventsSection from '@/components/FeaturedEventsSection';
 const upcomingEvents = [
   {
     id: 1,
+    title: "Journey to the Baobabs 2025",
+    description: "Kilifi's littest August weekend returns for the third year. Featuring a heavy lineup of Coastal performers and food and vendors.",
+    date: "2025-08-16",
+    time: "16:30",
+    location: "Beneath the Baobabs Venue, Kilifi, Kenya",
+    category: "Music Festival",
+    image: "/lovable-uploads/4fff77ec-78a5-428b-b35b-4b7136ac6c92.png",
+    attendees: "1500",
+    featured: true,
+    ticketLink: "https://www.quicket.co.za/events/314632-journey-to-the-baobabs-2025/?ref=link-campaign&lc=news2"
+  },
+  {
+    id: 2,
     title: "Saffron Garden Picnic & Paint",
     description: "Unique painting session filled with fun memories. Bring your stylish picnic basket and join us for art, cocktails, and creativity.",
     date: "2025-07-27",
@@ -22,7 +35,7 @@ const upcomingEvents = [
     pricing: "Adults KES 1900, Kids KES 1500"
   },
   {
-    id: 2,
+    id: 3,
     title: "Sunset Yacht Party",
     description: "Exclusive sunset cruise with premium drinks and DJ entertainment",
     date: "2024-08-02",
@@ -33,7 +46,7 @@ const upcomingEvents = [
     attendees: "150"
   },
   {
-    id: 3,
+    id: 4,
     title: "Local Art & Culture Night",
     description: "Showcase of local artists, traditional dances, and craft exhibitions",
     date: "2024-07-28",
@@ -47,7 +60,7 @@ const upcomingEvents = [
 
 const recentEvents = [
   {
-    id: 4,
+    id: 5,
     title: "Kilifi Food & Wine Expo",
     description: "Three-day expo featuring local restaurants and imported wines",
     date: "2024-07-10",
@@ -58,7 +71,7 @@ const recentEvents = [
     attendees: "800+"
   },
   {
-    id: 5,
+    id: 6,
     title: "Wildlife Conservation Awareness",
     description: "Educational event about local marine life and conservation efforts",
     date: "2024-06-25",
