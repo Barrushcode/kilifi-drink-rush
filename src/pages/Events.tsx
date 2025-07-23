@@ -106,11 +106,13 @@ const EventCard: React.FC<{
   return (
     <Card className={`group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 ${event.featured ? 'ring-2 ring-primary/20' : ''}`}>
       <div className="relative overflow-hidden rounded-t-lg">
-        <img 
-          src={event.image} 
-          alt={event.title}
-          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-        />
+        <div className="w-full h-64 flex items-center justify-center bg-muted/20">
+          <img 
+            src={event.image} 
+            alt={event.title}
+            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+          />
+        </div>
         {event.featured && (
           <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground">
             Featured
