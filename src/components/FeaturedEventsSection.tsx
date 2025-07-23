@@ -28,10 +28,10 @@ const featuredEvents: FeaturedEvent[] = [
   },
   {
     id: 'beneath-the-baobabs',
-    name: 'Beneath the Baobabs Festival',
-    description: "Kilifi's iconic NYE festival held in a baobab forest with DJs, art, and immersive experiences.",
-    officialSite: 'https://beneaththebaobabs.com/beneath-the-baobabs-festival/',
-    image: '/lovable-uploads/d3afdd56-6192-4a8d-86f3-2b0f9b1ed66f.png',
+    name: 'Beneath the Baobabs Festival 2026',
+    description: "For the past 10 years, the Kilifi Wilderness has become a hub of creativity bringing together thousands of festival-goers, artists, musicians, and creators for a 2-day celebration.",
+    officialSite: 'https://www.quicket.co.ke/events/314627-beneath-the-baobabs-festival-2026/?ref=link-campaign&lc=linktree#/',
+    image: '/lovable-uploads/3e080be6-873a-4b75-b9be-d2452790df8b.png',
     bundleTitle: '🍾 Shop Baobabs Party Bundle',
     bundleIcon: '🍾',
     themeColor: 'from-amber-500/20 to-orange-600/20'

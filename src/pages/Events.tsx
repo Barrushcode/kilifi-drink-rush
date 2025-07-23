@@ -22,6 +22,19 @@ const upcomingEvents = [
   },
   {
     id: 2,
+    title: "Beneath the Baobabs Festival 2026",
+    description: "For the past 10 years, the Kilifi Wilderness has become a hub of creativity bringing together thousands of festival-goers, artists, musicians, and creators for a 2-day celebration. Groove under the stars and make unforgettable memories with people from all over the world.",
+    date: "2025-12-30",
+    time: "17:00",
+    location: "Beneath the Baobabs Venue, Kilifi, Kenya",
+    category: "Music Festival",
+    image: "/lovable-uploads/3e080be6-873a-4b75-b9be-d2452790df8b.png",
+    attendees: "4000",
+    featured: true,
+    ticketLink: "https://www.quicket.co.ke/events/314627-beneath-the-baobabs-festival-2026/?ref=link-campaign&lc=linktree#/"
+  },
+  {
+    id: 3,
     title: "Saffron Garden Picnic & Paint",
     description: "Unique painting session filled with fun memories. Bring your stylish picnic basket and join us for art, cocktails, and creativity.",
     date: "2025-07-27",
@@ -35,7 +48,7 @@ const upcomingEvents = [
     pricing: "Adults KES 1900, Kids KES 1500"
   },
   {
-    id: 3,
+    id: 4,
     title: "Sunset Yacht Party",
     description: "Exclusive sunset cruise with premium drinks and DJ entertainment",
     date: "2024-08-02",
@@ -46,7 +59,7 @@ const upcomingEvents = [
     attendees: "150"
   },
   {
-    id: 4,
+    id: 5,
     title: "Local Art & Culture Night",
     description: "Showcase of local artists, traditional dances, and craft exhibitions",
     date: "2024-07-28",
