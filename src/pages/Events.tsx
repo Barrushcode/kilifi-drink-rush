@@ -106,7 +106,7 @@ const EventCard: React.FC<{
   return (
     <Card className={`group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 ${event.featured ? 'ring-2 ring-primary/20' : ''}`}>
       <div className="relative overflow-hidden rounded-t-lg">
-        <div className="w-full h-64 flex items-center justify-center bg-muted/20">
+        <div className="w-full aspect-[4/3] bg-muted/20">
           <img 
             src={event.image} 
             alt={event.title}
