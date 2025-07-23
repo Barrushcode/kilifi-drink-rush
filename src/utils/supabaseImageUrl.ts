@@ -82,11 +82,25 @@ async function getAvailableImages(): Promise<string[]> {
     if (error) throw error;
     
     imageCache = data?.map(file => file.name) || [];
+    console.log(`[SUPABASE IMAGE CACHE] Loaded ${imageCache.length} images from storage`);
     return imageCache;
   } catch (error) {
     console.error('[SUPABASE IMAGE CACHE] Error fetching image list:', error);
     return [];
   }
+}
+
+// Force refresh the image cache
+export function refreshImageCache(): void {
+  imageCache = null;
+  // Clear session storage cache for lookups
+  const keys = Object.keys(sessionStorage);
+  keys.forEach(key => {
+    if (key.startsWith('image_lookup_')) {
+      sessionStorage.removeItem(key);
+    }
+  });
+  console.log('[SUPABASE IMAGE CACHE] Cache cleared and refreshed');
 }
 
 export async function getSupabaseProductImageUrl(productName: string): Promise<string | null> {
@@ -98,72 +112,48 @@ export async function getSupabaseProductImageUrl(productName: string): Promise<s
     return null;
   }
 
-  // First try exact match with common extensions
-  const exactMatches = [
-    `${productName}.jpg`,
-    `${productName}.jpeg`,
-    `${productName}.png`,
-    `${productName}.webp`
-  ];
+  // Get all available images first for more efficient matching
+  const availableImages = await getAvailableImages();
+  if (availableImages.length === 0) {
+    console.log('[SUPABASE IMAGE LOOKUP] No images found in storage bucket');
+    return null;
+  }
 
-  for (const filePath of exactMatches) {
-    const { data } = supabase.storage.from(bucketName).getPublicUrl(filePath);
-    if (data && data.publicUrl) {
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 2000);
-        
-        const response = await fetch(data.publicUrl, { 
-          method: "HEAD",
-          signal: controller.signal
-        });
-        
-        clearTimeout(timeoutId);
-        
-        if (response.ok) {
-          console.log(`[SUPABASE IMAGE FOUND - EXACT]`, data.publicUrl);
+  // Generate name variants for better matching
+  const nameVariants = Array.from(generateNameVariants(productName));
+  const extensions = ['.jpg', '.jpeg', '.png', '.webp'];
+  
+  // Try exact matches first with all variants and extensions
+  for (const variant of nameVariants) {
+    for (const ext of extensions) {
+      const fileName = `${variant}${ext}`;
+      if (availableImages.includes(fileName)) {
+        const { data } = supabase.storage.from(bucketName).getPublicUrl(fileName);
+        if (data?.publicUrl) {
+          console.log(`[SUPABASE IMAGE FOUND - EXACT VARIANT] ${productName} -> ${fileName}`, data.publicUrl);
           return data.publicUrl;
         }
-      } catch (err) {
-        continue;
       }
     }
   }
 
-  // If exact match fails, try with (1), (2) variations for multiple images
-  const variationMatches = [
-    `${productName} (1).jpg`,
-    `${productName} (2).jpg`,
-    `${productName} (1).jpeg`,
-    `${productName} (2).jpeg`
-  ];
-
-  for (const filePath of variationMatches) {
-    const { data } = supabase.storage.from(bucketName).getPublicUrl(filePath);
-    if (data && data.publicUrl) {
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 2000);
-        
-        const response = await fetch(data.publicUrl, { 
-          method: "HEAD",
-          signal: controller.signal
-        });
-        
-        clearTimeout(timeoutId);
-        
-        if (response.ok) {
-          console.log(`[SUPABASE IMAGE FOUND - VARIATION]`, data.publicUrl);
-          return data.publicUrl;
+  // Try with (1), (2) variations
+  for (const variant of nameVariants) {
+    for (const ext of extensions) {
+      const variations = [`${variant} (1)${ext}`, `${variant} (2)${ext}`, `${variant} (3)${ext}`];
+      for (const varFile of variations) {
+        if (availableImages.includes(varFile)) {
+          const { data } = supabase.storage.from(bucketName).getPublicUrl(varFile);
+          if (data?.publicUrl) {
+            console.log(`[SUPABASE IMAGE FOUND - NUMBERED VARIANT] ${productName} -> ${varFile}`, data.publicUrl);
+            return data.publicUrl;
+          }
         }
-      } catch (err) {
-        continue;
       }
     }
   }
 
   // If no exact match, find closest matching image name
-  const availableImages = await getAvailableImages();
   if (availableImages.length > 0) {
     const productNameLower = productName.toLowerCase();
     let bestMatch = null;
