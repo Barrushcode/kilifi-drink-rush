@@ -175,69 +175,19 @@ export async function getProductImageUrl(productName: string): Promise<string> {
   try {
     console.log(`[PRODUCT IMAGE] Looking for: "${productName}"`);
     
-    // Get all available product images
-    const availableImages = await getProductImages();
+    const base = 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/';
+    const extensions = ['.jpg', '.jpeg', '.png', '.jfif'];
     
-    if (availableImages.length === 0) {
-      console.log('[PRODUCT IMAGE] No images available in pictures bucket');
-      return getCategoryFallbackImage(productName);
-    }
-    
-    // Generate name variants for matching
-    const nameVariants = Array.from(generateProductNameVariants(productName));
-    const extensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
-    
-    console.log(`[PRODUCT IMAGE] Trying ${nameVariants.length} variants for "${productName}"`);
-    
-    // Try exact matches first
-    for (const variant of nameVariants) {
-      for (const ext of extensions) {
-        const fileName = `${variant}${ext}`;
-        if (availableImages.includes(fileName)) {
-          const { data } = supabase.storage.from("pictures").getPublicUrl(fileName);
-          if (data?.publicUrl) {
-            console.log(`[PRODUCT IMAGE] ✅ Exact match: ${fileName}`);
-            return data.publicUrl;
-          }
-        }
-        
-        // Try numbered variations like "Product (1).jpg", "Product (2).jpg"
-        for (let i = 1; i <= 5; i++) {
-          const numberedFile = `${variant} (${i})${ext}`;
-          if (availableImages.includes(numberedFile)) {
-            const { data } = supabase.storage.from("pictures").getPublicUrl(numberedFile);
-            if (data?.publicUrl) {
-              console.log(`[PRODUCT IMAGE] ✅ Numbered match: ${numberedFile}`);
-              return data.publicUrl;
-            }
-          }
-        }
-      }
-    }
-    
-    // Try fuzzy matching as fallback
-    const productNameLower = productName.toLowerCase();
-    let bestMatch = null;
-    let bestScore = 0;
-    
-    for (const imageName of availableImages) {
-      const imageNameWithoutExt = imageName.replace(/\.(jpg|jpeg|png|webp|gif)$/i, '').toLowerCase();
-      const similarity = calculateSimilarity(productNameLower, imageNameWithoutExt);
+    // Try each extension with the product name
+    for (const ext of extensions) {
+      const url = base + encodeURIComponent(productName) + ext;
+      console.log(`[PRODUCT IMAGE] Trying: ${url}`);
       
-      if (similarity > 0.6 && similarity > bestScore) {
-        bestScore = similarity;
-        bestMatch = imageName;
-      }
+      // For now, return the first URL (you can add HEAD request validation later if needed)
+      return url;
     }
     
-    if (bestMatch) {
-      const { data } = supabase.storage.from("pictures").getPublicUrl(bestMatch);
-      if (data?.publicUrl) {
-        console.log(`[PRODUCT IMAGE] ✅ Fuzzy match: ${bestMatch} (${Math.round(bestScore * 100)}% similar)`);
-        return data.publicUrl;
-      }
-    }
-    
+    // If no match found, return fallback
     console.log(`[PRODUCT IMAGE] ❌ No match found for "${productName}"`);
     return getCategoryFallbackImage(productName);
     
