@@ -66,7 +66,7 @@ async function getProductImages(): Promise<string[]> {
     
     // Filter for image files only and ensure they're files (not folders)
     const imageFiles = data
-      .filter(file => file.name && !file.id && /\.(jpg|jpeg|png|webp|gif)$/i.test(file.name))
+      .filter(file => file.name && /\.(jpg|jpeg|png|jfif|webp|gif)$/i.test(file.name))
       .map(file => file.name);
     
     // Update cache
@@ -237,3 +237,6 @@ export function refreshProductImageCache(): void {
   productCacheExpiry = 0;
   console.log('[PRODUCT IMAGE] Cache cleared');
 }
+
+// Initialize cache refresh on module load
+refreshProductImageCache();

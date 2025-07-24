@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { ShoppingCart } from 'lucide-react';
 import ProductImageLoader from './ProductImageLoader';
 
 
@@ -46,14 +47,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             {product.description}
           </p>
         )}
-        <div className="flex justify-between items-center">
-          <span className="text-3xl font-bold text-barrush-platinum">
+        <div className="flex flex-col gap-2">
+          <span className="text-2xl font-bold text-barrush-platinum">
             {product.price}
           </span>
           <Button 
             onClick={handleAddToCart}
-            className="text-barrush-midnight font-bold px-6 py-3 transition-all duration-300 hover:scale-105 bg-rose-600 hover:bg-rose-500"
+            className="w-full text-white font-bold px-4 py-2 text-sm transition-all duration-300 hover:scale-105 bg-rose-600 hover:bg-rose-500 h-10"
           >
+            <ShoppingCart className="h-4 w-4 mr-2" />
             Add to Cart
           </Button>
         </div>

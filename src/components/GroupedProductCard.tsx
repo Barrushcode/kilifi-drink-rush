@@ -279,50 +279,42 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
           </div>
           
           {/* Action Buttons */}
-          <div className="flex gap-2 mt-4 w-full flex-col sm:flex-row">
+          <div className="flex gap-1 mt-3 w-full">
             <Button 
               onClick={(e) => { e.stopPropagation(); handleAddToCart(); }}
-              className="flex-1 font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-transparent border-2 border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white w-full"
+              className="flex-1 font-bold px-2 py-1.5 text-xs transition-all duration-300 hover:scale-105 h-8 font-iphone bg-transparent border border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white"
             >
               <ShoppingCart className="h-3 w-3 mr-1" />
-              Add to Cart
+              Add
             </Button>
             <Button 
               onClick={(e) => { e.stopPropagation(); handleBuyNow(); }}
-              className="flex-1 font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-rose-600 hover:bg-rose-500 text-white border-none shadow-lg w-full"
-              style={{
-                backgroundColor: '#e11d48',
-                color: '#fff',
-              }}
+              className="flex-1 font-bold px-2 py-1.5 text-xs transition-all duration-300 hover:scale-105 h-8 font-iphone bg-rose-600 hover:bg-rose-500 text-white"
             >
               <CreditCard className="h-3 w-3 mr-1" />
-              Buy Now
+              Buy
             </Button>
           </div>
           
-          {/* WhatsApp Availability Button */}
-          <div className="mt-2 w-full">
+          {/* Secondary Actions */}
+          <div className="flex gap-1 mt-2 w-full">
             <Button 
               onClick={(e) => { e.stopPropagation(); handleWhatsAppCheck(); }}
-              className="w-full font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-green-600 hover:bg-green-500 text-white border-none shadow-lg"
+              className="flex-1 font-bold px-2 py-1.5 text-xs transition-all duration-300 hover:scale-105 h-8 font-iphone bg-green-600 hover:bg-green-500 text-white"
             >
               <MessageCircle className="h-3 w-3 mr-1" />
-              Check Availability
+              WhatsApp
             </Button>
-          </div>
-          
-          {/* View Details Button */}
-          <div className="mt-2 w-full">
             <Link 
               to={`/product/${getProductSlug(product.baseName)}`}
-              className="block w-full"
+              className="flex-1"
               onClick={(e) => e.stopPropagation()}
             >
               <Button 
-                className="w-full font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-transparent border-2 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
+                className="w-full font-bold px-2 py-1.5 text-xs transition-all duration-300 hover:scale-105 h-8 font-iphone bg-transparent border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
               >
                 <ExternalLink className="h-3 w-3 mr-1" />
-                View Details
+                Details
               </Button>
             </Link>
           </div>
