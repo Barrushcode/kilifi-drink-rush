@@ -2,10 +2,11 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Download, BarChart3, ShoppingCart } from 'lucide-react';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { Download, Clock, BarChart3, ShoppingCart } from 'lucide-react';
+import OptimizedImage from './OptimizedImage';
 import { CocktailData } from '@/hooks/useCocktails';
 import IngredientBundleModal from './IngredientBundleModal';
-import { supabase } from '@/integrations/supabase/client';
 
 interface CocktailCardProps {
   cocktail: CocktailData;
@@ -15,42 +16,40 @@ interface CocktailCardProps {
 const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => {
   const [bundleModalOpen, setBundleModalOpen] = useState(false);
   
-  // Get image URL from Supabase storage bucket
-  const getImageUrl = (filename: string) => {
-    if (!filename) {
-      return "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=60";
-    }
-    const { data } = supabase.storage.from('cocktails').getPublicUrl(filename);
-    return data.publicUrl;
-  };
-
-  const imageUrl = getImageUrl(cocktail.image_filename);
+  // Construct image URL from Supabase storage bucket
+  const imageUrl = cocktail.image_filename 
+    ? `https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/cocktails/${cocktail.image_filename}`
+    : '';
+  
+  const fallbackImage = "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=60";
   
   return (
     <Card className="group bg-glass-effect border border-barrush-steel/30 hover:border-neon-pink/50 transition-all duration-500 hover:scale-105 hover:shadow-2xl overflow-hidden backdrop-blur-md">
-      <div className="relative w-full h-80 overflow-hidden">
+      <AspectRatio ratio={4/5} className="relative overflow-hidden">
         {/* Blurred background */}
         <div className="absolute inset-0">
-          <img
+          <OptimizedImage
             src={imageUrl}
             alt=""
             className="w-full h-full object-cover scale-110 blur-xl opacity-60"
-            loading="lazy"
+            fallbackSrc={fallbackImage}
+            priority={false}
           />
         </div>
         
         {/* Main image */}
-        <div className="relative z-10 w-full h-full flex items-center justify-center p-4">
-          <img
+        <div className="relative z-10 w-full h-full flex items-center justify-center p-2 sm:p-4">
+          <OptimizedImage
             src={imageUrl}
             alt={cocktail.Name}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 rounded-lg shadow-lg"
-            loading="eager"
+            fallbackSrc={fallbackImage}
+            priority={true}
           />
         </div>
         
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent z-20" />
-        <div className="absolute top-4 right-4 flex gap-2 z-30">
+        <div className="absolute top-2 right-2 sm:top-4 sm:right-4 flex gap-2 z-30">
           <div className="bg-neon-pink/90 backdrop-blur-sm px-2 py-1 rounded-full">
             <span className="text-white text-xs font-semibold flex items-center gap-1">
               <BarChart3 className="h-3 w-3" />
@@ -58,7 +57,7 @@ const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => 
             </span>
           </div>
         </div>
-      </div>
+      </AspectRatio>
       
       <CardHeader className="pb-3">
         <CardTitle className="text-xl font-serif text-barrush-platinum group-hover:text-neon-pink transition-colors duration-300">

@@ -10,39 +10,35 @@ import { GroupedProduct, ProductVariant } from '@/utils/productGroupingUtils';
 import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import ProductQuickViewModal from './ProductQuickViewModal';
-import { getProductImageUrl } from '@/utils/productImageLoader';
+import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
 import ProductImageLoader from './ProductImageLoader';
 
 
-// Get category-specific fallback image
-const getCategoryFallbackImage = (productName: string): string => {
-  const name = productName.toLowerCase();
-  
-  if (name.includes('beer')) {
-    return 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop&crop=center';
-  }
-  if (name.includes('whiskey') || name.includes('whisky')) {
-    return 'https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=400&h=400&fit=crop&crop=center';
-  }
-  if (name.includes('vodka')) {
-    return 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400&h=400&fit=crop&crop=center';
-  }
-  if (name.includes('wine')) {
-    return 'https://images.unsplash.com/photo-1506377247717-84a0f8d814f4?w=400&h=400&fit=crop&crop=center';
-  }
-  if (name.includes('rum')) {
-    return 'https://images.unsplash.com/photo-1560512823-829485b8bf24?w=400&h=400&fit=crop&crop=center';
-  }
-  if (name.includes('gin')) {
-    return 'https://images.unsplash.com/photo-1544145762-54623c6b8e91?w=400&h=400&fit=crop&crop=center';
-  }
-  
-  return 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=400&fit=crop&crop=center';
-};
+// Utility to determine if the product image is appropriate
+function isImageAppropriate(url?: string) {
+  if (!url) return false;
+  const lowerUrl = url.toLowerCase();
+  const badDomains = [
+    'youtube.com', 'youtu.be', 'pinterest.com', 'facebook.com', 'instagram.com',
+    'twitter.com', 'tiktok.com', 'reddit.com', 'blogspot.com', 'wordpress.com',
+    'wikimedia.org', 'wikipedia.org', 'tumblr.com', 'placeholder', 'no-image',
+    'svg', 'icon', 'logo'
+  ];
+  if (badDomains.some(domain => lowerUrl.includes(domain))) return false;
+  if (
+    lowerUrl.endsWith('.svg') ||
+    /150|default|thumb|generic/i.test(lowerUrl) ||
+    lowerUrl.includes('placeholder')
+  ) return false;
+  if (!/\.(jpg|jpeg|png|webp)$/i.test(lowerUrl)) return false;
+  return true;
+}
 
 interface GroupedProductCardProps {
   product: GroupedProduct;
 }
+
+const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80";
 
 const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(product.variants[0]);
@@ -130,15 +126,15 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
 
   useEffect(() => {
     let ignore = false;
-    async function fetchProductImage() {
-      const url = await getProductImageUrl(product.baseName);
+    async function fetchImage() {
+      const url = await getSupabaseProductImageUrl(product.baseName);
       if (!ignore) setSupabaseImage(url);
     }
-    fetchProductImage();
+    fetchImage();
     return () => { ignore = true; };
   }, [product.baseName]);
 
-  let displayImage = supabaseImage || getCategoryFallbackImage(product.baseName);
+  let displayImage = supabaseImage || (isImageAppropriate(product.image) ? product.image : FALLBACK_IMAGE);
 
   return (
     <>
@@ -159,12 +155,12 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
       >
         <CardContent className="p-2 md:p-4 lg:p-5 flex flex-col h-full">
           <div className="flex flex-col flex-grow">
-            {/* Product Image with flexible sizing */}
-            <div className="w-full rounded-lg overflow-hidden mb-2 relative bg-barrush-midnight">
+            {/* Product Image with consistent styling */}
+            <div className="w-full aspect-square rounded-lg overflow-hidden mb-2 relative bg-barrush-midnight">
               <ProductImageLoader
                 src={displayImage}
                 alt={product.baseName}
-                className="w-full h-auto object-cover"
+                className="w-full h-full object-cover"
                 priority={false}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-barrush-midnight/60 to-transparent group-hover:from-barrush-midnight/40 transition-all duration-300" />
@@ -279,42 +275,50 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
           </div>
           
           {/* Action Buttons */}
-          <div className="flex gap-1 mt-3 w-full">
+          <div className="flex gap-2 mt-4 w-full flex-col sm:flex-row">
             <Button 
               onClick={(e) => { e.stopPropagation(); handleAddToCart(); }}
-              className="flex-1 font-bold px-2 py-1.5 text-xs transition-all duration-300 hover:scale-105 h-8 font-iphone bg-transparent border border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white"
+              className="flex-1 font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-transparent border-2 border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white w-full"
             >
               <ShoppingCart className="h-3 w-3 mr-1" />
-              Add
+              Add to Cart
             </Button>
             <Button 
               onClick={(e) => { e.stopPropagation(); handleBuyNow(); }}
-              className="flex-1 font-bold px-2 py-1.5 text-xs transition-all duration-300 hover:scale-105 h-8 font-iphone bg-rose-600 hover:bg-rose-500 text-white"
+              className="flex-1 font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-rose-600 hover:bg-rose-500 text-white border-none shadow-lg w-full"
+              style={{
+                backgroundColor: '#e11d48',
+                color: '#fff',
+              }}
             >
               <CreditCard className="h-3 w-3 mr-1" />
-              Buy
+              Buy Now
             </Button>
           </div>
           
-          {/* Secondary Actions */}
-          <div className="flex gap-1 mt-2 w-full">
+          {/* WhatsApp Availability Button */}
+          <div className="mt-2 w-full">
             <Button 
               onClick={(e) => { e.stopPropagation(); handleWhatsAppCheck(); }}
-              className="flex-1 font-bold px-2 py-1.5 text-xs transition-all duration-300 hover:scale-105 h-8 font-iphone bg-green-600 hover:bg-green-500 text-white"
+              className="w-full font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-green-600 hover:bg-green-500 text-white border-none shadow-lg"
             >
               <MessageCircle className="h-3 w-3 mr-1" />
-              WhatsApp
+              Check Availability
             </Button>
+          </div>
+          
+          {/* View Details Button */}
+          <div className="mt-2 w-full">
             <Link 
               to={`/product/${getProductSlug(product.baseName)}`}
-              className="flex-1"
+              className="block w-full"
               onClick={(e) => e.stopPropagation()}
             >
               <Button 
-                className="w-full font-bold px-2 py-1.5 text-xs transition-all duration-300 hover:scale-105 h-8 font-iphone bg-transparent border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
+                className="w-full font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-transparent border-2 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
               >
                 <ExternalLink className="h-3 w-3 mr-1" />
-                Details
+                View Details
               </Button>
             </Link>
           </div>

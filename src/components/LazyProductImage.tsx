@@ -67,9 +67,9 @@ const LazyProductImage: React.FC<LazyProductImageProps> = ({
         <OptimizedImage
           src={src}
           alt={alt}
-          className={`w-full h-auto object-cover transition-opacity duration-500 ${
+          className={`transition-opacity duration-500 ${
             isLoaded ? 'opacity-100' : 'opacity-0'
-          }`}
+          } ${className}`}
           priority={priority}
           bustCache={bustCache}
           onLoad={handleImageLoad}

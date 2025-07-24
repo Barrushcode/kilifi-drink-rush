@@ -2,12 +2,10 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getCategoryFromName } from '@/utils/categoryUtils';
-import { getProductImageUrl } from '@/utils/productImageLoader';
+import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
 import { groupProductsByBaseName, GroupedProduct } from '@/utils/productGroupingUtils';
 import { useProductCache } from './useProductCache';
 import { correctProductName } from '@/utils/nameCorrectionUtils';
-import { refreshProductImageCache } from '@/utils/productImageLoader';
-import '@/utils/debugStorageAccess';
 
 interface Product {
   id: number;
@@ -62,10 +60,6 @@ export const useProducts = () => {
     try {
       setLoading(true);
       setError(null);
-      
-      // Clear image cache to ensure fresh data
-      refreshProductImageCache();
-      
       console.log('🚀 Starting to fetch products...');
       
       const allProductsData = await fetchAllProducts();
@@ -94,15 +88,26 @@ export const useProducts = () => {
 
           const description = product.Description || '';
           
-          // Get product image from the dedicated pictures bucket
-          const productImage = await getProductImageUrl(product.Title || 'Unknown Product');
-          console.log(`✅ Product image for "${product.Title}":`, productImage);
+          // Optimized image logic: Check storage first, fallback to database URL
+          let productImage: string | null = null;
+          
+          // First: Try storage bucket (with caching consideration)
+          const storageImage = await getSupabaseProductImageUrl(product.Title || 'Unknown Product');
+          if (storageImage) {
+            productImage = storageImage;
+           }
 
-          let category = product.Category || getCategoryFromName(product.Title || 'Unknown Product', productPrice);
-
-          if (description.toLowerCase().includes('beer')) {
-            category = 'Beer';
+          // Skip products without any image
+          if (!productImage) {
+            console.log(`❌ Skipping ${product.Title} - no image available`);
+            return null;
           }
+
+           let category = product.Category || getCategoryFromName(product.Title || 'Unknown Product', productPrice);
+
+           if (description.toLowerCase().includes('beer')) {
+             category = 'Beer';
+           }
 
           return {
             id: globalIndex + 1,

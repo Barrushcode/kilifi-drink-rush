@@ -9,32 +9,6 @@ import FeaturedEventsSection from '@/components/FeaturedEventsSection';
 const upcomingEvents = [
   {
     id: 1,
-    title: "Journey to the Baobabs 2025",
-    description: "Kilifi's littest August weekend returns for the third year. Featuring a heavy lineup of Coastal performers and food and vendors.",
-    date: "2025-08-16",
-    time: "16:30",
-    location: "Beneath the Baobabs Venue, Kilifi, Kenya",
-    category: "Music Festival",
-    image: "/lovable-uploads/4fff77ec-78a5-428b-b35b-4b7136ac6c92.png",
-    attendees: "1500",
-    featured: true,
-    ticketLink: "https://www.quicket.co.za/events/314632-journey-to-the-baobabs-2025/?ref=link-campaign&lc=news2"
-  },
-  {
-    id: 2,
-    title: "Beneath the Baobabs Festival 2026",
-    description: "For the past 10 years, the Kilifi Wilderness has become a hub of creativity bringing together thousands of festival-goers, artists, musicians, and creators for a 2-day celebration. Groove under the stars and make unforgettable memories with people from all over the world.",
-    date: "2025-12-30",
-    time: "17:00",
-    location: "Beneath the Baobabs Venue, Kilifi, Kenya",
-    category: "Music Festival",
-    image: "/lovable-uploads/3e080be6-873a-4b75-b9be-d2452790df8b.png",
-    attendees: "4000",
-    featured: true,
-    ticketLink: "https://www.quicket.co.ke/events/314627-beneath-the-baobabs-festival-2026/?ref=link-campaign&lc=linktree#/"
-  },
-  {
-    id: 3,
     title: "Saffron Garden Picnic & Paint",
     description: "Unique painting session filled with fun memories. Bring your stylish picnic basket and join us for art, cocktails, and creativity.",
     date: "2025-07-27",
@@ -48,7 +22,7 @@ const upcomingEvents = [
     pricing: "Adults KES 1900, Kids KES 1500"
   },
   {
-    id: 4,
+    id: 2,
     title: "Sunset Yacht Party",
     description: "Exclusive sunset cruise with premium drinks and DJ entertainment",
     date: "2024-08-02",
@@ -59,7 +33,7 @@ const upcomingEvents = [
     attendees: "150"
   },
   {
-    id: 5,
+    id: 3,
     title: "Local Art & Culture Night",
     description: "Showcase of local artists, traditional dances, and craft exhibitions",
     date: "2024-07-28",
@@ -73,7 +47,7 @@ const upcomingEvents = [
 
 const recentEvents = [
   {
-    id: 5,
+    id: 4,
     title: "Kilifi Food & Wine Expo",
     description: "Three-day expo featuring local restaurants and imported wines",
     date: "2024-07-10",
@@ -84,7 +58,7 @@ const recentEvents = [
     attendees: "800+"
   },
   {
-    id: 6,
+    id: 5,
     title: "Wildlife Conservation Awareness",
     description: "Educational event about local marine life and conservation efforts",
     date: "2024-06-25",
@@ -106,13 +80,11 @@ const EventCard: React.FC<{
   return (
     <Card className={`group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 ${event.featured ? 'ring-2 ring-primary/20' : ''}`}>
       <div className="relative overflow-hidden rounded-t-lg">
-        <div className="w-full aspect-[4/3] bg-muted/20">
-          <img 
-            src={event.image} 
-            alt={event.title}
-            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
-          />
-        </div>
+        <img 
+          src={event.image} 
+          alt={event.title}
+          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+        />
         {event.featured && (
           <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground">
             Featured
