@@ -7,6 +7,7 @@ import PaymentOptionsPanel from './PaymentOptionsPanel';
 import AlternativePaymentInfo from './AlternativePaymentInfo';
 import DeliverySpeedPopup from './DeliverySpeedPopup';
 import { useCheckout } from '@/hooks/useCheckout';
+import DiscountCodeField from './DiscountCodeField';
 
 const DELIVERY_ZONES = [{
   name: 'Mnarani',
@@ -47,11 +48,15 @@ const CheckoutSection: React.FC = () => {
     zapierWebhookUrl,
     setZapierWebhookUrl,
     selectedZone,
+    appliedDiscount,
     handleInputChange,
     handleZoneChange,
+    handleDiscountApplied,
+    handleDiscountRemoved,
     zoneObject,
     subtotal,
     deliveryFee,
+    discountAmount,
     totalAmount,
     handleSimulatePayment
   } = useCheckout(DELIVERY_ZONES, items, getTotalAmount);
@@ -92,6 +97,8 @@ const CheckoutSection: React.FC = () => {
               deliveryFee={deliveryFee}
               subtotal={subtotal}
               totalAmount={totalAmount}
+              appliedDiscount={appliedDiscount}
+              discountAmount={discountAmount}
             />
           </div>
           {/* Right Column - Forms and Payment */}
@@ -103,6 +110,11 @@ const CheckoutSection: React.FC = () => {
               selectedZone={selectedZone}
               handleInputChange={handleInputChange}
               handleZoneChange={handleZoneChange}
+            />
+            <DiscountCodeField
+              onDiscountApplied={handleDiscountApplied}
+              onDiscountRemoved={handleDiscountRemoved}
+              appliedDiscount={appliedDiscount}
             />
             <ZapierWebhookInput
               zapierWebhookUrl={zapierWebhookUrl}
