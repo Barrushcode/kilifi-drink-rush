@@ -187,22 +187,45 @@ export async function getProductImageUrl(productName: string): Promise<string> {
   try {
     console.log(`[PRODUCT IMAGE] Looking for: "${productName}"`);
     
+    // Get all available images from pictures bucket first for better matching
+    const availableImages = await getProductImages();
     const baseUrl = 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/';
-    const extensions = ['.jpg', '.jpeg', '.jfif', '.png'];
     
-    // Try direct URLs with different extensions
+    if (availableImages.length === 0) {
+      console.log('[PRODUCT IMAGE] No images found in pictures bucket');
+      return getCategoryFallbackImage(productName);
+    }
+
+    // First, try exact name matching with available images
+    const extensions = ['.jpg', '.jpeg', '.jfif', '.png'];
     for (const ext of extensions) {
-      const imageUrl = baseUrl + encodeURIComponent(productName + ext);
-      console.log(`[PRODUCT IMAGE] Trying: ${imageUrl}`);
+      const targetFilename = productName + ext;
+      const matchingImage = availableImages.find(img => 
+        img.toLowerCase() === targetFilename.toLowerCase()
+      );
       
-      const exists = await checkImageExists(imageUrl);
-      if (exists) {
-        console.log(`[PRODUCT IMAGE] ✅ Found: ${productName}${ext}`);
+      if (matchingImage) {
+        const imageUrl = baseUrl + encodeURIComponent(matchingImage);
+        console.log(`[PRODUCT IMAGE] ✅ Found exact match: ${matchingImage}`);
         return imageUrl;
       }
     }
-    
-    // If no direct match found, return fallback
+
+    // Then try name variations and fuzzy matching
+    for (const nameVariant of generateProductNameVariants(productName)) {
+      const matchingImage = availableImages.find(imageName => {
+        const imageBaseName = imageName.replace(/\.(jpg|jpeg|png|jfif|webp|gif)$/i, '');
+        return imageBaseName.toLowerCase() === nameVariant.toLowerCase();
+      });
+      
+      if (matchingImage) {
+        const imageUrl = baseUrl + encodeURIComponent(matchingImage);
+        console.log(`[PRODUCT IMAGE] ✅ Found variant match: "${matchingImage}" for variant: "${nameVariant}"`);
+        return imageUrl;
+      }
+    }
+
+    // If no match found, return fallback
     console.log(`[PRODUCT IMAGE] ❌ No image found for "${productName}"`);
     return getCategoryFallbackImage(productName);
     
