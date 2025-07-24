@@ -27,11 +27,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   return (
     <Card className="bg-glass-effect border-barrush-steel/30 border hover:border-barrush-copper/50 transition-all duration-500 hover:scale-105 backdrop-blur-md group overflow-hidden">
-      <div className="h-64 w-full overflow-hidden">
+      <div className="w-full overflow-hidden">
         <ProductImageLoader
           src={product.image}
           alt={`${product.name} - ${product.category}`}
-          className="w-full h-full object-cover"
+          className="w-full h-auto object-cover"
         />
       </div>
       <CardContent className="p-8">

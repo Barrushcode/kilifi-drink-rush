@@ -97,10 +97,25 @@ export const useProducts = () => {
             productImage = storageImage;
            }
 
-          // Skip products without any image
+          // Always include products - don't skip if no image found
           if (!productImage) {
-            console.log(`❌ Skipping ${product.Title} - no image available`);
-            return null;
+            console.log(`⚠️ No Supabase image found for ${product.Title} - will use category placeholder`);
+            // Use category-specific placeholder
+            if (description.toLowerCase().includes('beer')) {
+              productImage = 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=300&fit=crop&crop=center';
+            } else if (product.Title?.toLowerCase().includes('whiskey') || product.Title?.toLowerCase().includes('whisky')) {
+              productImage = 'https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=300&h=300&fit=crop&crop=center';
+            } else if (product.Title?.toLowerCase().includes('vodka')) {
+              productImage = 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=300&h=300&fit=crop&crop=center';
+            } else if (product.Title?.toLowerCase().includes('wine')) {
+              productImage = 'https://images.unsplash.com/photo-1506377247717-84a0f8d814f4?w=300&h=300&fit=crop&crop=center';
+            } else if (product.Title?.toLowerCase().includes('rum')) {
+              productImage = 'https://images.unsplash.com/photo-1560512823-829485b8bf24?w=300&h=300&fit=crop&crop=center';
+            } else if (product.Title?.toLowerCase().includes('gin')) {
+              productImage = 'https://images.unsplash.com/photo-1544145762-54623c6b8e91?w=300&h=300&fit=crop&crop=center';
+            } else {
+              productImage = 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=300&h=300&fit=crop&crop=center';
+            }
           }
 
            let category = product.Category || getCategoryFromName(product.Title || 'Unknown Product', productPrice);

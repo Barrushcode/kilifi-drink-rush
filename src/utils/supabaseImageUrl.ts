@@ -78,8 +78,23 @@ async function getAvailableImages(): Promise<string[]> {
   if (imageCache) return imageCache;
   
   try {
-    const { data, error } = await supabase.storage.from("pictures").list();
-    if (error) throw error;
+    // First try to list files directly
+    const { data, error } = await supabase.storage.from("pictures").list("", {
+      limit: 2000,
+      offset: 0
+    });
+    
+    if (error) {
+      console.error('[SUPABASE IMAGE CACHE] Error fetching image list:', error);
+      // Try alternate approach - get public URL and test
+      const testResult = await supabase.storage.from("pictures").list();
+      if (testResult.data) {
+        imageCache = testResult.data.map(file => file.name) || [];
+        console.log(`[SUPABASE IMAGE CACHE] Loaded ${imageCache.length} images from storage (fallback method)`);
+        return imageCache;
+      }
+      return [];
+    }
     
     imageCache = data?.map(file => file.name) || [];
     console.log(`[SUPABASE IMAGE CACHE] Loaded ${imageCache.length} images from storage`);

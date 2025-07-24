@@ -155,12 +155,12 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
       >
         <CardContent className="p-2 md:p-4 lg:p-5 flex flex-col h-full">
           <div className="flex flex-col flex-grow">
-            {/* Product Image with consistent styling */}
-            <div className="w-full aspect-square rounded-lg overflow-hidden mb-2 relative bg-barrush-midnight">
+            {/* Product Image with flexible sizing */}
+            <div className="w-full rounded-lg overflow-hidden mb-2 relative bg-barrush-midnight">
               <ProductImageLoader
                 src={displayImage}
                 alt={product.baseName}
-                className="w-full h-full object-cover"
+                className="w-full h-auto object-cover"
                 priority={false}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-barrush-midnight/60 to-transparent group-hover:from-barrush-midnight/40 transition-all duration-300" />
