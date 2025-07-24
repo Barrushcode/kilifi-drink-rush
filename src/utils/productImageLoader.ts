@@ -175,25 +175,50 @@ export async function getProductImageUrl(productName: string): Promise<string> {
   try {
     console.log(`[PRODUCT IMAGE] Looking for: "${productName}"`);
     
-    const base = 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/';
-    const extensions = ['.jpg', '.jpeg', '.png', '.jfif'];
+    // Get all available images from the pictures bucket
+    const availableImages = await getProductImages();
     
-    // Try each extension with the product name
-    for (const ext of extensions) {
-      const url = base + encodeURIComponent(productName) + ext;
-      console.log(`[PRODUCT IMAGE] Trying: ${url}`);
+    if (availableImages.length === 0) {
+      console.log('[PRODUCT IMAGE] No images found in pictures bucket');
+      return getCategoryFallbackImage(productName);
+    }
+    
+    // Try to find a matching image using name variations
+    const baseUrl = 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/';
+    
+    for (const nameVariant of generateProductNameVariants(productName)) {
+      // Check if any available image matches this name variant (case-insensitive)
+      const matchingImage = availableImages.find(imageName => {
+        const imageBaseName = imageName.replace(/\.(jpg|jpeg|png|jfif|webp|gif)$/i, '');
+        return imageBaseName.toLowerCase() === nameVariant.toLowerCase();
+      });
       
-      try {
-        // Test if the image exists with a HEAD request
-        const response = await fetch(url, { method: 'HEAD' });
-        if (response.ok) {
-          console.log(`[PRODUCT IMAGE] ✅ Found: ${url}`);
-          return url;
-        }
-      } catch (fetchError) {
-        // Continue to next extension if this one fails
-        console.log(`[PRODUCT IMAGE] ❌ Failed to fetch: ${url}`);
+      if (matchingImage) {
+        const imageUrl = baseUrl + encodeURIComponent(matchingImage);
+        console.log(`[PRODUCT IMAGE] ✅ Found match: "${matchingImage}" for variant: "${nameVariant}"`);
+        return imageUrl;
       }
+    }
+    
+    // Try fuzzy matching as a fallback
+    let bestMatch = '';
+    let bestSimilarity = 0;
+    const threshold = 0.7; // Minimum similarity threshold
+    
+    for (const imageName of availableImages) {
+      const imageBaseName = imageName.replace(/\.(jpg|jpeg|png|jfif|webp|gif)$/i, '');
+      const similarity = calculateSimilarity(productName.toLowerCase(), imageBaseName.toLowerCase());
+      
+      if (similarity > bestSimilarity && similarity >= threshold) {
+        bestSimilarity = similarity;
+        bestMatch = imageName;
+      }
+    }
+    
+    if (bestMatch) {
+      const imageUrl = baseUrl + encodeURIComponent(bestMatch);
+      console.log(`[PRODUCT IMAGE] ✅ Found fuzzy match: "${bestMatch}" (similarity: ${bestSimilarity.toFixed(2)})`);
+      return imageUrl;
     }
     
     // If no match found, return fallback
