@@ -52,10 +52,7 @@ async function getProductImages(): Promise<string[]> {
     // List files from pictures bucket
     const { data, error } = await supabase.storage
       .from("pictures")
-      .list("", {
-        limit: 1000,
-        offset: 0
-      });
+      .list();
     
     if (error) {
       console.error('[PRODUCT IMAGES] Failed to list files:', error);
@@ -67,9 +64,9 @@ async function getProductImages(): Promise<string[]> {
       return [];
     }
     
-    // Filter for image files only
+    // Filter for image files only and ensure they're files (not folders)
     const imageFiles = data
-      .filter(file => /\.(jpg|jpeg|png|webp|gif)$/i.test(file.name))
+      .filter(file => file.name && !file.id && /\.(jpg|jpeg|png|webp|gif)$/i.test(file.name))
       .map(file => file.name);
     
     // Update cache
