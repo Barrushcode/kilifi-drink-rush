@@ -10,7 +10,7 @@ import { GroupedProduct, ProductVariant } from '@/utils/productGroupingUtils';
 import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import ProductQuickViewModal from './ProductQuickViewModal';
-import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
+import { getSupabaseProductImageUrl } from '@/utils/enhancedSupabaseImageUrl';
 import ProductImageLoader from './ProductImageLoader';
 
 

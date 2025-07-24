@@ -2,10 +2,11 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getCategoryFromName } from '@/utils/categoryUtils';
-import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
+import { getSupabaseProductImageUrl } from '@/utils/enhancedSupabaseImageUrl';
 import { groupProductsByBaseName, GroupedProduct } from '@/utils/productGroupingUtils';
 import { useProductCache } from './useProductCache';
 import { correctProductName } from '@/utils/nameCorrectionUtils';
+import '@/utils/debugStorageAccess';
 
 interface Product {
   id: number;

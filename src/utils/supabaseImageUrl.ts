@@ -78,29 +78,47 @@ async function getAvailableImages(): Promise<string[]> {
   if (imageCache) return imageCache;
   
   try {
-    // First try to list files directly
-    const { data, error } = await supabase.storage.from("pictures").list("", {
+    console.log('[SUPABASE IMAGE CACHE] Attempting to fetch from pictures bucket...');
+    
+    // Try different approaches to list files
+    let data, error;
+    
+    // Method 1: List with empty string and specific parameters
+    ({ data, error } = await supabase.storage.from("pictures").list("", {
       limit: 2000,
-      offset: 0
-    });
+      offset: 0,
+      sortBy: { column: "name", order: "asc" }
+    }));
     
     if (error) {
-      console.error('[SUPABASE IMAGE CACHE] Error fetching image list:', error);
-      // Try alternate approach - get public URL and test
-      const testResult = await supabase.storage.from("pictures").list();
-      if (testResult.data) {
-        imageCache = testResult.data.map(file => file.name) || [];
-        console.log(`[SUPABASE IMAGE CACHE] Loaded ${imageCache.length} images from storage (fallback method)`);
-        return imageCache;
+      console.error('[SUPABASE IMAGE CACHE] Method 1 failed:', error);
+      
+      // Method 2: Simple list without parameters
+      ({ data, error } = await supabase.storage.from("pictures").list());
+      
+      if (error) {
+        console.error('[SUPABASE IMAGE CACHE] Method 2 failed:', error);
+        
+        // Method 3: Try listing with null path
+        ({ data, error } = await supabase.storage.from("pictures").list(null as any));
+        
+        if (error) {
+          console.error('[SUPABASE IMAGE CACHE] All methods failed:', error);
+          return [];
+        }
       }
-      return [];
     }
     
     imageCache = data?.map(file => file.name) || [];
-    console.log(`[SUPABASE IMAGE CACHE] Loaded ${imageCache.length} images from storage`);
+    console.log(`[SUPABASE IMAGE CACHE] Successfully loaded ${imageCache.length} images from storage`);
+    
+    if (imageCache.length > 0) {
+      console.log('[SUPABASE IMAGE CACHE] Sample files:', imageCache.slice(0, 5));
+    }
+    
     return imageCache;
   } catch (error) {
-    console.error('[SUPABASE IMAGE CACHE] Error fetching image list:', error);
+    console.error('[SUPABASE IMAGE CACHE] Exception occurred:', error);
     return [];
   }
 }

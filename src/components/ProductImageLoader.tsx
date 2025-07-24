@@ -22,7 +22,7 @@ const ProductImageLoader: React.FC<ProductImageLoaderProps> = ({
     <LazyProductImage
       src={src}
       alt={alt}
-      className={`${className} rounded-lg`}
+      className={`${className} rounded-lg w-full h-auto`}
       priority={priority}
       bustCache={shouldBustCache}
     />
