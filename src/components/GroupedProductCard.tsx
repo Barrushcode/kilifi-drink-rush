@@ -10,35 +10,39 @@ import { GroupedProduct, ProductVariant } from '@/utils/productGroupingUtils';
 import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import ProductQuickViewModal from './ProductQuickViewModal';
-import { getSupabaseProductImageUrl } from '@/utils/enhancedSupabaseImageUrl';
+import { getProductImageUrl } from '@/utils/productImageLoader';
 import ProductImageLoader from './ProductImageLoader';
 
 
-// Utility to determine if the product image is appropriate
-function isImageAppropriate(url?: string) {
-  if (!url) return false;
-  const lowerUrl = url.toLowerCase();
-  const badDomains = [
-    'youtube.com', 'youtu.be', 'pinterest.com', 'facebook.com', 'instagram.com',
-    'twitter.com', 'tiktok.com', 'reddit.com', 'blogspot.com', 'wordpress.com',
-    'wikimedia.org', 'wikipedia.org', 'tumblr.com', 'placeholder', 'no-image',
-    'svg', 'icon', 'logo'
-  ];
-  if (badDomains.some(domain => lowerUrl.includes(domain))) return false;
-  if (
-    lowerUrl.endsWith('.svg') ||
-    /150|default|thumb|generic/i.test(lowerUrl) ||
-    lowerUrl.includes('placeholder')
-  ) return false;
-  if (!/\.(jpg|jpeg|png|webp)$/i.test(lowerUrl)) return false;
-  return true;
-}
+// Get category-specific fallback image
+const getCategoryFallbackImage = (productName: string): string => {
+  const name = productName.toLowerCase();
+  
+  if (name.includes('beer')) {
+    return 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop&crop=center';
+  }
+  if (name.includes('whiskey') || name.includes('whisky')) {
+    return 'https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=400&h=400&fit=crop&crop=center';
+  }
+  if (name.includes('vodka')) {
+    return 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400&h=400&fit=crop&crop=center';
+  }
+  if (name.includes('wine')) {
+    return 'https://images.unsplash.com/photo-1506377247717-84a0f8d814f4?w=400&h=400&fit=crop&crop=center';
+  }
+  if (name.includes('rum')) {
+    return 'https://images.unsplash.com/photo-1560512823-829485b8bf24?w=400&h=400&fit=crop&crop=center';
+  }
+  if (name.includes('gin')) {
+    return 'https://images.unsplash.com/photo-1544145762-54623c6b8e91?w=400&h=400&fit=crop&crop=center';
+  }
+  
+  return 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=400&fit=crop&crop=center';
+};
 
 interface GroupedProductCardProps {
   product: GroupedProduct;
 }
-
-const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80";
 
 const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(product.variants[0]);
@@ -126,15 +130,15 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
 
   useEffect(() => {
     let ignore = false;
-    async function fetchImage() {
-      const url = await getSupabaseProductImageUrl(product.baseName);
+    async function fetchProductImage() {
+      const url = await getProductImageUrl(product.baseName);
       if (!ignore) setSupabaseImage(url);
     }
-    fetchImage();
+    fetchProductImage();
     return () => { ignore = true; };
   }, [product.baseName]);
 
-  let displayImage = supabaseImage || (isImageAppropriate(product.image) ? product.image : FALLBACK_IMAGE);
+  let displayImage = supabaseImage || getCategoryFallbackImage(product.baseName);
 
   return (
     <>

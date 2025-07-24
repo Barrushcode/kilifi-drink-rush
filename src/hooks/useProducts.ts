@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getCategoryFromName } from '@/utils/categoryUtils';
-import { getSupabaseProductImageUrl } from '@/utils/enhancedSupabaseImageUrl';
+import { getProductImageUrl } from '@/utils/productImageLoader';
 import { groupProductsByBaseName, GroupedProduct } from '@/utils/productGroupingUtils';
 import { useProductCache } from './useProductCache';
 import { correctProductName } from '@/utils/nameCorrectionUtils';
@@ -89,41 +89,15 @@ export const useProducts = () => {
 
           const description = product.Description || '';
           
-          // Optimized image logic: Check storage first, fallback to database URL
-          let productImage: string | null = null;
-          
-          // First: Try storage bucket (with caching consideration)
-          const storageImage = await getSupabaseProductImageUrl(product.Title || 'Unknown Product');
-          if (storageImage) {
-            productImage = storageImage;
-           }
+          // Get product image from the dedicated pictures bucket
+          const productImage = await getProductImageUrl(product.Title || 'Unknown Product');
+          console.log(`✅ Product image for "${product.Title}":`, productImage);
 
-          // Always include products - don't skip if no image found
-          if (!productImage) {
-            console.log(`⚠️ No Supabase image found for ${product.Title} - will use category placeholder`);
-            // Use category-specific placeholder
-            if (description.toLowerCase().includes('beer')) {
-              productImage = 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=300&fit=crop&crop=center';
-            } else if (product.Title?.toLowerCase().includes('whiskey') || product.Title?.toLowerCase().includes('whisky')) {
-              productImage = 'https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=300&h=300&fit=crop&crop=center';
-            } else if (product.Title?.toLowerCase().includes('vodka')) {
-              productImage = 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=300&h=300&fit=crop&crop=center';
-            } else if (product.Title?.toLowerCase().includes('wine')) {
-              productImage = 'https://images.unsplash.com/photo-1506377247717-84a0f8d814f4?w=300&h=300&fit=crop&crop=center';
-            } else if (product.Title?.toLowerCase().includes('rum')) {
-              productImage = 'https://images.unsplash.com/photo-1560512823-829485b8bf24?w=300&h=300&fit=crop&crop=center';
-            } else if (product.Title?.toLowerCase().includes('gin')) {
-              productImage = 'https://images.unsplash.com/photo-1544145762-54623c6b8e91?w=300&h=300&fit=crop&crop=center';
-            } else {
-              productImage = 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=300&h=300&fit=crop&crop=center';
-            }
+          let category = product.Category || getCategoryFromName(product.Title || 'Unknown Product', productPrice);
+
+          if (description.toLowerCase().includes('beer')) {
+            category = 'Beer';
           }
-
-           let category = product.Category || getCategoryFromName(product.Title || 'Unknown Product', productPrice);
-
-           if (description.toLowerCase().includes('beer')) {
-             category = 'Beer';
-           }
 
           return {
             id: globalIndex + 1,

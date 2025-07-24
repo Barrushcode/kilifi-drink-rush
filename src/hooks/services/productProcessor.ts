@@ -1,5 +1,5 @@
 
-import { getSupabaseProductImageUrl } from '@/utils/supabaseImageUrl';
+import { getProductImageUrl } from '@/utils/productImageLoader';
 import { groupProductsByBaseName } from '@/utils/productGroupingUtils';
 import { Product, RawProduct, GroupedProduct } from '../types/productTypes';
 import { correctProductName } from '@/utils/nameCorrectionUtils';
@@ -49,20 +49,10 @@ export const processRawProducts = async (
     const description = product.Description || '';
     const category = product.Category || 'General';
 
-    // Get Supabase image with improved matching
+    // Get product image from dedicated pictures bucket loader
     const productTitle = product.Title || 'Unknown Product';
-    const storageImage = await getSupabaseProductImageUrl(productTitle);
-
-    let productImage: string | null = null;
-    if (storageImage) {
-      productImage = storageImage;
-      console.log(`✅ Found Supabase image for "${productTitle}": ${storageImage}`);
-    } else {
-      console.log(`❌ No Supabase image found for "${productTitle}"`);
-      // Use category-specific placeholder image if no storage image found
-      const categoryImage = getCategoryPlaceholder(category);
-      productImage = categoryImage;
-    }
+    const productImage = await getProductImageUrl(productTitle);
+    console.log(`✅ Product processor image for "${productTitle}":`, productImage);
 
     // Clean up description by removing common typos and fixing basic issues
     const cleanDescription = description
