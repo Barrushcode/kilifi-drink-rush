@@ -49,30 +49,21 @@ async function getProductImages(): Promise<string[]> {
   try {
     console.log('[PRODUCT IMAGES] Fetching from pictures bucket...');
     
-    // Try multiple strategies to list images
-    let data, error;
-    
-    // Strategy 1: List with parameters
-    ({ data, error } = await supabase.storage
+    // List all files in the pictures bucket
+    const { data, error } = await supabase.storage
       .from("pictures")
       .list("", {
-        limit: 3000,
-        offset: 0,
-        sortBy: { column: "name", order: "asc" }
-      }));
+        limit: 5000,
+        offset: 0
+      });
     
-    if (error || !data) {
-      console.log('[PRODUCT IMAGES] Strategy 1 failed, trying strategy 2...');
-      ({ data, error } = await supabase.storage.from("pictures").list());
+    if (error) {
+      console.error('[PRODUCT IMAGES] Error listing files:', error);
+      return [];
     }
     
-    if (error || !data) {
-      console.log('[PRODUCT IMAGES] Strategy 2 failed, trying strategy 3...');
-      ({ data, error } = await supabase.storage.from("pictures").list(""));
-    }
-    
-    if (error || !data) {
-      console.error('[PRODUCT IMAGES] All strategies failed:', error);
+    if (!data || data.length === 0) {
+      console.log('[PRODUCT IMAGES] No files found in pictures bucket');
       return [];
     }
     
@@ -102,7 +93,7 @@ async function getProductImages(): Promise<string[]> {
 function* generateProductNameVariants(productName: string) {
   const base = productName.trim();
   
-  // Basic variations
+  // Basic variations with proper trimming
   yield base;
   yield base.toUpperCase();
   yield base.toLowerCase();
@@ -111,32 +102,37 @@ function* generateProductNameVariants(productName: string) {
   yield base.replace(/\s+/g, ""); // Remove all spaces
   yield base.replace(/\s+/g, "-"); // Spaces to hyphens
   yield base.replace(/\s+/g, "_"); // Spaces to underscores
+  yield base.replace(/\s+/g, "%20"); // Spaces to URL encoding
   
-  // Handle ML/L variations
-  if (base.includes("ML")) {
-    yield base.replace("ML", "ml");
-    yield base.replace(" ML", "ml");
-    yield base.replace("ML", "");
-    yield base.replace(" ML", "");
+  // Handle volume variations (ML, L)
+  const baseNoSpace = base.replace(/\s+/g, "");
+  if (baseNoSpace.includes("ML")) {
+    yield baseNoSpace.replace("ML", "ml");
+    yield baseNoSpace.replace("ML", "");
+    yield base.replace(/\s*ML\s*/gi, "ml");
+    yield base.replace(/\s*ML\s*/gi, "");
+    yield base.replace(/\s*ML\s*/gi, " ml");
   }
   
   if (base.includes("L") && !base.includes("ML")) {
-    yield base.replace("L", "l");
-    yield base.replace(" L", "l");
-    yield base.replace("L", "");
-    yield base.replace(" L", "");
+    yield base.replace(/\s*L\s*/gi, "l");
+    yield base.replace(/\s*L\s*/gi, "");
+    yield base.replace(/\s*L\s*/gi, " l");
   }
   
   // Remove special characters
   yield base.replace(/[^a-zA-Z0-9\s]/g, "");
   yield base.replace(/[^a-zA-Z0-9]/g, "");
   
-  // Try with different case combinations
+  // Case variations for multi-word names
   const words = base.split(/\s+/);
   if (words.length > 1) {
     yield words.map(w => w.toUpperCase()).join(" ");
     yield words.map(w => w.toLowerCase()).join(" ");
     yield words.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ");
+    yield words.map(w => w.toUpperCase()).join("");
+    yield words.map(w => w.toLowerCase()).join("");
+    yield words.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join("");
   }
 }
 

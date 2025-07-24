@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getCategoryFromName } from '@/utils/categoryUtils';
-import { getProductImageUrl } from '@/utils/productImageLoader';
+import { getProductImageUrl, refreshProductImageCache } from '@/utils/productImageLoader';
 import { groupProductsByBaseName, GroupedProduct } from '@/utils/productGroupingUtils';
 import { useProductCache } from './useProductCache';
 import { correctProductName } from '@/utils/nameCorrectionUtils';
@@ -152,6 +152,7 @@ export const useProducts = () => {
 
   const refetch = () => {
     clearCache(); // Clear cache to force fresh fetch
+    refreshProductImageCache(); // Clear image cache too
     fetchProducts();
   };
 
