@@ -49,30 +49,21 @@ async function getProductImages(): Promise<string[]> {
   try {
     console.log('[PRODUCT IMAGES] Fetching from pictures bucket...');
     
-    // Try multiple strategies to list images
-    let data, error;
-    
-    // Strategy 1: List with parameters
-    ({ data, error } = await supabase.storage
+    // List files from pictures bucket
+    const { data, error } = await supabase.storage
       .from("pictures")
       .list("", {
-        limit: 3000,
-        offset: 0,
-        sortBy: { column: "name", order: "asc" }
-      }));
+        limit: 1000,
+        offset: 0
+      });
     
-    if (error || !data) {
-      console.log('[PRODUCT IMAGES] Strategy 1 failed, trying strategy 2...');
-      ({ data, error } = await supabase.storage.from("pictures").list());
+    if (error) {
+      console.error('[PRODUCT IMAGES] Failed to list files:', error);
+      return [];
     }
     
-    if (error || !data) {
-      console.log('[PRODUCT IMAGES] Strategy 2 failed, trying strategy 3...');
-      ({ data, error } = await supabase.storage.from("pictures").list(""));
-    }
-    
-    if (error || !data) {
-      console.error('[PRODUCT IMAGES] All strategies failed:', error);
+    if (!data || data.length === 0) {
+      console.log('[PRODUCT IMAGES] No files found in pictures bucket');
       return [];
     }
     

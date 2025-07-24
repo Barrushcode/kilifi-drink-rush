@@ -6,6 +6,7 @@ import { getProductImageUrl } from '@/utils/productImageLoader';
 import { groupProductsByBaseName, GroupedProduct } from '@/utils/productGroupingUtils';
 import { useProductCache } from './useProductCache';
 import { correctProductName } from '@/utils/nameCorrectionUtils';
+import { refreshProductImageCache } from '@/utils/productImageLoader';
 import '@/utils/debugStorageAccess';
 
 interface Product {
@@ -61,6 +62,10 @@ export const useProducts = () => {
     try {
       setLoading(true);
       setError(null);
+      
+      // Clear image cache to ensure fresh data
+      refreshProductImageCache();
+      
       console.log('🚀 Starting to fetch products...');
       
       const allProductsData = await fetchAllProducts();
