@@ -168,6 +168,18 @@ function levenshteinDistance(str1: string, str2: string): number {
 }
 
 /**
+ * Check if an image URL exists by making a HEAD request
+ */
+async function checkImageExists(url: string): Promise<boolean> {
+  try {
+    const response = await fetch(url, { method: 'HEAD' });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Get product image URL from the 'pictures' bucket
  * This function is specifically for products from the productprice table
  */
@@ -175,54 +187,23 @@ export async function getProductImageUrl(productName: string): Promise<string> {
   try {
     console.log(`[PRODUCT IMAGE] Looking for: "${productName}"`);
     
-    // Get all available images from the pictures bucket
-    const availableImages = await getProductImages();
-    
-    if (availableImages.length === 0) {
-      console.log('[PRODUCT IMAGE] No images found in pictures bucket');
-      return getCategoryFallbackImage(productName);
-    }
-    
-    // Try to find a matching image using name variations
     const baseUrl = 'https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/';
+    const extensions = ['.jpg', '.jpeg', '.jfif', '.png'];
     
-    for (const nameVariant of generateProductNameVariants(productName)) {
-      // Check if any available image matches this name variant (case-insensitive)
-      const matchingImage = availableImages.find(imageName => {
-        const imageBaseName = imageName.replace(/\.(jpg|jpeg|png|jfif|webp|gif)$/i, '');
-        return imageBaseName.toLowerCase() === nameVariant.toLowerCase();
-      });
+    // Try direct URLs with different extensions
+    for (const ext of extensions) {
+      const imageUrl = baseUrl + encodeURIComponent(productName + ext);
+      console.log(`[PRODUCT IMAGE] Trying: ${imageUrl}`);
       
-      if (matchingImage) {
-        const imageUrl = baseUrl + encodeURIComponent(matchingImage);
-        console.log(`[PRODUCT IMAGE] ✅ Found match: "${matchingImage}" for variant: "${nameVariant}"`);
+      const exists = await checkImageExists(imageUrl);
+      if (exists) {
+        console.log(`[PRODUCT IMAGE] ✅ Found: ${productName}${ext}`);
         return imageUrl;
       }
     }
     
-    // Try fuzzy matching as a fallback
-    let bestMatch = '';
-    let bestSimilarity = 0;
-    const threshold = 0.7; // Minimum similarity threshold
-    
-    for (const imageName of availableImages) {
-      const imageBaseName = imageName.replace(/\.(jpg|jpeg|png|jfif|webp|gif)$/i, '');
-      const similarity = calculateSimilarity(productName.toLowerCase(), imageBaseName.toLowerCase());
-      
-      if (similarity > bestSimilarity && similarity >= threshold) {
-        bestSimilarity = similarity;
-        bestMatch = imageName;
-      }
-    }
-    
-    if (bestMatch) {
-      const imageUrl = baseUrl + encodeURIComponent(bestMatch);
-      console.log(`[PRODUCT IMAGE] ✅ Found fuzzy match: "${bestMatch}" (similarity: ${bestSimilarity.toFixed(2)})`);
-      return imageUrl;
-    }
-    
-    // If no match found, return fallback
-    console.log(`[PRODUCT IMAGE] ❌ No match found for "${productName}"`);
+    // If no direct match found, return fallback
+    console.log(`[PRODUCT IMAGE] ❌ No image found for "${productName}"`);
     return getCategoryFallbackImage(productName);
     
   } catch (error) {
