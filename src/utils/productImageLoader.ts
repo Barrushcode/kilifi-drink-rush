@@ -183,8 +183,17 @@ export async function getProductImageUrl(productName: string): Promise<string> {
       const url = base + encodeURIComponent(productName) + ext;
       console.log(`[PRODUCT IMAGE] Trying: ${url}`);
       
-      // For now, return the first URL (you can add HEAD request validation later if needed)
-      return url;
+      try {
+        // Test if the image exists with a HEAD request
+        const response = await fetch(url, { method: 'HEAD' });
+        if (response.ok) {
+          console.log(`[PRODUCT IMAGE] ✅ Found: ${url}`);
+          return url;
+        }
+      } catch (fetchError) {
+        // Continue to next extension if this one fails
+        console.log(`[PRODUCT IMAGE] ❌ Failed to fetch: ${url}`);
+      }
     }
     
     // If no match found, return fallback
