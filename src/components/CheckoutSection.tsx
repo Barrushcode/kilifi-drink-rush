@@ -6,6 +6,7 @@ import OrderSummaryCard from './OrderSummaryCard';
 import PaymentOptionsPanel from './PaymentOptionsPanel';
 import AlternativePaymentInfo from './AlternativePaymentInfo';
 import DeliverySpeedPopup from './DeliverySpeedPopup';
+import DiscountCodeInput from './DiscountCodeInput';
 import { useCheckout } from '@/hooks/useCheckout';
 
 const DELIVERY_ZONES = [{
@@ -53,6 +54,11 @@ const CheckoutSection: React.FC = () => {
     subtotal,
     deliveryFee,
     totalAmount,
+    appliedDiscount,
+    discountAmount,
+    baseDeliveryFee,
+    handleDiscountApplied,
+    handleDiscountRemoved,
     handleSimulatePayment
   } = useCheckout(DELIVERY_ZONES, items, getTotalAmount);
 
@@ -92,10 +98,18 @@ const CheckoutSection: React.FC = () => {
               deliveryFee={deliveryFee}
               subtotal={subtotal}
               totalAmount={totalAmount}
+              appliedDiscount={appliedDiscount}
+              discountAmount={discountAmount}
+              baseDeliveryFee={baseDeliveryFee}
             />
           </div>
           {/* Right Column - Forms and Payment */}
           <div className="space-y-6 w-full max-w-full">
+            <DiscountCodeInput
+              onDiscountApplied={handleDiscountApplied}
+              onDiscountRemoved={handleDiscountRemoved}
+              appliedDiscount={appliedDiscount}
+            />
             <ShippingInfoForm
               shippingDetails={shippingDetails}
               errors={errors}

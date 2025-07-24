@@ -48,10 +48,18 @@ export function useCheckout(
   const [selectedZone, setSelectedZone] = useState(DELIVERY_ZONES[0].value);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [zapierWebhookUrl, setZapierWebhookUrl] = useState("");
+  const [appliedDiscount, setAppliedDiscount] = useState<{
+    code: string;
+    amount: number;
+  } | null>(null);
 
   const zoneObject = DELIVERY_ZONES.find(z => z.value === selectedZone);
   const subtotal = getTotalAmount();
-  const deliveryFee = subtotal > 5000 ? 0 : zoneObject ? zoneObject.fee : 0;
+  const baseDeliveryFee = subtotal > 5000 ? 0 : zoneObject ? zoneObject.fee : 0;
+  
+  // Apply discount to delivery fee
+  const discountAmount = appliedDiscount ? Math.min(appliedDiscount.amount, baseDeliveryFee) : 0;
+  const deliveryFee = Math.max(0, baseDeliveryFee - discountAmount);
   const totalAmount = subtotal + deliveryFee;
 
   const handleInputChange = (field: string, value: string) => {
@@ -69,6 +77,14 @@ export function useCheckout(
 
   const handleZoneChange = (value: string) => {
     setSelectedZone(value);
+  };
+
+  const handleDiscountApplied = (code: string, amount: number) => {
+    setAppliedDiscount({ code, amount });
+  };
+
+  const handleDiscountRemoved = () => {
+    setAppliedDiscount(null);
   };
 
   const validateForm = () => {
@@ -203,8 +219,13 @@ export function useCheckout(
     subtotal,
     deliveryFee,
     totalAmount,
+    appliedDiscount,
+    discountAmount,
+    baseDeliveryFee,
     handleInputChange,
     handleZoneChange,
+    handleDiscountApplied,
+    handleDiscountRemoved,
     validateForm,
     handleSimulatePayment
   };
