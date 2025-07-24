@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Download, Clock, BarChart3, ShoppingCart } from 'lucide-react';
 import OptimizedImage from './OptimizedImage';
 import { CocktailData } from '@/hooks/useCocktails';
@@ -25,7 +24,7 @@ const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => 
   
   return (
     <Card className="group bg-glass-effect border border-barrush-steel/30 hover:border-neon-pink/50 transition-all duration-500 hover:scale-105 hover:shadow-2xl overflow-hidden backdrop-blur-md">
-      <AspectRatio ratio={4/5} className="relative overflow-hidden">
+      <div className="relative overflow-hidden h-64">
         {/* Blurred background */}
         <div className="absolute inset-0">
           <OptimizedImage
@@ -42,7 +41,7 @@ const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => 
           <OptimizedImage
             src={imageUrl}
             alt={cocktail.Name}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 rounded-lg shadow-lg"
+            className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105 rounded-lg shadow-lg"
             fallbackSrc={fallbackImage}
             priority={true}
           />
@@ -57,7 +56,7 @@ const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => 
             </span>
           </div>
         </div>
-      </AspectRatio>
+      </div>
       
       <CardHeader className="pb-3">
         <CardTitle className="text-xl font-serif text-barrush-platinum group-hover:text-neon-pink transition-colors duration-300">

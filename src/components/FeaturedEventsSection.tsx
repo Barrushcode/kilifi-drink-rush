@@ -17,12 +17,22 @@ interface FeaturedEvent {
 
 const featuredEvents: FeaturedEvent[] = [
   {
-    id: 'beneath-the-baobabs',
-    name: 'Beneath the Baobabs Festival',
-    description: "Kilifi's iconic NYE festival held in a baobab forest with DJs, art, and immersive experiences.",
-    officialSite: 'https://beneaththebaobabs.com/beneath-the-baobabs-festival/',
-    image: '/lovable-uploads/d3afdd56-6192-4a8d-86f3-2b0f9b1ed66f.png',
-    bundleTitle: '🍾 Shop Baobabs Party Bundle',
+    id: 'journey-to-baobabs-2025',
+    name: 'Journey to the Baobabs 2025',
+    description: "Kilifi's littest August weekend returns for the third year. Featuring a heavy lineup of Coastal performers and food and vendors.",
+    officialSite: 'https://www.quicket.co.za/events/314632-journey-to-the-baobabs-2025/?ref=link-campaign&lc=news2',
+    image: '/lovable-uploads/65de8016-15a0-4127-9212-2d2d86f3799d.png',
+    bundleTitle: '🎵 Shop Journey Bundle',
+    bundleIcon: '🎵',
+    themeColor: 'from-emerald-500/20 to-teal-600/20'
+  },
+  {
+    id: 'beneath-the-baobabs-2026',
+    name: 'Beneath the Baobabs Festival 2026',
+    description: "For the past 10 years, the Kilifi Wilderness has become a hub of creativity bringing together thousands of festival-goers, artists, musicians, and creators for a 2-day celebration.",
+    officialSite: 'https://www.quicket.co.ke/events/314627-beneath-the-baobabs-festival-2026/?ref=link-campaign&lc=linktree#/',
+    image: '/lovable-uploads/41a5c903-11b2-4eb9-92da-4a82ba31b134.png',
+    bundleTitle: '🍾 Shop Baobabs NYE Bundle',
     bundleIcon: '🍾',
     themeColor: 'from-amber-500/20 to-orange-600/20'
   },
