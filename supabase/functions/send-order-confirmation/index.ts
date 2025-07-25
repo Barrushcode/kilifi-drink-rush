@@ -353,7 +353,7 @@ serve(async (req: Request) => {
         try {
           console.log(`📤 Sending email to: ${recipient}`);
           const response = await resend.emails.send({
-            from: "Barrush Delivery <onboarding@resend.dev>",
+            from: "Barrush Delivery <orders@send.barrush.co.ke>",
             to: [recipient],
             subject: subject,
             html: html,
