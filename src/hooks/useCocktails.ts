@@ -6,7 +6,6 @@ export interface CocktailData {
   Name: string;
   'Recipe (Ingredients)': string;
   Instructions: string;
-  image_filename: string;
   Image: string;
 }
 
@@ -37,7 +36,6 @@ export const useCocktails = () => {
           Name: item.Name,
           'Recipe (Ingredients)': item['Recipe (Ingredients)'],
           Instructions: item.Instructions,
-          image_filename: item.image_filename || '',
           Image: item.Image || ''
         }));
         setCocktails(cocktailsData);
