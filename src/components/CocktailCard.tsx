@@ -23,7 +23,7 @@ const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => 
   
   return (
     <Card className="group bg-glass-effect border border-barrush-steel/30 hover:border-neon-pink/50 transition-all duration-500 hover:scale-105 hover:shadow-2xl overflow-hidden backdrop-blur-md">
-      <div className="relative overflow-hidden h-64">
+      <div className="relative overflow-hidden h-48 sm:h-56 md:h-64 lg:h-72 aspect-square">
         {/* Blurred background */}
         <div className="absolute inset-0">
           <OptimizedImage
