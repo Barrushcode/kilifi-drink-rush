@@ -18,7 +18,15 @@ export const processRawProducts = async (
       continue;
     }
 
-    const productPrice = product.Price;
+    // Use discounted price for tequila products, regular price for others
+    let productPrice = product.Price;
+    if (product.Category?.toLowerCase() === 'tequila' && product.Discounted) {
+      const discountedPrice = parseFloat(product.Discounted);
+      if (!isNaN(discountedPrice) && discountedPrice > 0) {
+        productPrice = discountedPrice;
+      }
+    }
+    
     const description = product.Description || '';
     const category = product.Category || 'General';
 

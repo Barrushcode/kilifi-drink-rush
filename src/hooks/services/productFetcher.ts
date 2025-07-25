@@ -37,7 +37,7 @@ export const fetchProductsData = async (
     };
   }
 
-  const processedProducts = await processRawProducts(data as RawProduct[], startIndex);
+  const processedProducts = await processRawProducts(data as any[], startIndex);
   
   if (isCancelled()) return null;
 
