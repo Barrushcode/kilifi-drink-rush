@@ -139,6 +139,7 @@ export type Database = {
           Category: string | null
           "Cost per item": number | null
           Description: string | null
+          Discounted: string | null
           id: number
           Price: number | null
           "Price / International": number | null
@@ -149,6 +150,7 @@ export type Database = {
           Category?: string | null
           "Cost per item"?: number | null
           Description?: string | null
+          Discounted?: string | null
           id?: number
           Price?: number | null
           "Price / International"?: number | null
@@ -159,6 +161,7 @@ export type Database = {
           Category?: string | null
           "Cost per item"?: number | null
           Description?: string | null
+          Discounted?: string | null
           id?: number
           Price?: number | null
           "Price / International"?: number | null
