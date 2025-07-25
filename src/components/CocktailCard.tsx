@@ -6,6 +6,7 @@ import { Download, Clock, BarChart3, ShoppingCart } from 'lucide-react';
 import OptimizedImage from './OptimizedImage';
 import { CocktailData } from '@/hooks/useCocktails';
 import IngredientBundleModal from './IngredientBundleModal';
+import { getCocktailImageUrl } from '@/services/cocktailImageService';
 
 interface CocktailCardProps {
   cocktail: CocktailData;
@@ -15,10 +16,8 @@ interface CocktailCardProps {
 const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => {
   const [bundleModalOpen, setBundleModalOpen] = useState(false);
   
-  // Construct image URL from Supabase storage bucket
-  const imageUrl = cocktail.image_filename 
-    ? `https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/cocktails/${cocktail.image_filename}`
-    : '';
+  // Use the cocktail image service for proper storage URLs
+  const imageUrl = getCocktailImageUrl(cocktail.image_filename);
   
   const fallbackImage = "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=60";
   
@@ -41,7 +40,7 @@ const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => 
           <OptimizedImage
             src={imageUrl}
             alt={cocktail.Name}
-            className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105 rounded-lg shadow-lg"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 rounded-lg shadow-lg"
             fallbackSrc={fallbackImage}
             priority={true}
           />
