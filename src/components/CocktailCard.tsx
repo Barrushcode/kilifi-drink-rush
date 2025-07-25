@@ -16,8 +16,8 @@ interface CocktailCardProps {
 const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => {
   const [bundleModalOpen, setBundleModalOpen] = useState(false);
   
-  // Use the cocktail image service for proper storage URLs
-  const imageUrl = getCocktailImageUrl(cocktail.image_filename);
+  // Use the Image column directly from the database
+  const imageUrl = cocktail.Image;
   
   const fallbackImage = "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=60";
   

@@ -7,6 +7,7 @@ export interface CocktailData {
   'Recipe (Ingredients)': string;
   Instructions: string;
   image_filename: string;
+  Image: string;
 }
 
 export const useCocktails = () => {
@@ -22,12 +23,7 @@ export const useCocktails = () => {
         
         const { data, error } = await supabase
           .from('Cocktails page')
-          .select(`
-            Name,
-            "Recipe (Ingredients)",
-            Instructions,
-            image_filename
-          `)
+          .select('*')
           .order('Name');
 
         if (error) {
@@ -36,7 +32,15 @@ export const useCocktails = () => {
         }
         
         console.log('✅ Fetched cocktails data:', data);
-        setCocktails(data || []);
+        // Map the data to ensure all required fields are present
+        const cocktailsData = (data || []).map((item: any) => ({
+          Name: item.Name,
+          'Recipe (Ingredients)': item['Recipe (Ingredients)'],
+          Instructions: item.Instructions,
+          image_filename: item.image_filename || '',
+          Image: item.Image || ''
+        }));
+        setCocktails(cocktailsData);
       } catch (err) {
         console.error('Error fetching cocktails:', err);
         setError(err instanceof Error ? err.message : 'Failed to load cocktails');
