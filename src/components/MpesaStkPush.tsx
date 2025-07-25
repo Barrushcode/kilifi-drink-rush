@@ -70,7 +70,7 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
       };
 
       // Send order confirmation emails using new format
-      const { data, error } = await supabase.functions.invoke('send-order-confirmation', {
+      const { data, error } = await supabase.functions.invoke('send-order-email', {
         body: {
           orderDetails
         }

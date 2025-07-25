@@ -151,7 +151,7 @@ export function useCheckout(
       };
 
       // Send order confirmation emails (both customer and business)
-      const { data, error } = await supabase.functions.invoke('send-order-confirmation', {
+      const { data, error } = await supabase.functions.invoke('send-order-email', {
         body: {
           orderDetails
         }
