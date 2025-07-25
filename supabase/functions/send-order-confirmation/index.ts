@@ -292,7 +292,7 @@ serve(async (req: Request) => {
         const customerEmailHTML = generateOrderEmailHTML(orderDetails);
         
         const customerResponse = await resend.emails.send({
-          from: "Barrush Delivery <onboarding@resend.dev>",
+          from: "Barrush Delivery <orders@send.barrush.co.ke>",
           to: [orderDetails.customerEmail],
           subject: `🎉 Order Confirmed - #${orderDetails.reference} | Barrush Delivery`,
           html: customerEmailHTML,
@@ -311,7 +311,7 @@ serve(async (req: Request) => {
         const businessEmailHTML = generateBusinessNotificationHTML(orderDetails);
         
         const businessResponse = await resend.emails.send({
-          from: "Barrush Delivery <onboarding@resend.dev>",
+          from: "Barrush Delivery <orders@send.barrush.co.ke>",
           to: ["barrushdelivery@gmail.com"],
           subject: `🚨 NEW ORDER #${orderDetails.reference} - ${orderDetails.deliveryZone.name} | ${orderDetails.customerName}`,
           html: businessEmailHTML,
