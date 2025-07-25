@@ -16,10 +16,10 @@ interface CocktailCardProps {
 const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => {
   const [bundleModalOpen, setBundleModalOpen] = useState(false);
   
-  // Use the Image column directly from the database
-  const imageUrl = cocktail.Image;
-  
   const fallbackImage = "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=60";
+  
+  // Use the Image column directly from the database (GitHub URLs)
+  const imageUrl = cocktail.Image || fallbackImage;
   
   return (
     <Card className="group bg-glass-effect border border-barrush-steel/30 hover:border-neon-pink/50 transition-all duration-500 hover:scale-105 hover:shadow-2xl overflow-hidden backdrop-blur-md">
