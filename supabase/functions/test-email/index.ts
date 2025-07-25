@@ -28,14 +28,15 @@ serve(async (req: Request) => {
     
     console.log("Sending test email...");
     const response = await resend.emails.send({
-      from: "Barrush Delivery <onboarding@resend.dev>",
-      to: ["test@example.com"],
-      bcc: ["barrushdelivery@gmail.com"],
-      subject: "Test Email from Barrush Delivery",
+      from: "Barrush Delivery <orders@send.barrush.co.ke>",
+      to: ["barrushdelivery@gmail.com"],
+      subject: "Test Email from Barrush Delivery - Domain Verification Test",
       html: `
-        <h1>Test Email</h1>
-        <p>This is a test email to verify Resend configuration.</p>
-        <p>If you receive this, Resend is working correctly!</p>
+        <h1>Test Email - Domain Verification</h1>
+        <p>This is a test email to verify that the domain send.barrush.co.ke is properly configured.</p>
+        <p>From: orders@send.barrush.co.ke</p>
+        <p>If you receive this, your domain verification and API key are working correctly!</p>
+        <p>Timestamp: ${new Date().toISOString()}</p>
       `,
     });
     

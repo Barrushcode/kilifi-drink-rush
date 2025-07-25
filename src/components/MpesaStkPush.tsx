@@ -46,71 +46,33 @@ const MpesaStkPush: React.FC<MpesaStkPushProps> = ({
 
   const sendOrderConfirmationEmail = async (orderReference: string) => {
     try {
-      // Create order details HTML
-      const itemsHtml = items.map(item => `
-        <tr style="border-bottom: 1px solid #eee;">
-          <td style="padding: 10px; border-right: 1px solid #eee;">${item.name}</td>
-          <td style="padding: 10px; border-right: 1px solid #eee;">${item.size || 'Standard'}</td>
-          <td style="padding: 10px; border-right: 1px solid #eee;">${item.quantity}</td>
-          <td style="padding: 10px;">${item.priceFormatted}</td>
-        </tr>
-      `).join('');
+      // Prepare order details for the new email format
+      const orderDetails = {
+        reference: orderReference,
+        customerName: `${shippingDetails?.firstName || ''} ${shippingDetails?.lastName || ''}`.trim(),
+        customerEmail: shippingDetails?.email || '',
+        customerPhone: userPhone,
+        deliveryAddress: {
+          street: shippingDetails?.street || '',
+          building: shippingDetails?.building || '',
+          area: shippingDetails?.area || '',
+          city: shippingDetails?.city || ''
+        },
+        deliveryZone: {
+          name: deliveryZone?.name || shippingDetails?.deliveryZoneName || '',
+          fee: deliveryZone?.fee || shippingDetails?.deliveryZoneFee || 0
+        },
+        deliveryInstructions: shippingDetails?.instructions || '',
+        items: items,
+        subtotal: amount - (deliveryZone?.fee || shippingDetails?.deliveryZoneFee || 0),
+        deliveryFee: deliveryZone?.fee || shippingDetails?.deliveryZoneFee || 0,
+        totalAmount: amount
+      };
 
-      const orderDetailsHtml = `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h1 style="color: #e11d48; margin-bottom: 20px;">New Order Received!</h1>
-          
-          <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-            <h2 style="color: #333; margin-top: 0;">Order Reference: ${orderReference}</h2>
-            <p><strong>Payment Status:</strong> <span style="color: #10b981;">PAID via M-PESA</span></p>
-            <p><strong>Total Amount:</strong> KES ${amount.toLocaleString()}</p>
-          </div>
-
-          <div style="margin-bottom: 20px;">
-            <h3 style="color: #333;">Customer Details:</h3>
-            <p><strong>Name:</strong> ${shippingDetails?.firstName} ${shippingDetails?.lastName}</p>
-            <p><strong>Phone:</strong> ${shippingDetails?.phone}</p>
-            <p><strong>Email:</strong> ${shippingDetails?.email}</p>
-          </div>
-
-          <div style="margin-bottom: 20px;">
-            <h3 style="color: #333;">Delivery Address:</h3>
-            <p><strong>Street:</strong> ${shippingDetails?.street}</p>
-            ${shippingDetails?.building ? `<p><strong>Building:</strong> ${shippingDetails.building}</p>` : ''}
-            <p><strong>Area:</strong> ${shippingDetails?.area}</p>
-            <p><strong>City:</strong> ${shippingDetails?.city}</p>
-            ${shippingDetails?.instructions ? `<p><strong>Special Instructions:</strong> ${shippingDetails.instructions}</p>` : ''}
-          </div>
-
-          <div style="margin-bottom: 20px;">
-            <h3 style="color: #333;">Order Items:</h3>
-            <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
-              <thead>
-                <tr style="background-color: #f1f1f1;">
-                  <th style="padding: 12px; text-align: left; border-right: 1px solid #ddd;">Product</th>
-                  <th style="padding: 12px; text-align: left; border-right: 1px solid #ddd;">Size</th>
-                  <th style="padding: 12px; text-align: left; border-right: 1px solid #ddd;">Quantity</th>
-                  <th style="padding: 12px; text-align: left;">Price</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${itemsHtml}
-              </tbody>
-            </table>
-          </div>
-
-          <div style="background-color: #e11d48; color: white; padding: 15px; border-radius: 8px; text-align: center;">
-            <p style="margin: 0; font-size: 16px;">Process this order for delivery as soon as possible!</p>
-          </div>
-        </div>
-      `;
-
-      // Send order confirmation to customer only
+      // Send order confirmation emails using new format
       const { data, error } = await supabase.functions.invoke('send-order-confirmation', {
         body: {
-          to: [shippingDetails?.email].filter(Boolean),
-          subject: `Order Confirmed! - ${orderReference} - KES ${amount.toLocaleString()}`,
-          html: orderDetailsHtml
+          orderDetails
         }
       });
 
