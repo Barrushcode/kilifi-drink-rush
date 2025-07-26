@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Calendar, MapPin, Clock, Users, ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import FeaturedEventsSection from '@/components/FeaturedEventsSection';
 import SEOHead from '@/components/SEOHead';
 
@@ -143,10 +144,21 @@ const EventCard: React.FC<{
         </div>
         
         {isUpcoming && (
-          <Button className="w-full group" variant="outline">
-            Learn More
-            <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="w-full group" variant="outline">
+                Learn More
+                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl">
+              <img 
+                src={event.image} 
+                alt={event.title}
+                className="w-full h-auto rounded-lg"
+              />
+            </DialogContent>
+          </Dialog>
         )}
       </CardContent>
     </Card>
@@ -267,7 +279,11 @@ const Events: React.FC = () => {
               Partner with Barrush for your event's beverage needs. We provide premium alcohol delivery 
               and catering services for events of all sizes in Kilifi County.
             </p>
-            <Button size="lg" className="bg-primary hover:bg-primary/90">
+            <Button 
+              size="lg" 
+              className="bg-primary hover:bg-primary/90"
+              onClick={() => window.location.href = 'mailto:barrushdelivery@gmail.com'}
+            >
               Contact Us for Events
             </Button>
           </div>
