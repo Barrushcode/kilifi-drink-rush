@@ -29,7 +29,7 @@ const upcomingEvents = [
     time: "17:30",
     location: "Kilifi Creek Marina",
     category: "Party",
-    image: "https://images.unsplash.com/photo-1500673922987-e212871fec22?w=800&h=600&fit=crop",
+    image: "/lovable-uploads/384ba519-4954-4fe4-a346-d5b8de93f533.png",
     attendees: "150"
   },
   {
@@ -40,7 +40,7 @@ const upcomingEvents = [
     time: "19:00",
     location: "Kilifi Cultural Center",
     category: "Culture",
-    image: "https://images.unsplash.com/photo-1466442929976-97f336a657be?w=800&h=600&fit=crop",
+    image: "/lovable-uploads/5dce9d14-2121-4d0e-9b9a-24217fb4cb0f.png",
     attendees: "200+"
   }
 ];
@@ -54,7 +54,7 @@ const recentEvents = [
     time: "12:00",
     location: "Kilifi Sports Club",
     category: "Food & Wine",
-    image: "https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=800&h=600&fit=crop",
+    image: "/lovable-uploads/eed458a0-c82d-483b-b67a-887e67da1b9c.png",
     attendees: "800+"
   },
   {
@@ -65,7 +65,7 @@ const recentEvents = [
     time: "09:00",
     location: "Kilifi Nature Reserve",
     category: "Education",
-    image: "https://images.unsplash.com/photo-1472396961693-142e6e269027?w=800&h=600&fit=crop",
+    image: "/lovable-uploads/44a4a4ba-cffd-475b-9ee9-b01cb49950c1.png",
     attendees: "300"
   }
 ];

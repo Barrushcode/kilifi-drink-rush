@@ -107,12 +107,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
           objectPosition: 'center'
         }}
       />
-      <div 
-        className="absolute inset-0 transition-all duration-300"
-        style={{
-          background: 'linear-gradient(to top, rgba(15, 20, 25, 0.6) 0%, transparent 100%)'
-        }}
-      />
+      {/* Remove the built-in gradient overlay that's covering images */}
       {error && !loading && (
         <div 
           className="absolute inset-0 flex items-center justify-center"

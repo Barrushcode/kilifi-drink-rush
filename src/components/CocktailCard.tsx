@@ -66,7 +66,7 @@ const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => 
   
   return (
     <Card className="group bg-glass-effect border border-barrush-steel/30 hover:border-neon-pink/50 transition-all duration-500 hover:scale-105 hover:shadow-2xl overflow-hidden backdrop-blur-md">
-      <div className="relative overflow-hidden h-64">
+      <div className="relative overflow-hidden h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80">
         {/* Blurred background */}
         <div className="absolute inset-0">
           <OptimizedImage
@@ -91,7 +91,7 @@ const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => 
           />
         </div>
         
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent z-20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent z-20" />
         <div className="absolute top-2 right-2 sm:top-4 sm:right-4 flex gap-2 z-30">
           <div className="bg-neon-pink/90 backdrop-blur-sm px-2 py-1 rounded-full">
             <span className="text-white text-xs font-semibold flex items-center gap-1">
