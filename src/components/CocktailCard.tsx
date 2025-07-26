@@ -69,25 +69,21 @@ const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => 
       <div className="relative overflow-hidden h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80">
         {/* Blurred background */}
         <div className="absolute inset-0">
-          <OptimizedImage
+          <img
             src={imageUrl}
             alt=""
             className="w-full h-full object-cover scale-110 blur-xl opacity-60"
-            fallbackSrc={fallbackImage}
-            priority={false}
-            bustCache={true}
+            loading="lazy"
           />
         </div>
         
         {/* Main image */}
         <div className="relative z-10 w-full h-full flex items-center justify-center p-2 sm:p-4">
-          <OptimizedImage
+          <img
             src={imageUrl}
             alt={cocktail.Name}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 rounded-lg shadow-lg"
-            fallbackSrc={fallbackImage}
-            priority={true}
-            bustCache={true}
+            loading="eager"
           />
         </div>
         
