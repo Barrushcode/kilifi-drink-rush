@@ -5,6 +5,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import { CartProvider } from "@/contexts/CartContext";
 import Navigation from "./components/Navigation";
 import CartDrawer from "@/components/CartDrawer";
@@ -40,10 +41,11 @@ const App = () => {
   };
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <MiniCartDrawerProvider>
-        <CartProvider>
-          <TooltipProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <MiniCartDrawerProvider>
+          <CartProvider>
+            <TooltipProvider>
             <Toaster />
             <Sonner />
             {!isAgeVerified ? (
@@ -76,10 +78,11 @@ const App = () => {
                 </div>
               </BrowserRouter>
             )}
-          </TooltipProvider>
-        </CartProvider>
-      </MiniCartDrawerProvider>
-    </QueryClientProvider>
+            </TooltipProvider>
+          </CartProvider>
+        </MiniCartDrawerProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
   );
 };
 

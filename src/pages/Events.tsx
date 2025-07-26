@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import FeaturedEventsSection from '@/components/FeaturedEventsSection';
+import SEOHead from '@/components/SEOHead';
 
 // Sample events data - this could later come from a database
 const upcomingEvents = [
@@ -153,8 +154,50 @@ const EventCard: React.FC<{
 };
 
 const Events: React.FC = () => {
+  const eventsStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Events in Kilifi County",
+    "description": "Upcoming events, festivals, and entertainment in Kilifi County, Kenya",
+    "url": "https://barrush.lovable.app/events",
+    "itemListElement": upcomingEvents.map((event, index) => ({
+      "@type": "Event",
+      "position": index + 1,
+      "name": event.title,
+      "description": event.description,
+      "startDate": event.date + "T" + event.time.split(" ")[0],
+      "location": {
+        "@type": "Place",
+        "name": event.location,
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "Kenya",
+          "addressRegion": "Kilifi County"
+        }
+      },
+      "organizer": {
+        "@type": "Organization",
+        "name": event.host || "Salty's",
+        "url": "https://saltyskitesurf.com"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": event.entry === "Free" ? "0" : event.entry.replace("KES ", ""),
+        "priceCurrency": "KES",
+        "availability": "https://schema.org/InStock"
+      }
+    }))
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Events in Kilifi County | Beach Parties, DJ Sets & Entertainment | Kenya"
+        description="Discover exciting events in Kilifi County - beach parties, trivia nights, DJ sets at Salty's Social. From entertainment to music festivals, find the best events happening in Kilifi, Kenya."
+        keywords="events Kilifi County, Kilifi events, beach parties Kilifi, DJ sets Kilifi, Salty's Social events, trivia night Kilifi, entertainment Kilifi Kenya, music events Kilifi, festivals Kilifi County, nightlife Kilifi"
+        url="https://barrush.lovable.app/events"
+        structuredData={eventsStructuredData}
+      />
       {/* Hero Section */}
       <section className="relative py-16 lg:py-24 bg-gradient-to-br from-primary/10 to-primary/5">
         <div className="container mx-auto px-4">
