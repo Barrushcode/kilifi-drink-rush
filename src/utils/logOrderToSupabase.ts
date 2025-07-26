@@ -71,9 +71,10 @@ export async function logOrderToSupabase({
     throw error;
   }
 
-  // Trigger SMS edge function if order was created successfully
+  // Trigger SMS and Email edge functions if order was created successfully
   if (data && data[0]) {
     try {
+      // Send SMS notification
       const { error: smsError } = await supabase.functions.invoke('send-sms', {
         body: {
           order_id: data[0].id
@@ -85,6 +86,43 @@ export async function logOrderToSupabase({
       }
     } catch (smsErr) {
       console.error("Error calling SMS function:", smsErr);
+    }
+
+    try {
+      // Send order confirmation email
+      const { error: emailError } = await supabase.functions.invoke('send-order-confirmation', {
+        body: {
+          orderDetails: {
+            reference: orderReference,
+            customerName: buyerName,
+            customerEmail: buyerEmail,
+            customerPhone: buyerPhone || '',
+            deliveryAddress: {
+              street: street || '',
+              building: building || '',
+              area: region,
+              city: city || ''
+            },
+            deliveryZone: {
+              name: region,
+              fee: deliveryFee
+            },
+            deliveryInstructions: instructions || '',
+            items: items,
+            subtotal: subtotal,
+            deliveryFee: deliveryFee,
+            totalAmount: totalAmount
+          }
+        }
+      });
+      
+      if (emailError) {
+        console.error("Email sending failed:", emailError.message);
+      } else {
+        console.log("Order confirmation email sent successfully");
+      }
+    } catch (emailErr) {
+      console.error("Error calling email function:", emailErr);
     }
   }
 
