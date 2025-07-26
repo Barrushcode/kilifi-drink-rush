@@ -30,6 +30,11 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
   // Optimize image URL for better performance
   const optimizeImageUrl = (url: string): string => {
+    // Don't modify local images (hardcoded cocktail images)
+    if (url.startsWith('/lovable-uploads/') || url.startsWith('/assets/')) {
+      return url;
+    }
+    
     // If it's an Unsplash image, add optimization parameters
     if (url.includes('unsplash.com')) {
       const optimizedUrl = new URL(url);
@@ -40,7 +45,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
       return optimizedUrl.toString();
     }
     
-    // Add cache busting if requested
+    // Add cache busting if requested (but not for local images)
     if (bustCache) {
       const separator = url.includes('?') ? '&' : '?';
       return `${url}${separator}t=${Date.now()}`;
