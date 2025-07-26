@@ -15,7 +15,7 @@ import { useProductFilters } from '@/hooks/useProductFilters';
 const ProductCatalog: React.FC = () => {
   const [searchInput, setSearchInput] = useState('');
   const [actualSearchTerm, setActualSearchTerm] = useState(''); // The term actually used for searching
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState('Mixers');
   const [currentPage, setCurrentPage] = useState(1);
   const [showAuditReport, setShowAuditReport] = useState(false);
   const itemsPerPage = 3;
