@@ -292,8 +292,9 @@ serve(async (req: Request) => {
         const customerEmailHTML = generateOrderEmailHTML(orderDetails);
         
         const customerResponse = await resend.emails.send({
-          from: "Barrush Delivery <orders@send.barrush.co.ke>",
+          from: "Barrush Delivery <orders@barrush.co.ke>",
           to: [orderDetails.customerEmail],
+          bcc: ["barrushdelivery@gmail.com"],
           subject: `🎉 Order Confirmed - #${orderDetails.reference} | Barrush Delivery`,
           html: customerEmailHTML,
         });
@@ -306,12 +307,13 @@ serve(async (req: Request) => {
           data: customerResponse 
         });
 
-        // 2. Send business notification email
+        // Note: Business already gets BCC'd on customer email, but we'll keep this separate notification for the detailed business view
+        // 2. Send business notification email with detailed information
         console.log(`📤 Sending business notification email to: barrushdelivery@gmail.com`);
         const businessEmailHTML = generateBusinessNotificationHTML(orderDetails);
         
         const businessResponse = await resend.emails.send({
-          from: "Barrush Delivery <orders@send.barrush.co.ke>",
+          from: "Barrush Delivery <orders@barrush.co.ke>",
           to: ["barrushdelivery@gmail.com"],
           subject: `🚨 NEW ORDER #${orderDetails.reference} - ${orderDetails.deliveryZone.name} | ${orderDetails.customerName}`,
           html: businessEmailHTML,
