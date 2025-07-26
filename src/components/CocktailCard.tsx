@@ -75,6 +75,7 @@ const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => 
             className="w-full h-full object-cover scale-110 blur-xl opacity-60"
             fallbackSrc={fallbackImage}
             priority={false}
+            bustCache={true}
           />
         </div>
         
@@ -86,6 +87,7 @@ const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => 
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 rounded-lg shadow-lg"
             fallbackSrc={fallbackImage}
             priority={true}
+            bustCache={true}
           />
         </div>
         
