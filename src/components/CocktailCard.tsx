@@ -23,6 +23,12 @@ const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => 
     if (cocktail.Name.toLowerCase().includes('cosmopolitan')) {
       return '/lovable-uploads/c46561db-632b-428e-be18-0b79dc0b0421.png';
     }
+    if (cocktail.Name.toLowerCase().includes('daiquiri')) {
+      return '/lovable-uploads/100eef3f-025a-437b-9151-435dc9911ef4.png';
+    }
+    if (cocktail.Name.toLowerCase().includes('espresso martini')) {
+      return '/lovable-uploads/16ac3d3b-35c1-4805-93b3-2d8c23df8863.png';
+    }
     return (cocktail.Image && cocktail.Image.trim() !== '') ? cocktail.Image : fallbackImage;
   };
   
