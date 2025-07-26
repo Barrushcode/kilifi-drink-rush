@@ -106,12 +106,17 @@ export async function getSupabaseProductImageUrl(productName: string): Promise<s
     return null;
   }
 
-  // First try exact match with common extensions
+  // First try exact match with all supported image extensions
   const exactMatches = [
     `${productName}.jpg`,
     `${productName}.jpeg`,
+    `${productName}.jfif`,
     `${productName}.png`,
-    `${productName}.webp`
+    `${productName}.webp`,
+    `${productName}.bmp`,
+    `${productName}.gif`,
+    `${productName}.tiff`,
+    `${productName}.svg`
   ];
 
   for (const filePath of exactMatches) {
@@ -143,7 +148,11 @@ export async function getSupabaseProductImageUrl(productName: string): Promise<s
     `${productName} (1).jpg`,
     `${productName} (2).jpg`,
     `${productName} (1).jpeg`,
-    `${productName} (2).jpeg`
+    `${productName} (2).jpeg`,
+    `${productName} (1).jfif`,
+    `${productName} (2).jfif`,
+    `${productName} (1).png`,
+    `${productName} (2).png`
   ];
 
   for (const filePath of variationMatches) {
@@ -178,7 +187,7 @@ export async function getSupabaseProductImageUrl(productName: string): Promise<s
     let bestScore = 0;
 
     for (const imageName of availableImages) {
-      const imageNameWithoutExt = imageName.replace(/\.(jpg|jpeg|png|webp)$/i, '').toLowerCase();
+      const imageNameWithoutExt = imageName.replace(/\.(jpg|jpeg|jfif|png|webp|bmp|gif|tiff|svg)$/i, '').toLowerCase();
       const similarity = calculateSimilarity(productNameLower, imageNameWithoutExt);
       
       // Only consider matches with similarity > 0.6 (60% match)
