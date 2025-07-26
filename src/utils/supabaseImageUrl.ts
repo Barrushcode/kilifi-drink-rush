@@ -94,6 +94,14 @@ export async function getSupabaseProductImageUrl(productName: string): Promise<s
   
   // Cache for failed lookups to avoid repeated attempts
   const cacheKey = `image_lookup_${productName}`;
+  
+  // Clear cache for Jack Daniels products to force refresh
+  if (productName.toLowerCase().includes('jack daniel')) {
+    sessionStorage.removeItem(cacheKey);
+    // Also clear the image cache to force a fresh fetch
+    imageCache = null;
+  }
+  
   if (sessionStorage.getItem(cacheKey) === 'not_found') {
     return null;
   }
