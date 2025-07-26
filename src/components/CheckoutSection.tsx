@@ -109,6 +109,7 @@ const CheckoutSection: React.FC = () => {
               onDiscountApplied={handleDiscountApplied}
               onDiscountRemoved={handleDiscountRemoved}
               appliedDiscount={appliedDiscount}
+              subtotal={subtotal}
             />
             <ShippingInfoForm
               shippingDetails={shippingDetails}

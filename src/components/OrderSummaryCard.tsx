@@ -62,7 +62,16 @@ const OrderSummaryCard: React.FC<OrderSummaryCardProps> = ({
             <div className="flex-1 min-w-0">
               <h4 className="text-white font-semibold text-sm truncate">{item.name}</h4>
               <p className="text-gray-300 text-xs">{item.size}</p>
-              <p className="text-neon-pink-light font-bold text-sm">{item.priceFormatted}</p>
+              {appliedDiscount && discountAmount && discountAmount > 0 ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-400 line-through text-xs">{item.priceFormatted}</span>
+                  <span className="text-red-400 font-bold text-sm bg-red-900/20 px-2 py-1 rounded border border-red-500/30">
+                    SALE PRICE
+                  </span>
+                </div>
+              ) : (
+                <p className="text-neon-pink-light font-bold text-sm">{item.priceFormatted}</p>
+              )}
             </div>
             <div className="flex items-center space-x-2">
               <Button 
