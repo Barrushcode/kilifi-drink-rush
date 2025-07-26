@@ -61,6 +61,9 @@ const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => 
   
   const imageUrl = getImageUrl();
   
+  // Debug logging to check image URLs
+  console.log(`[COCKTAIL IMAGE] ${cocktail.Name} -> ${imageUrl}`);
+  
   return (
     <Card className="group bg-glass-effect border border-barrush-steel/30 hover:border-neon-pink/50 transition-all duration-500 hover:scale-105 hover:shadow-2xl overflow-hidden backdrop-blur-md">
       <div className="relative overflow-hidden h-64">
