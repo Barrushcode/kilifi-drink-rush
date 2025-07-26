@@ -151,12 +151,62 @@ const EventCard: React.FC<{
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-4xl">
-              <img 
-                src={event.image} 
-                alt={event.title}
-                className="w-full h-auto rounded-lg"
-              />
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+              <div className="space-y-6">
+                <img 
+                  src={event.image} 
+                  alt={event.title}
+                  className="w-full h-auto rounded-lg"
+                />
+                <div className="space-y-4">
+                  <h2 className="text-2xl font-bold">{event.title}</h2>
+                  <p className="text-muted-foreground">{event.description}</p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4" />
+                      <span><strong>Date:</strong> {eventDate.toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4" />
+                      <span><strong>Time:</strong> {event.time}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4" />
+                      <span><strong>Location:</strong> {event.location}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4" />
+                      <span><strong>Attendees:</strong> {event.attendees}</span>
+                    </div>
+                    {event.entry && (
+                      <div>
+                        <span><strong>Entry:</strong> {event.entry}</span>
+                      </div>
+                    )}
+                    {event.host && (
+                      <div>
+                        <span><strong>Host:</strong> {event.host}</span>
+                      </div>
+                    )}
+                    {event.contact && (
+                      <div>
+                        <span><strong>Contact:</strong> {event.contact}</span>
+                      </div>
+                    )}
+                    {event.artist && (
+                      <div>
+                        <span><strong>Artist:</strong> {event.artist}</span>
+                      </div>
+                    )}
+                    {event.lineup && (
+                      <div>
+                        <span><strong>Lineup:</strong> {event.lineup}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </DialogContent>
           </Dialog>
         )}
