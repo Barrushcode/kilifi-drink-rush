@@ -20,15 +20,42 @@ const CocktailCard: React.FC<CocktailCardProps> = ({ cocktail, onDownload }) => 
   
   // Hardcode specific images for certain cocktails
   const getImageUrl = () => {
-    if (cocktail.Name.toLowerCase().includes('cosmopolitan')) {
+    const cocktailName = cocktail.Name.toLowerCase();
+    
+    if (cocktailName.includes('cosmopolitan')) {
       return '/lovable-uploads/c46561db-632b-428e-be18-0b79dc0b0421.png';
     }
-    if (cocktail.Name.toLowerCase().includes('daiquiri')) {
+    if (cocktailName.includes('daiquiri')) {
       return '/lovable-uploads/100eef3f-025a-437b-9151-435dc9911ef4.png';
     }
-    if (cocktail.Name.toLowerCase().includes('espresso martini')) {
+    if (cocktailName.includes('espresso martini')) {
       return '/lovable-uploads/16ac3d3b-35c1-4805-93b3-2d8c23df8863.png';
     }
+    if (cocktailName.includes('manhattan')) {
+      return '/lovable-uploads/846f9b11-3340-4d9c-b1a8-f42913d81b5c.png';
+    }
+    if (cocktailName.includes('margarita')) {
+      return '/lovable-uploads/b5d11b2f-60a1-4326-86e7-5d7a8a879ad3.png';
+    }
+    if (cocktailName.includes('martini') && !cocktailName.includes('espresso')) {
+      return '/lovable-uploads/e8ebbd7b-2cbc-41a3-8155-e71d6c308b02.png';
+    }
+    if (cocktailName.includes('mojito')) {
+      return '/lovable-uploads/9d10b57b-d722-42c5-83dc-80b7a464646e.png';
+    }
+    if (cocktailName.includes('moscow mule')) {
+      return '/lovable-uploads/fb908e00-3d38-45c8-acb1-7680549255b9.png';
+    }
+    if (cocktailName.includes('negroni')) {
+      return '/lovable-uploads/777949e3-1d3d-4d1d-845e-69ce6b25f4f9.png';
+    }
+    if (cocktailName.includes('pina colada')) {
+      return '/lovable-uploads/81e639d5-0953-48e0-97f7-2258736d48ed.png';
+    }
+    if (cocktailName.includes('whiskey sour')) {
+      return '/lovable-uploads/9f16588d-96b6-4e6d-8339-cdaa2cbfbbcf.png';
+    }
+    
     return (cocktail.Image && cocktail.Image.trim() !== '') ? cocktail.Image : fallbackImage;
   };
   
