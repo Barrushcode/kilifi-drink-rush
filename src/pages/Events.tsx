@@ -9,39 +9,45 @@ import FeaturedEventsSection from '@/components/FeaturedEventsSection';
 const upcomingEvents = [
   {
     id: 1,
-    title: "Saffron Garden Picnic & Paint",
-    description: "Unique painting session filled with fun memories. Bring your stylish picnic basket and join us for art, cocktails, and creativity.",
-    date: "2025-07-27",
-    time: "14:00",
-    location: "Saffron Garden Malindi (Old La Malindino)",
-    category: "Art & Culture",
-    image: "/lovable-uploads/3d290029-10cb-406d-9184-32ccfffb2606.png",
-    attendees: "Limited",
+    title: "🧠 Trivia Night",
+    description: "Fun, team-based adult game night – good for groups of friends, couples, or coworkers. Free tequila shots & a lunch voucher worth KES 500.00!",
+    date: "2025-08-08",
+    time: "7:00 PM – 9:00 PM",
+    location: "Salty's (www.saltyskitesurf.com)",
+    category: "Entertainment",
+    image: "/lovable-uploads/81aa873d-120d-4937-a946-92c7b398d971.png",
+    attendees: "2-6 people per squad",
     featured: true,
-    dressCode: "Happy Bold Colours",
-    pricing: "Adults KES 1900, Kids KES 1500"
+    host: "Kaz",
+    entry: "Free",
+    contact: "+254 794 449 196"
   },
   {
     id: 2,
-    title: "Sunset Yacht Party",
-    description: "Exclusive sunset cruise with premium drinks and DJ entertainment",
-    date: "2024-08-02",
-    time: "17:30",
-    location: "Kilifi Creek Marina",
-    category: "Party",
-    image: "/lovable-uploads/384ba519-4954-4fe4-a346-d5b8de93f533.png",
-    attendees: "150"
+    title: "🎧 Salty's Social: Kamushez DJ Set",
+    description: "Chill, danceable beach party with a DJ set, ideal for nightlife and party lovers.",
+    date: "2025-08-09",
+    time: "9:00 PM",
+    location: "Salty's Social – www.saltyskitesurf.com",
+    category: "Music",
+    image: "/lovable-uploads/d4d78ce6-0458-4617-b6b9-8856b228637f.png",
+    attendees: "Open",
+    artist: "Kamushez",
+    entry: "Free or venue entry"
   },
   {
     id: 3,
-    title: "Local Art & Culture Night",
-    description: "Showcase of local artists, traditional dances, and craft exhibitions",
-    date: "2024-07-28",
-    time: "19:00",
-    location: "Kilifi Cultural Center",
-    category: "Culture",
-    image: "/lovable-uploads/5dce9d14-2121-4d0e-9b9a-24217fb4cb0f.png",
-    attendees: "200+"
+    title: "🌴 Salty's Social: Krish, Rich Mvazi, Evan Rhodes",
+    description: "High-energy, party by the sea with a diverse music lineup featuring three amazing DJs!",
+    date: "2025-08-15",
+    time: "8:00 PM",
+    location: "Salty's Social – www.saltyskitesurf.com",
+    category: "Music",
+    image: "/lovable-uploads/73d2618a-4ea2-43cc-849d-c01f033f5351.png",
+    attendees: "Open",
+    featured: true,
+    lineup: "KRISH, RICH MVAZI, EVAN RHODES",
+    entry: "KES 500"
   }
 ];
 
@@ -71,7 +77,7 @@ const recentEvents = [
 ];
 
 const EventCard: React.FC<{
-  event: typeof upcomingEvents[0];
+  event: any;
   isUpcoming?: boolean;
 }> = ({ event, isUpcoming = true }) => {
   const eventDate = new Date(event.date);
