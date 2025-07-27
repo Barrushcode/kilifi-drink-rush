@@ -254,9 +254,9 @@ const Events: React.FC = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
-        title="Events in Kilifi County | Beach Parties, DJ Sets & Entertainment | Kenya"
-        description="Discover exciting events in Kilifi County - beach parties, trivia nights, DJ sets at Salty's Social. From entertainment to music festivals, find the best events happening in Kilifi, Kenya."
-        keywords="events Kilifi County, Kilifi events, beach parties Kilifi, DJ sets Kilifi, Salty's Social events, trivia night Kilifi, entertainment Kilifi Kenya, music events Kilifi, festivals Kilifi County, nightlife Kilifi"
+        title="Trivia Night Salty's | Kamushez DJ Set | Krish Rich Mvazi Evan Rhodes | Events Kilifi County Kenya | Barrush"
+        description="Join Trivia Night at Salty's, Kamushez DJ Set, Krish Rich Mvazi Evan Rhodes lineup, Food & Wine Expo, Wildlife Conservation events in Kilifi County. Premium alcohol delivery for all events."
+        keywords="Trivia Night Salty's Kilifi, Kamushez DJ Set Kilifi, Krish Rich Mvazi Evan Rhodes, Salty's Social events, Kilifi Food Wine Expo, Wildlife Conservation Kilifi, events Kilifi County, beach parties Salty's, DJ sets Kilifi, entertainment Kenya, event alcohol delivery Kilifi, nightlife Kilifi Kenya"
         url="https://barrush.lovable.app/events"
         structuredData={eventsStructuredData}
       />
