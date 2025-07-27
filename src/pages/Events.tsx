@@ -50,6 +50,21 @@ const upcomingEvents = [
     featured: true,
     lineup: "KRISH, RICH MVAZI, EVAN RHODES",
     entry: "KES 500"
+  },
+  {
+    id: 4,
+    title: "🎪 A Happy Soko",
+    description: "A Happy Soko is a community-driven outdoor marketplace and cultural festival designed to uplift local entrepreneurs, celebrate Kenyan creativity, and spark meaningful human connections. Powered by A Happy Society, this event blends commerce, music, wellness, and storytelling into a vibrant open-air experience for the Kilifi community and beyond. This second edition builds on the success of our June 2025 debut, bringing together SMEs, artists, DJs, and health partners in a curated day-to-night activation of Kilifi's creative spirit — all in the name of freedom, flavor, and festivity.",
+    date: "2025-08-30",
+    time: "10:00 AM till late",
+    location: "Mazingira Park",
+    category: "Festival",
+    image: "/lovable-uploads/e9853dfa-366d-48a2-b18f-e7fa248cea96.png",
+    attendees: "Open",
+    featured: true,
+    host: "A Happy Society",
+    entry: "Various vendor options",
+    signupLink: "https://forms.gle/3FVv9oi5gfc4fb9h7"
   }
 ];
 
@@ -205,6 +220,23 @@ const EventCard: React.FC<{
                       </div>
                     )}
                   </div>
+                  
+                  {event.signupLink && (
+                    <div className="mt-6">
+                      <Button 
+                        asChild 
+                        className="w-full bg-primary hover:bg-primary/90"
+                      >
+                        <a 
+                          href={event.signupLink} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                        >
+                          Sign Up for Event
+                        </a>
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             </DialogContent>
