@@ -11,6 +11,7 @@ import SEOHead from '@/components/SEOHead';
 const upcomingEvents = [
   {
     id: 1,
+    slug: 'trivia-night',
     title: "🧠 Trivia Night",
     description: "Fun, team-based adult game night – good for groups of friends, couples, or coworkers. Free tequila shots & a lunch voucher worth KES 500.00!",
     date: "2025-08-08",
@@ -26,6 +27,7 @@ const upcomingEvents = [
   },
   {
     id: 2,
+    slug: 'kamushez-dj-set',
     title: "🎧 Salty's Social: Kamushez DJ Set",
     description: "Chill, danceable beach party with a DJ set, ideal for nightlife and party lovers.",
     date: "2025-08-09",
@@ -39,6 +41,7 @@ const upcomingEvents = [
   },
   {
     id: 3,
+    slug: 'krish-rich-mvazi-evan-rhodes',
     title: "🌴 Salty's Social: Krish, Rich Mvazi, Evan Rhodes",
     description: "High-energy, party by the sea with a diverse music lineup featuring three amazing DJs!",
     date: "2025-08-15",
@@ -53,6 +56,7 @@ const upcomingEvents = [
   },
   {
     id: 4,
+    slug: 'happy-soko',
     title: "🎪 A Happy Soko",
     description: "A Happy Soko is a community-driven outdoor marketplace and cultural festival designed to uplift local entrepreneurs, celebrate Kenyan creativity, and spark meaningful human connections. Powered by A Happy Society, this event blends commerce, music, wellness, and storytelling into a vibrant open-air experience for the Kilifi community and beyond. This second edition builds on the success of our June 2025 debut, bringing together SMEs, artists, DJs, and health partners in a curated day-to-night activation of Kilifi's creative spirit — all in the name of freedom, flavor, and festivity.",
     date: "2025-08-30",
@@ -101,10 +105,11 @@ const EventCard: React.FC<{
   const isToday = eventDate.toDateString() === new Date().toDateString();
   
   const shareEvent = async () => {
+    const eventUrl = event.slug ? `${window.location.origin}/events/${event.slug}` : `${window.location.origin}/events#event-${event.id}`;
     const shareData = {
       title: event.title,
       text: `Check out this event: ${event.title} on ${eventDate.toLocaleDateString()} at ${event.location}`,
-      url: `${window.location.origin}/events#event-${event.id}`
+      url: eventUrl
     };
 
     if (navigator.share) {
@@ -272,7 +277,7 @@ const EventCard: React.FC<{
                         variant="outline"
                         className="w-full"
                         onClick={() => {
-                          const eventUrl = `${window.location.origin}/events#event-${event.id}`;
+                          const eventUrl = event.slug ? `${window.location.origin}/events/${event.slug}` : `${window.location.origin}/events#event-${event.id}`;
                           navigator.clipboard.writeText(eventUrl);
                           alert('Event link copied to clipboard!');
                         }}
