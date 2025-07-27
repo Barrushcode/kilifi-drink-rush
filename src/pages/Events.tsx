@@ -288,6 +288,18 @@ const EventCard: React.FC<{
 };
 
 const Events: React.FC = () => {
+  // Handle scrolling to event on page load if hash exists
+  React.useEffect(() => {
+    if (window.location.hash) {
+      const element = document.querySelector(window.location.hash);
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+      }
+    }
+  }, []);
+
   const eventsStructuredData = {
     "@context": "https://schema.org",
     "@type": "ItemList",
