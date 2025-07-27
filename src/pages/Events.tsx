@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, MapPin, Clock, Users, ArrowRight, Share2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -289,13 +289,13 @@ const EventCard: React.FC<{
 
 const Events: React.FC = () => {
   // Handle scrolling to event on page load if hash exists
-  React.useEffect(() => {
+  useEffect(() => {
     if (window.location.hash) {
       const element = document.querySelector(window.location.hash);
       if (element) {
         setTimeout(() => {
           element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 100);
+        }, 500);
       }
     }
   }, []);
