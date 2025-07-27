@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, MapPin, Clock, Users, ArrowRight } from 'lucide-react';
+import { Calendar, MapPin, Clock, Users, ArrowRight, Share2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -100,8 +100,36 @@ const EventCard: React.FC<{
   const eventDate = new Date(event.date);
   const isToday = eventDate.toDateString() === new Date().toDateString();
   
+  const shareEvent = async () => {
+    const shareData = {
+      title: event.title,
+      text: `Check out this event: ${event.title} on ${eventDate.toLocaleDateString()} at ${event.location}`,
+      url: `${window.location.origin}/events#event-${event.id}`
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.log('Error sharing:', err);
+      }
+    } else {
+      // Fallback to copying to clipboard
+      try {
+        await navigator.clipboard.writeText(`${shareData.title}\n${shareData.text}\n${shareData.url}`);
+        // You could add a toast notification here
+        alert('Event details copied to clipboard!');
+      } catch (err) {
+        console.log('Error copying to clipboard:', err);
+      }
+    }
+  };
+  
   return (
-    <Card className={`group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 ${event.featured ? 'ring-2 ring-primary/20' : ''}`}>
+    <Card 
+      id={`event-${event.id}`}
+      className={`group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 ${event.featured ? 'ring-2 ring-primary/20' : ''}`}
+    >
       <div className="relative overflow-hidden rounded-t-lg h-56 md:h-64">
         <img 
           src={event.image} 
@@ -158,90 +186,102 @@ const EventCard: React.FC<{
           <span>{event.location}</span>
         </div>
         
-        {isUpcoming && (
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button className="w-full group" variant="outline">
-                Learn More
-                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-              <div className="space-y-6">
-                <img 
-                  src={event.image} 
-                  alt={event.title}
-                  className="w-full h-auto rounded-lg"
-                />
-                <div className="space-y-4">
-                  <h2 className="text-2xl font-bold">{event.title}</h2>
-                  <p className="text-muted-foreground">{event.description}</p>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4" />
-                      <span><strong>Date:</strong> {eventDate.toLocaleDateString()}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4" />
-                      <span><strong>Time:</strong> {event.time}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4" />
-                      <span><strong>Location:</strong> {event.location}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4" />
-                      <span><strong>Attendees:</strong> {event.attendees}</span>
-                    </div>
-                    {event.entry && (
-                      <div>
-                        <span><strong>Entry:</strong> {event.entry}</span>
+        <div className="flex gap-2">
+          {isUpcoming && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="flex-1 group" variant="outline">
+                  Learn More
+                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <div className="space-y-6">
+                  <img 
+                    src={event.image} 
+                    alt={event.title}
+                    className="w-full h-auto rounded-lg"
+                  />
+                  <div className="space-y-4">
+                    <h2 className="text-2xl font-bold">{event.title}</h2>
+                    <p className="text-muted-foreground">{event.description}</p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
+                        <span><strong>Date:</strong> {eventDate.toLocaleDateString()}</span>
                       </div>
-                    )}
-                    {event.host && (
-                      <div>
-                        <span><strong>Host:</strong> {event.host}</span>
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4" />
+                        <span><strong>Time:</strong> {event.time}</span>
                       </div>
-                    )}
-                    {event.contact && (
-                      <div>
-                        <span><strong>Contact:</strong> {event.contact}</span>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4" />
+                        <span><strong>Location:</strong> {event.location}</span>
                       </div>
-                    )}
-                    {event.artist && (
-                      <div>
-                        <span><strong>Artist:</strong> {event.artist}</span>
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4" />
+                        <span><strong>Attendees:</strong> {event.attendees}</span>
                       </div>
-                    )}
-                    {event.lineup && (
-                      <div>
-                        <span><strong>Lineup:</strong> {event.lineup}</span>
+                      {event.entry && (
+                        <div>
+                          <span><strong>Entry:</strong> {event.entry}</span>
+                        </div>
+                      )}
+                      {event.host && (
+                        <div>
+                          <span><strong>Host:</strong> {event.host}</span>
+                        </div>
+                      )}
+                      {event.contact && (
+                        <div>
+                          <span><strong>Contact:</strong> {event.contact}</span>
+                        </div>
+                      )}
+                      {event.artist && (
+                        <div>
+                          <span><strong>Artist:</strong> {event.artist}</span>
+                        </div>
+                      )}
+                      {event.lineup && (
+                        <div>
+                          <span><strong>Lineup:</strong> {event.lineup}</span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {event.signupLink && (
+                      <div className="mt-6">
+                        <Button 
+                          asChild 
+                          className="w-full bg-primary hover:bg-primary/90"
+                        >
+                          <a 
+                            href={event.signupLink} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                          >
+                            Sign Up for Event
+                          </a>
+                        </Button>
                       </div>
                     )}
                   </div>
-                  
-                  {event.signupLink && (
-                    <div className="mt-6">
-                      <Button 
-                        asChild 
-                        className="w-full bg-primary hover:bg-primary/90"
-                      >
-                        <a 
-                          href={event.signupLink} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                        >
-                          Sign Up for Event
-                        </a>
-                      </Button>
-                    </div>
-                  )}
                 </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
+              </DialogContent>
+            </Dialog>
+          )}
+          
+          <Button 
+            variant="outline" 
+            size="icon"
+            onClick={shareEvent}
+            className="shrink-0"
+            title="Share this event"
+          >
+            <Share2 className="h-4 w-4" />
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
