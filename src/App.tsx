@@ -16,7 +16,6 @@ import { MiniCartDrawerProvider, useMiniCartDrawer } from "@/contexts/CartContex
 // Lazy load all pages for optimal performance
 const Index = lazy(() => import("./pages/Index"));
 const Events = lazy(() => import("./pages/Events"));
-const EventDetail = lazy(() => import("./pages/EventDetail"));
 const Products = lazy(() => import("./pages/Products"));
 const ProductDetail = lazy(() => import("./pages/ProductDetail"));
 const Recipes = lazy(() => import("./pages/Recipes"));
@@ -66,7 +65,6 @@ const App = () => {
                       <Route path="/" element={<Index />} />
                       <Route path="/products" element={<Products />} />
                       <Route path="/events" element={<Events />} />
-                      <Route path="/events/:eventSlug" element={<EventDetail />} />
                       <Route path="/product/:id" element={<ProductDetail />} />
                       <Route path="/recipes" element={<Recipes />} />
                       <Route path="/help" element={<Help />} />
