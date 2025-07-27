@@ -251,7 +251,7 @@ const EventCard: React.FC<{
                     </div>
                     
                     {event.signupLink && (
-                      <div className="mt-6">
+                      <div className="mt-6 space-y-3">
                         <Button 
                           asChild 
                           className="w-full bg-primary hover:bg-primary/90"
@@ -266,6 +266,20 @@ const EventCard: React.FC<{
                         </Button>
                       </div>
                     )}
+                    
+                    <div className="mt-4">
+                      <Button 
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => {
+                          const eventUrl = `${window.location.origin}/events#event-${event.id}`;
+                          navigator.clipboard.writeText(eventUrl);
+                          alert('Event link copied to clipboard!');
+                        }}
+                      >
+                        Copy Event Link
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </DialogContent>
