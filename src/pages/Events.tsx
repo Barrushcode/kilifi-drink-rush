@@ -40,7 +40,7 @@ const upcomingEvents = [
     host: "Ministry of Enjoyment",
     artist: "Saul Bucho",
     entry: "Early Bird – KSH 500, Gate – KSH 1,000",
-    signupLink: "https://afrocarnival.hustlesasa.shop"
+    signupLink: "https://afrocarnival.hustlesasa.shop/"
   },
   {
     id: 6,
@@ -48,13 +48,13 @@ const upcomingEvents = [
     title: "💃 Dance With Dee",
     description: "Hello, I'm Diana — or Dee — a dance fitness instructor based in Kilifi. Join me for high-energy Zumba and Zoca dance sessions designed to get your body moving for fitness, fun, and pure vibes! Whether you're a beginner or a pro, it's all about joy and movement.",
     date: "2025-08-05",
-    time: "5:30 PM – 6:30 PM",
+    time: "Tuesday & Thursday, 5:30 PM – 6:30 PM",
     location: "Kilifi Recreational Center - Behind Express Shop",
     category: "Fitness",
     image: "/lovable-uploads/e17c9f6d-ac8c-4707-8b62-84448646cde8.png",
     attendees: "Open",
     host: "Diana (Dee) – Zumba & Zoca Dance Coach",
-    entry: "Free",
+    entry: "KES 500",
     contact: "0723998309",
     recurring: "Tuesday & Thursday"
   },
