@@ -144,7 +144,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         product={product}
       />
       <Card
-        className="shadow-lg transition-all duration-300 group hover:scale-105 bg-barrush-slate border-barrush-steel/30 flex flex-col cursor-pointer h-full md:min-h-[600px] lg:min-h-[650px] xl:min-h-[700px]"
+        className="shadow-lg transition-all duration-300 group hover:scale-105 bg-barrush-slate border-barrush-steel/30 flex flex-col cursor-pointer h-full md:h-[650px] lg:h-[700px] xl:h-[750px]"
         onClick={handleCardClick}
         tabIndex={0}
         onKeyDown={e => {
@@ -153,7 +153,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         aria-label={`Show details for ${product.baseName}`}
         role="button"
       >
-        <CardContent className="p-2 md:p-4 lg:p-5 flex flex-col h-full">
+        <CardContent className="p-2 md:p-4 lg:p-5 flex flex-col justify-between h-full">
           {/* Main Content Section */}
           <div className="flex-grow">
             {/* Product Image with consistent styling */}
@@ -275,53 +275,55 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
             )}
           </div>
           
-          {/* Action Buttons */}
-          <div className="flex gap-2 mt-4 w-full flex-col sm:flex-row">
-            <Button 
-              onClick={(e) => { e.stopPropagation(); handleAddToCart(); }}
-              className="flex-1 font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-transparent border-2 border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white w-full"
-            >
-              <ShoppingCart className="h-3 w-3 mr-1" />
-              Add to Cart
-            </Button>
-            <Button 
-              onClick={(e) => { e.stopPropagation(); handleBuyNow(); }}
-              className="flex-1 font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-rose-600 hover:bg-rose-500 text-white border-none shadow-lg w-full"
-              style={{
-                backgroundColor: '#e11d48',
-                color: '#fff',
-              }}
-            >
-              <CreditCard className="h-3 w-3 mr-1" />
-              Buy Now
-            </Button>
-          </div>
-          
-          {/* WhatsApp Availability Button */}
-          <div className="mt-2 w-full">
-            <Button 
-              onClick={(e) => { e.stopPropagation(); handleWhatsAppCheck(); }}
-              className="w-full font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-green-600 hover:bg-green-500 text-white border-none shadow-lg"
-            >
-              <MessageCircle className="h-3 w-3 mr-1" />
-              Check Availability
-            </Button>
-          </div>
-          
-          {/* View Details Button */}
-          <div className="mt-2 w-full">
-            <Link 
-              to={`/product/${getProductSlug(product.baseName)}`}
-              className="block w-full"
-              onClick={(e) => e.stopPropagation()}
-            >
+          {/* Action Buttons - Pinned to bottom */}
+          <div className="mt-auto space-y-2 w-full">
+            <div className="flex gap-2 w-full flex-col sm:flex-row">
               <Button 
-                className="w-full font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-transparent border-2 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
+                onClick={(e) => { e.stopPropagation(); handleAddToCart(); }}
+                className="flex-1 font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-transparent border-2 border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white w-full"
               >
-                <ExternalLink className="h-3 w-3 mr-1" />
-                View Details
+                <ShoppingCart className="h-3 w-3 mr-1" />
+                Add to Cart
               </Button>
-            </Link>
+              <Button 
+                onClick={(e) => { e.stopPropagation(); handleBuyNow(); }}
+                className="flex-1 font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-rose-600 hover:bg-rose-500 text-white border-none shadow-lg w-full"
+                style={{
+                  backgroundColor: '#e11d48',
+                  color: '#fff',
+                }}
+              >
+                <CreditCard className="h-3 w-3 mr-1" />
+                Buy Now
+              </Button>
+            </div>
+            
+            {/* WhatsApp Availability Button */}
+            <div className="w-full">
+              <Button 
+                onClick={(e) => { e.stopPropagation(); handleWhatsAppCheck(); }}
+                className="w-full font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-green-600 hover:bg-green-500 text-white border-none shadow-lg"
+              >
+                <MessageCircle className="h-3 w-3 mr-1" />
+                Check Availability
+              </Button>
+            </div>
+            
+            {/* View Details Button */}
+            <div className="w-full">
+              <Link 
+                to={`/product/${getProductSlug(product.baseName)}`}
+                className="block w-full"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Button 
+                  className="w-full font-bold px-2 py-2 text-xs md:text-sm transition-all duration-300 hover:scale-105 h-10 font-iphone min-h-[40px] bg-transparent border-2 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
+                >
+                  <ExternalLink className="h-3 w-3 mr-1" />
+                  View Details
+                </Button>
+              </Link>
+            </div>
           </div>
         </CardContent>
       </Card>
