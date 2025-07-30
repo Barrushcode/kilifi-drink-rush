@@ -144,7 +144,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         product={product}
       />
       <Card
-        className="overflow-hidden h-full min-h-[320px] shadow-lg transition-all duration-300 group hover:scale-105 bg-barrush-slate border-barrush-steel/30 flex flex-col cursor-pointer"
+        className="shadow-lg transition-all duration-300 group hover:scale-105 bg-barrush-slate border-barrush-steel/30 flex flex-col cursor-pointer h-full md:min-h-[600px] lg:min-h-[650px] xl:min-h-[700px]"
         onClick={handleCardClick}
         tabIndex={0}
         onKeyDown={e => {
@@ -154,16 +154,17 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         role="button"
       >
         <CardContent className="p-2 md:p-4 lg:p-5 flex flex-col h-full">
-          <div className="flex flex-col flex-grow">
+          {/* Main Content Section */}
+          <div className="flex-grow">
             {/* Product Image with consistent styling */}
-            <div className="w-full aspect-square rounded-lg overflow-hidden mb-2 relative bg-barrush-midnight">
+            <div className="w-full aspect-square rounded-lg mb-2 relative bg-barrush-midnight">
               <ProductImageLoader
                 src={displayImage}
                 alt={product.baseName}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover rounded-lg"
                 priority={false}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-barrush-midnight/60 to-transparent group-hover:from-barrush-midnight/40 transition-all duration-300" />
+              <div className="absolute inset-0 bg-gradient-to-t from-barrush-midnight/60 to-transparent group-hover:from-barrush-midnight/40 transition-all duration-300 rounded-lg" />
             </div>
             
             {/* Product Name with correction */}
