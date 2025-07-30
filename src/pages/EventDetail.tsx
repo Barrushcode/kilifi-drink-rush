@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import SEOHead from '@/components/SEOHead';
 
-// Import the same events data
+// Import the same events data from Events page
 const upcomingEvents = [
   {
     id: 1,
@@ -68,6 +68,39 @@ const upcomingEvents = [
     host: "A Happy Society",
     entry: "Various vendor options",
     signupLink: "https://forms.gle/3FVv9oi5gfc4fb9h7"
+  },
+  {
+    id: 5,
+    slug: 'afro-carnival-beach-exp',
+    title: "🎵 Afro Carnival: Beach Exp.",
+    description: "Get ready for a vibrant beach experience filled with Afro House, Amapiano, Afro Beats & ArbanTone. Curated by the Ministry of Enjoyment and featuring top DJ Saul Bucho, this is the ultimate beach party of the year!",
+    date: "2025-08-16",
+    time: "All Day",
+    location: "Moonshine Beach Club",
+    category: "Music",
+    image: "/lovable-uploads/6fbed43c-70e6-43dc-8096-71e36d555174.png",
+    attendees: "Open",
+    featured: true,
+    host: "Ministry of Enjoyment",
+    artist: "Saul Bucho",
+    entry: "Early Bird – KSH 500, Gate – KSH 1,000",
+    signupLink: "https://afrocarnival.hustlesasa.shop/"
+  },
+  {
+    id: 6,
+    slug: 'dance-with-dee',
+    title: "💃 Dance With Dee",
+    description: "Hello, I'm Diana — or Dee — a dance fitness instructor based in Kilifi. Join me for high-energy Zumba and Zoca dance sessions designed to get your body moving for fitness, fun, and pure vibes! Whether you're a beginner or a pro, it's all about joy and movement.",
+    date: "2025-08-05",
+    time: "Tuesday & Thursday, 5:30 PM – 6:30 PM",
+    location: "Kilifi Recreational Center - Behind Express Shop",
+    category: "Fitness",
+    image: "/lovable-uploads/e17c9f6d-ac8c-4707-8b62-84448646cde8.png",
+    attendees: "Open",
+    host: "Diana (Dee) – Zumba & Zoca Dance Coach",
+    entry: "KES 500",
+    contact: "0723998309",
+    recurring: "Tuesday & Thursday"
   }
 ];
 
