@@ -38,7 +38,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
         </div>
       )}
 
-      {/* Enhanced desktop grid layout */}
+      {/* Enhanced desktop grid layout for better space utilization */}
       <div className="
         grid 
         grid-cols-1
@@ -47,15 +47,21 @@ const ProductGrid: React.FC<ProductGridProps> = ({
         lg:grid-cols-4 
         xl:grid-cols-5
         2xl:grid-cols-6
-        gap-4 
+        gap-3
+        sm:gap-4 
+        md:gap-5
         lg:gap-6
         xl:gap-8
-        max-w-full 
+        w-full
         mx-auto
         pb-8
         lg:pb-12
+        px-2
+        sm:px-4
+        md:px-6
+        lg:px-8
+        xl:px-12
       "
-        style={{ width: '100%' }}
       >
         {paginatedProducts.map(product => {
           console.log('🔧 Rendering product card for:', product.baseName, 'with price:', product.lowestPriceFormatted);
