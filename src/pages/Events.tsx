@@ -414,7 +414,7 @@ const Events: React.FC = () => {
       },
       "offers": {
         "@type": "Offer",
-        "price": event.entry === "Free" ? "0" : event.entry.replace("KES ", ""),
+        "price": !event.entry || event.entry === "Free" ? "0" : event.entry.replace("KES ", ""),
         "priceCurrency": "KES",
         "availability": "https://schema.org/InStock"
       }
