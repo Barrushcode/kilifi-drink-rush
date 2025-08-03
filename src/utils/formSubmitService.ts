@@ -38,7 +38,7 @@ export const submitOrderToFormSubmit = async (shippingDetails: any, items: any[]
     formData.append('items', itemsString);
     
     // Submit to FormSubmit
-    await fetch('https://formsubmit.co/barrushdelivery@gmail.com', {
+    await fetch('https://formsubmit.co/info@barrush.co.ke', {
       method: 'POST',
       body: formData
     });

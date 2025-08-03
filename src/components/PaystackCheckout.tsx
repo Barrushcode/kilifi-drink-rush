@@ -141,8 +141,8 @@ const PaystackCheckout: React.FC<PaystackCheckoutProps> = ({
         console.log('Payment complete! Reference: ' + response.reference);
         try {
           const emailHtml = generateOrderEmailHtml(response.reference, amount, cartItems, shippingDetails);
-          // Always send to both customer and barrushdelivery@gmail.com
-          const recipients = [shippingDetails.email, "barrushdelivery@gmail.com"];
+          // Always send to both customer and info@barrush.co.ke
+          const recipients = [shippingDetails.email, "info@barrush.co.ke"];
           const {
             error: functionError
           } = await supabase.functions.invoke('send-order-confirmation', {

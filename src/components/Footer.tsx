@@ -29,7 +29,7 @@ const Footer: React.FC = () => {
             <div className="space-y-2 text-barrush-cream">
               <p className="text-zinc-50"><strong>M-PESA Till:</strong> 5950470</p>
               <p className="text-zinc-50"><strong>Support:</strong> 0117808024</p>
-              <p className="text-zinc-50"><strong>Email:</strong> barrushdelivery@gmail.com</p>
+              <p className="text-zinc-50"><strong>Email:</strong> info@barrush.co.ke</p>
             </div>
           </div>
           

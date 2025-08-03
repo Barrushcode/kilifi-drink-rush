@@ -81,7 +81,7 @@ const SupportSection: React.FC = () => {
                 <h4 className="text-lg font-bold text-barrush-gold mb-2 text-zinc-50">
                   Email Support
                 </h4>
-                <p className="text-barrush-cream text-zinc-50">barrushdelivery@gmail.com</p>
+                <p className="text-barrush-cream text-zinc-50">support@barrush.co.ke</p>
               </CardContent>
             </Card>
 

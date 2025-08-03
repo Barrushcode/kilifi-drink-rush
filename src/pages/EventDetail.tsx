@@ -5,12 +5,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import SEOHead from '@/components/SEOHead';
-import { upcomingEvents } from '@/data/eventsData';
+import { upcomingEvents, recentEvents } from '@/data/eventsData';
 
+// Type guard for events with extended properties
+const isUpcomingEvent = (event: any): event is typeof upcomingEvents[0] => 
+  'slug' in event && typeof event.slug === 'string';
 
 const EventDetail: React.FC = () => {
   const { eventSlug } = useParams<{ eventSlug: string }>();
-  const event = upcomingEvents.find(e => e.slug === eventSlug);
+  
+  // Combine all events and filter by slug
+  const allEvents = [...upcomingEvents, ...recentEvents];
+  const event = allEvents.find(e => isUpcomingEvent(e) ? e.slug === eventSlug : false);
 
   if (!event) {
     return (
@@ -69,12 +75,12 @@ const EventDetail: React.FC = () => {
     },
     "organizer": {
       "@type": "Organization",
-      "name": event.host || "Salty's",
+      "name": (isUpcomingEvent(event) ? event.host : null) || "Salty's",
       "url": "https://saltyskitesurf.com"
     },
     "offers": {
       "@type": "Offer",
-      "price": event.entry === "Free" ? "0" : event.entry.replace("KES ", ""),
+      "price": (isUpcomingEvent(event) && event.entry === "Free") ? "0" : (isUpcomingEvent(event) && event.entry && typeof event.entry === 'string') ? event.entry.replace("KES ", "") : "0",
       "priceCurrency": "KES",
       "availability": "https://schema.org/InStock"
     }
@@ -86,7 +92,7 @@ const EventDetail: React.FC = () => {
         title={`${event.title} | Events Kilifi County Kenya | Barrush`}
         description={`${event.description} Join us on ${eventDate.toLocaleDateString()} at ${event.location}. Premium alcohol delivery available for all events in Kilifi County.`}
         keywords={`${event.title}, ${event.category}, Kilifi events, ${event.location}, Kenya events, alcohol delivery Kilifi`}
-        url={`https://barrush.lovable.app/events/${event.slug}`}
+        url={`https://barrush.lovable.app/events/${(isUpcomingEvent(event) ? event.slug : event.id)}`}
         structuredData={eventStructuredData}
       />
 
@@ -111,7 +117,7 @@ const EventDetail: React.FC = () => {
                   alt={event.title}
                   className="w-full h-96 object-cover"
                 />
-                {event.featured && (
+                {isUpcomingEvent(event) && event.featured && (
                   <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground shadow-lg">
                     Featured
                   </Badge>
@@ -165,34 +171,34 @@ const EventDetail: React.FC = () => {
                     <MapPin className="h-5 w-5 text-primary" />
                     <span><strong>Location:</strong> {event.location}</span>
                   </div>
-                  {event.entry && (
+                  {isUpcomingEvent(event) && event.entry && (
                     <div>
                       <span><strong>Entry:</strong> {event.entry}</span>
                     </div>
                   )}
-                  {event.host && (
+                  {isUpcomingEvent(event) && event.host && (
                     <div>
                       <span><strong>Host:</strong> {event.host}</span>
                     </div>
                   )}
-                  {event.contact && (
+                  {isUpcomingEvent(event) && event.contact && (
                     <div>
                       <span><strong>Contact:</strong> {event.contact}</span>
                     </div>
                   )}
-                  {event.artist && (
+                  {isUpcomingEvent(event) && event.artist && (
                     <div>
                       <span><strong>Artist:</strong> {event.artist}</span>
                     </div>
                   )}
-                  {event.lineup && (
+                  {isUpcomingEvent(event) && event.lineup && (
                     <div>
                       <span><strong>Lineup:</strong> {event.lineup}</span>
                     </div>
                   )}
                 </div>
                 
-                {event.signupLink && (
+                {isUpcomingEvent(event) && event.signupLink && (
                   <div className="pt-6 border-t">
                     <Button 
                       asChild 
@@ -222,11 +228,11 @@ const EventDetail: React.FC = () => {
             <h2 className="text-2xl font-bold">Other Events</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {upcomingEvents
+            {allEvents
               .filter(e => e.id !== event.id)
               .slice(0, 3)
               .map((relatedEvent) => (
-                <Link key={relatedEvent.id} to={`/events/${relatedEvent.slug}`}>
+                <Link key={relatedEvent.id} to={`/events/${(isUpcomingEvent(relatedEvent) ? relatedEvent.slug : relatedEvent.id)}`}>
                   <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                     <div className="relative overflow-hidden rounded-t-lg h-48">
                       <img 

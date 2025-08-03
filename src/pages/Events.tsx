@@ -218,6 +218,32 @@ const EventCard: React.FC<{
 };
 
 const Events: React.FC = () => {
+  // Sort events by date (upcoming soonest to latest)
+  const sortedUpcomingEvents = [...upcomingEvents].sort((a, b) => {
+    const dateA = new Date(a.date);
+    const dateB = new Date(b.date);
+    return dateA.getTime() - dateB.getTime();
+  });
+
+  // Filter events based on today's date
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const currentUpcomingEvents = sortedUpcomingEvents.filter(event => {
+    const eventDate = new Date(event.date);
+    eventDate.setHours(0, 0, 0, 0);
+    return eventDate >= today;
+  });
+
+  const pastEvents = sortedUpcomingEvents.filter(event => {
+    const eventDate = new Date(event.date);
+    eventDate.setHours(0, 0, 0, 0);
+    return eventDate < today;
+  });
+
+  // Get featured events for the "What We Featured" section
+  const featuredEvents = currentUpcomingEvents.filter(event => event.featured);
+
   // Handle scrolling to event on page load if hash exists
   useEffect(() => {
     if (window.location.hash) {
@@ -236,7 +262,7 @@ const Events: React.FC = () => {
     "name": "Events in Kilifi County",
     "description": "Upcoming events, festivals, and entertainment in Kilifi County, Kenya",
     "url": "https://barrush.lovable.app/events",
-    "itemListElement": upcomingEvents.map((event, index) => ({
+    "itemListElement": currentUpcomingEvents.map((event, index) => ({
       "@type": "Event",
       "position": index + 1,
       "name": event.title,
@@ -289,6 +315,28 @@ const Events: React.FC = () => {
         </div>
       </section>
 
+      {/* What We Featured Section */}
+      {featuredEvents.length > 0 && (
+        <section className="py-16 lg:py-20 bg-primary/5">
+          <div className="container mx-auto px-4">
+            <div className="text-center space-y-4 mb-12">
+              <h2 className="text-3xl lg:text-4xl font-serif font-bold text-foreground">
+                What We Featured
+              </h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Handpicked events that we're excited to highlight
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {featuredEvents.map((event) => (
+                <EventCard key={event.id} event={event} isUpcoming={true} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Featured Events */}
       <FeaturedEventsSection />
 
@@ -304,16 +352,38 @@ const Events: React.FC = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {upcomingEvents.map((event) => (
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {currentUpcomingEvents.map((event) => (
               <EventCard key={event.id} event={event} isUpcoming={true} />
             ))}
           </div>
         </div>
       </section>
 
+      {/* Past Events */}
+      {pastEvents.length > 0 && (
+        <section className="py-16 lg:py-20 bg-muted/30">
+          <div className="container mx-auto px-4">
+            <div className="text-center space-y-4 mb-12">
+              <h2 className="text-3xl lg:text-4xl font-serif font-bold text-foreground">
+                Past Events
+              </h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Events that have already taken place
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+              {pastEvents.map((event) => (
+                <EventCard key={event.id} event={event} isUpcoming={false} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Recent Events */}
-      <section className="py-16 lg:py-20 bg-muted/30">
+      <section className="py-16 lg:py-20 bg-muted/50">
         <div className="container mx-auto px-4">
           <div className="text-center space-y-4 mb-12">
             <h2 className="text-3xl lg:text-4xl font-serif font-bold text-foreground">
@@ -346,7 +416,7 @@ const Events: React.FC = () => {
             <Button 
               size="lg" 
               className="bg-primary hover:bg-primary/90"
-              onClick={() => window.location.href = 'mailto:barrushdelivery@gmail.com'}
+              onClick={() => window.location.href = 'mailto:events@barrush.co.ke'}
             >
               Contact Us for Events
             </Button>

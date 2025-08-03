@@ -125,7 +125,7 @@ export function useCheckout(
     try {
       const reference = "SIM" + Math.floor(Math.random() * 1000000);
       const { toast } = await import('@/components/ui/use-toast');
-      const recipients = [shippingDetails.email, "barrushdelivery@gmail.com"];
+      const recipients = [shippingDetails.email, "info@barrush.co.ke"];
       
       // Enhanced order details for the email template
       const orderDetails = {
