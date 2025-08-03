@@ -144,7 +144,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         product={product}
       />
       <Card
-        className="shadow-lg transition-all duration-300 group hover:scale-105 bg-barrush-slate border-barrush-steel/30 flex flex-col cursor-pointer h-full min-h-[420px] sm:min-h-[450px] md:min-h-[480px] lg:min-h-[520px] xl:min-h-[560px] 2xl:min-h-[580px] w-full"
+        className="shadow-lg transition-all duration-300 group hover:scale-105 bg-barrush-slate border-barrush-steel/30 flex flex-col cursor-pointer h-full min-h-[400px] lg:min-h-[450px] xl:min-h-[480px] w-full"
         onClick={handleCardClick}
         tabIndex={0}
         onKeyDown={e => {
@@ -153,11 +153,11 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
         aria-label={`Show details for ${product.baseName}`}
         role="button"
       >
-        <CardContent className="p-2 sm:p-3 md:p-4 lg:p-5 xl:p-6 flex flex-col justify-between h-full">
+        <CardContent className="p-3 sm:p-4 lg:p-5 xl:p-6 flex flex-col justify-between h-full">
           {/* Main Content Section */}
           <div className="flex-grow">
             {/* Product Image with responsive aspect ratio */}
-            <div className="w-full aspect-square rounded-lg mb-2 sm:mb-3 md:mb-4 relative bg-barrush-midnight overflow-hidden">
+            <div className="w-full aspect-square rounded-lg mb-3 lg:mb-4 relative bg-barrush-midnight overflow-hidden">
               <ProductImageLoader
                 src={displayImage}
                 alt={product.baseName}
@@ -168,7 +168,7 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
             </div>
             
             {/* Product Name with responsive text sizing */}
-            <h3 className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold mb-1 sm:mb-2 font-iphone line-clamp-2 text-barrush-platinum break-words leading-tight">
+            <h3 className="text-base lg:text-lg xl:text-xl font-bold mb-2 font-iphone line-clamp-2 text-barrush-platinum break-words leading-tight">
               {product.baseName}
             </h3>
             
@@ -276,24 +276,24 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
           </div>
           
           {/* Action Buttons - Pinned to bottom with responsive sizing */}
-          <div className="mt-auto space-y-2 w-full pt-2 sm:pt-3 md:pt-4">
+          <div className="mt-auto space-y-2 w-full pt-3 lg:pt-4">
             <div className="flex gap-2 w-full flex-col sm:flex-row">
               <Button 
                 onClick={(e) => { e.stopPropagation(); handleAddToCart(); }}
-                className="flex-1 font-bold px-2 py-2 text-xs sm:text-sm md:text-base transition-all duration-300 hover:scale-105 h-10 sm:h-11 md:h-12 font-iphone bg-transparent border-2 border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white w-full"
+                className="flex-1 font-bold px-3 py-2 text-sm lg:text-base transition-all duration-300 hover:scale-105 h-10 lg:h-11 font-iphone bg-transparent border-2 border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white w-full"
               >
-                <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                <ShoppingCart className="h-4 w-4 mr-1" />
                 Add to Cart
               </Button>
               <Button 
                 onClick={(e) => { e.stopPropagation(); handleBuyNow(); }}
-                className="flex-1 font-bold px-2 py-2 text-xs sm:text-sm md:text-base transition-all duration-300 hover:scale-105 h-10 sm:h-11 md:h-12 font-iphone bg-rose-600 hover:bg-rose-500 text-white border-none shadow-lg w-full"
+                className="flex-1 font-bold px-3 py-2 text-sm lg:text-base transition-all duration-300 hover:scale-105 h-10 lg:h-11 font-iphone bg-rose-600 hover:bg-rose-500 text-white border-none shadow-lg w-full"
                 style={{
                   backgroundColor: '#e11d48',
                   color: '#fff',
                 }}
               >
-                <CreditCard className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                <CreditCard className="h-4 w-4 mr-1" />
                 Buy Now
               </Button>
             </div>
@@ -302,9 +302,9 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
             <div className="w-full">
               <Button 
                 onClick={(e) => { e.stopPropagation(); handleWhatsAppCheck(); }}
-                className="w-full font-bold px-2 py-2 text-xs sm:text-sm md:text-base transition-all duration-300 hover:scale-105 h-10 sm:h-11 md:h-12 font-iphone bg-green-600 hover:bg-green-500 text-white border-none shadow-lg"
+                className="w-full font-bold px-3 py-2 text-sm lg:text-base transition-all duration-300 hover:scale-105 h-10 lg:h-11 font-iphone bg-green-600 hover:bg-green-500 text-white border-none shadow-lg"
               >
-                <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                <MessageCircle className="h-4 w-4 mr-1" />
                 Check Availability
               </Button>
             </div>
@@ -317,9 +317,9 @@ const GroupedProductCard: React.FC<GroupedProductCardProps> = ({ product }) => {
                 onClick={(e) => e.stopPropagation()}
               >
                 <Button 
-                  className="w-full font-bold px-2 py-2 text-xs sm:text-sm md:text-base transition-all duration-300 hover:scale-105 h-10 sm:h-11 md:h-12 font-iphone bg-transparent border-2 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
+                  className="w-full font-bold px-3 py-2 text-sm lg:text-base transition-all duration-300 hover:scale-105 h-10 lg:h-11 font-iphone bg-transparent border-2 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
                 >
-                  <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                  <ExternalLink className="h-4 w-4 mr-1" />
                   View Details
                 </Button>
               </Link>
