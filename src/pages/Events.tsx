@@ -143,13 +143,38 @@ const EventCard: React.FC<{
                         </Button>
                       </div>}
                     
-                    <div className="mt-4">
+                    <div className="mt-4 space-y-3">
                       <Button variant="outline" className="w-full" onClick={() => {
-                    const eventUrl = event.slug ? `${window.location.origin}/events/${event.slug}` : `${window.location.origin}/events#event-${event.id}`;
-                    navigator.clipboard.writeText(eventUrl);
-                    alert('Event link copied to clipboard!');
-                  }}>
+                        const eventUrl = event.slug ? `${window.location.origin}/events/${event.slug}` : `${window.location.origin}/events#event-${event.id}`;
+                        navigator.clipboard.writeText(eventUrl);
+                        alert('Event link copied to clipboard!');
+                      }}>
                         Copy Event Link
+                      </Button>
+                      
+                      <Button variant="outline" className="w-full" onClick={() => {
+                        const startDate = new Date(event.date + 'T' + event.time.split(' ')[0]);
+                        const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // Add 2 hours
+                        
+                        const calendarEvent = {
+                          title: event.title,
+                          start: startDate.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z',
+                          end: endDate.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z',
+                          description: event.description,
+                          location: event.location
+                        };
+                        
+                        const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(calendarEvent.title)}&dates=${calendarEvent.start}/${calendarEvent.end}&details=${encodeURIComponent(calendarEvent.description)}&location=${encodeURIComponent(calendarEvent.location)}`;
+                        window.open(googleCalendarUrl, '_blank');
+                      }}>
+                        Add to Calendar
+                      </Button>
+                      
+                      <Button variant="outline" className="w-full" onClick={() => {
+                        const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.location)}`;
+                        window.open(mapsUrl, '_blank');
+                      }}>
+                        View on Maps
                       </Button>
                     </div>
                   </div>
