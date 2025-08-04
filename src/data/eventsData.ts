@@ -215,6 +215,22 @@ export const upcomingEvents = [
     host: "A Happy Society",
     entry: "Various vendor options",
     signupLink: "https://forms.gle/3FVv9oi5gfc4fb9h7"
+  },
+  {
+    id: 15,
+    slug: 'pregame-power-hour',
+    title: "🌀 Pregame Power Hour",
+    description: "Before the weekend steals the spotlight, Pregame Power Hour is here to heat things up. Expect good vibes, fire deejays, and your favorite drinks flowing all day. Bring your crew, your bottle, and your best energy. Late night convos, unexpected dance moves, and maybe even a crush or two—this is your community's favorite corner for the pregame magic. Tip: We kick off at 2PM sharp—don't be late. 😉",
+    date: "2025-08-15",
+    time: "2:00 PM – 10:00 PM",
+    location: "The Studio (S1607), Bofa Road",
+    category: "Music",
+    image: "/lovable-uploads/5165594d-93c8-44f9-9881-ecc9df739c20.png",
+    attendees: "Open",
+    featured: false,
+    host: "The Studio",
+    entry: "BYOB",
+    lineup: ["DJ Kenia", "Shamba Deejay", "Mashok"]
   }
 ];
 
