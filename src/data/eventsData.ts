@@ -246,7 +246,7 @@ export const recentEvents = [
     time: "12:00",
     location: "Kilifi Sports Club",
     category: "Food & Wine",
-    image: "/lovable-uploads/eed458a0-c82d-483b-b67a-887e67da1b9c.png",
+    image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=800&h=600&fit=crop",
     attendees: "800+"
   },
   {
@@ -257,7 +257,7 @@ export const recentEvents = [
     time: "09:00",
     location: "Kilifi Nature Reserve",
     category: "Education",
-    image: "/lovable-uploads/44a4a4ba-cffd-475b-9ee9-b01cb49950c1.png",
+    image: "https://images.unsplash.com/photo-1500673922987-e212871fec22?w=800&h=600&fit=crop",
     attendees: "300"
   }
 ];
