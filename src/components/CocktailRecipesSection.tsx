@@ -66,7 +66,22 @@ Created with BarrushDelivery Cocktail Recipes
           </div>
         )}
         
-        <div className="text-center mt-20">
+        <div className="text-center mt-20 space-y-8">
+          <div className="bg-glass-effect border border-barrush-steel/30 rounded-xl p-8 max-w-2xl mx-auto backdrop-blur-md">
+            <h3 className="text-2xl font-bold mb-6 font-serif text-barrush-platinum">
+              🥃 Want a Professional Touch?
+            </h3>
+            <p className="text-barrush-platinum/80 text-lg leading-relaxed font-iphone mb-6">
+              Let our expert mixologists craft the perfect cocktail experience for your event.
+            </p>
+            <a 
+              href="mailto:info@barrush.co.ke?subject=Private Mixologist Inquiry&body=Hi, I'm interested in hiring a private mixologist for my event. Please send me more details."
+              className="inline-flex items-center justify-center bg-neon-pink hover:bg-neon-pink-light text-white font-semibold py-3 px-8 rounded-md transition-all duration-300 font-iphone"
+            >
+              Hire a Private Mixologist
+            </a>
+          </div>
+          
           <div className="bg-glass-effect border border-barrush-steel/30 rounded-xl p-8 max-w-2xl mx-auto backdrop-blur-md">
             <h3 className="text-2xl font-bold mb-4 font-serif text-barrush-platinum">
               🍸 Share Your Craft
