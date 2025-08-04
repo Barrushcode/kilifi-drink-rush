@@ -16,14 +16,15 @@ export const upcomingEvents = [
     entry: "KES 5,000 (Prepay & prebook by Saturday)",
     specialOffer: "50% discount for children under 12",
     contact: "0705 437 307",
-    recurring: "Every Sunday"
+    recurring: "Every Sunday",
+    isRecurring: true
   },
   {
     id: 8,
     slug: 'themed-dinner-nights-billionaire',
     title: "🍣 Themed Dinner Nights at Billionaire",
     description: "Embark on a unique culinary journey each Thursday at Billionaire's Themed Dinner Nights. Taste global flavors in a stylish beachfront setting with a DJ spinning all evening. From the bold flavors of Spain to the rich traditions of ancient Rome, and the delicate elegance of Japanese cuisine.",
-    date: "2025-08-01",
+    date: "2025-08-08",
     time: "Evening",
     location: "Billionaire Resort & Retreat, Malindi",
     category: "Dining",
@@ -34,7 +35,8 @@ export const upcomingEvents = [
     entry: "KES 5,000 per person",
     specialOffer: "A welcome drink is included",
     contact: "0705 437 307",
-    themes: "1st August – Japanese Night, 8th August – Spanish Night, 22nd August – Cena Romana (Roman Night)"
+    themes: "8th August – Spanish Night, 22nd August – Cena Romana (Roman Night)",
+    recurring: "Every Thursday"
   },
   {
     id: 9,
@@ -169,7 +171,8 @@ export const upcomingEvents = [
     host: "Diana (Dee) – Zumba & Zoca Dance Coach",
     entry: "KES 500",
     contact: "0723998309",
-    recurring: "Tuesday & Thursday"
+    recurring: "Tuesday & Thursday",
+    isRecurring: true
   },
   {
     id: 12,

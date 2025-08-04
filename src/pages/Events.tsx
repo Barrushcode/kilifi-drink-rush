@@ -172,17 +172,30 @@ const Events: React.FC = () => {
     return dateA.getTime() - dateB.getTime();
   });
 
-  // Filter events based on today's date
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  
   const currentUpcomingEvents = sortedUpcomingEvents.filter(event => {
     const eventDate = new Date(event.date);
     eventDate.setHours(0, 0, 0, 0);
+    
+    // Always show recurring events as upcoming
+    if (event.isRecurring || (event.recurring && event.recurring !== '')) {
+      return true;
+    }
+    
     return eventDate >= today;
   });
+  
   const pastEvents = sortedUpcomingEvents.filter(event => {
     const eventDate = new Date(event.date);
     eventDate.setHours(0, 0, 0, 0);
+    
+    // Never show recurring events as past
+    if (event.isRecurring || (event.recurring && event.recurring !== '')) {
+      return false;
+    }
+    
     return eventDate < today;
   });
 
