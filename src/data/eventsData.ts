@@ -234,6 +234,24 @@ export const upcomingEvents = [
     host: "The Studio",
     entry: "BYOB",
     lineup: ["DJ Kenia", "Shamba Deejay", "Mashok"]
+  },
+  {
+    id: 16,
+    slug: 'afrohouse-night-paparemo',
+    title: "🌍 Afrohouse Night – Paparemo Beach",
+    description: "Feel the rhythm of the waves and the beat of Afrohouse at the ultimate beach party of the month. Afrohouse Night blends African culture, fire music, and seaside energy — come dressed in your best African wear and dance under the stars till sunrise. This is not just a party. It's a lituation.",
+    date: "2025-08-23",
+    time: "10:00 PM – 3:00 AM",
+    location: "Paparemo Beach",
+    category: "Music",
+    image: "/lovable-uploads/820352fd-b341-488d-a8a4-3634bab17153.png",
+    attendees: "18+ only",
+    featured: true,
+    host: "MC John",
+    entry: "Gents: KES 800, Ladies: KES 400",
+    specialOffer: "Dress Code: African Wear",
+    lineup: ["TeeKay", "Shangatatu"],
+    organizer: "Lituation Festival & Paparemo Beach"
   }
 ];
 
