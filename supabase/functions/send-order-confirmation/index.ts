@@ -38,16 +38,8 @@ interface EmailRequest {
 }
 
 const generateOrderEmailHTML = (orderDetails: any) => {
-  // Delivery time estimates based on zone
-  const getDeliveryTime = (zoneName: string) => {
-    const zone = zoneName.toLowerCase();
-    if (zone.includes('nairobi')) return '15-20 minutes';
-    if (zone.includes('mtongwe') || zone.includes('diani')) return '10-15 minutes';
-    if (zone.includes('kilifi')) return '5-10 minutes';
-    return '15-30 minutes'; // default
-  };
-
-  const deliveryTime = getDeliveryTime(orderDetails.deliveryZone.name);
+  // Standard delivery time for all zones
+  const deliveryTime = '30-45 minutes';
   
   const itemsHTML = orderDetails.items.map((item: any) => `
     <tr style="border-bottom: 1px solid #e5e7eb;">
@@ -62,7 +54,7 @@ const generateOrderEmailHTML = (orderDetails: any) => {
       <!-- Header with Logo -->
       <div style="background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%); padding: 30px 20px; text-align: center; position: relative;">
         <div style="margin-bottom: 15px;">
-          <img src="https://tyfsxboxshbkdetweuke.supabase.co/storage/v1/object/public/pictures/lovable-uploads/4c04bd38-2934-4f85-8897-76401cef6d00.png" alt="Barrush Delivery Logo" style="height: 80px; width: auto; margin: 0 auto;" />
+          <img src="/lovable-uploads/2558d798-733c-4d87-9f1c-ae3020007a36.png" alt="Barrush Delivery Logo" style="height: 80px; width: auto; margin: 0 auto;" />
         </div>
         <h1 style="color: white; margin: 10px 0 0 0; font-size: 28px; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">Order Confirmed!</h1>
         <p style="color: rgba(255,255,255,0.9); margin: 5px 0 0 0; font-size: 16px;">Your order will be delivered in ${deliveryTime}</p>
@@ -150,13 +142,7 @@ const generateOrderEmailHTML = (orderDetails: any) => {
 };
 
 const generateBusinessNotificationHTML = (orderDetails: any) => {
-  const deliveryTime = orderDetails.deliveryZone?.name ? (() => {
-    const zone = orderDetails.deliveryZone.name.toLowerCase();
-    if (zone.includes('nairobi')) return '15-20 minutes';
-    if (zone.includes('mtongwe') || zone.includes('diani')) return '10-15 minutes';
-    if (zone.includes('kilifi')) return '5-10 minutes';
-    return '15-30 minutes';
-  })() : '15-30 minutes';
+  const deliveryTime = '30-45 minutes';
 
   const itemsHTML = orderDetails.items.map((item: any) => `
     <tr style="border-bottom: 1px solid #e5e7eb;">
