@@ -46,7 +46,6 @@ const DiscountCodeInput: React.FC<DiscountCodeInputProps> = ({
       setError('Please enter a discount code');
       return;
     }
-
     setIsApplying(true);
     setError('');
 
@@ -54,7 +53,6 @@ const DiscountCodeInput: React.FC<DiscountCodeInputProps> = ({
     await new Promise(resolve => setTimeout(resolve, 500));
     const normalizedCode = code.trim().toUpperCase();
     const discountInfo = DISCOUNT_CODES[normalizedCode as keyof typeof DISCOUNT_CODES];
-    
     if (discountInfo) {
       // Handle different discount types
       if (discountInfo.type === 'delivery_discount') {
@@ -66,27 +64,24 @@ const DiscountCodeInput: React.FC<DiscountCodeInputProps> = ({
         }
       } else if (discountInfo.type === 'product_discount') {
         // Check if any items are eligible based on profit
-        const { supabase } = await import('@/integrations/supabase/client');
-        
+        const {
+          supabase
+        } = await import('@/integrations/supabase/client');
         try {
           // Get product titles to check their profits
           const productTitles = items.map(item => item.name);
-          const { data: products, error } = await supabase
-            .from('productprice')
-            .select('Title, Profit')
-            .in('Title', productTitles);
-            
+          const {
+            data: products,
+            error
+          } = await supabase.from('productprice').select('Title, Profit').in('Title', productTitles);
           if (error) {
             setError('Error checking product eligibility. Please try again.');
             setIsApplying(false);
             return;
           }
-          
+
           // Check if any products have profit > 200
-          const eligibleProducts = products?.filter(product => 
-            product.Profit && product.Profit > 200
-          );
-          
+          const eligibleProducts = products?.filter(product => product.Profit && product.Profit > 200);
           if (!eligibleProducts || eligibleProducts.length === 0) {
             setError('This discount only applies to premium items. No eligible items in your cart.');
             setIsApplying(false);
@@ -98,7 +93,6 @@ const DiscountCodeInput: React.FC<DiscountCodeInputProps> = ({
           return;
         }
       }
-      
       onDiscountApplied(normalizedCode, discountInfo.amount, discountInfo.type);
       setCode('');
       setError('');
@@ -140,9 +134,7 @@ const DiscountCodeInput: React.FC<DiscountCodeInputProps> = ({
                 <X className="h-4 w-4" />
               </Button>
             </div>
-          </div> : (
-            subtotal >= 5000 ? (
-              <div className="text-center p-6 bg-green-900/20 border border-green-500/30 rounded-lg">
+          </div> : subtotal >= 5000 ? <div className="text-center p-6 bg-green-900/20 border border-green-500/30 rounded-lg">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <Check className="h-5 w-5 text-green-400" />
                   <span className="text-green-400 font-semibold">Free Delivery Unlocked!</span>
@@ -150,47 +142,28 @@ const DiscountCodeInput: React.FC<DiscountCodeInputProps> = ({
                 <p className="text-green-300 text-sm">
                   Your order qualifies for free delivery (orders KES 5,000+)
                 </p>
-              </div>
-            ) : (
-              <div className="space-y-3">
+              </div> : <div className="space-y-3">
                 <div>
                   <Label htmlFor="discount-code" className="text-white text-sm">
                     Enter discount code
                   </Label>
                   <div className="flex gap-2 mt-1">
-                    <Input 
-                      id="discount-code" 
-                      type="text" 
-                      value={code} 
-                      onChange={e => setCode(e.target.value)} 
-                      onKeyPress={handleKeyPress} 
-                      placeholder="Enter code (e.g. BARRUSHKINGS, BARRUSHKNIGHTS)" 
-                      className="bg-barrush-midnight border-gray-600 text-white placeholder-gray-400 flex-1" 
-                      disabled={isApplying} 
-                    />
-                    <Button 
-                      onClick={handleApplyCode} 
-                      disabled={isApplying || !code.trim()} 
-                      className="bg-neon-pink hover:bg-neon-pink/80 text-white px-6"
-                    >
+                    <Input id="discount-code" type="text" value={code} onChange={e => setCode(e.target.value)} onKeyPress={handleKeyPress} placeholder="Enter code (e.g. BARRUSHKINGS, BARRUSHKNIGHTS)" className="bg-barrush-midnight border-gray-600 text-white placeholder-gray-400 flex-1" disabled={isApplying} />
+                    <Button onClick={handleApplyCode} disabled={isApplying || !code.trim()} className="bg-neon-pink hover:bg-neon-pink/80 text-white px-6">
                       {isApplying ? 'Applying...' : 'Apply'}
                     </Button>
                   </div>
                 </div>
                 
-                {error && (
-                  <div className="flex items-center gap-2 text-red-400 text-sm">
+                {error && <div className="flex items-center gap-2 text-red-400 text-sm">
                     <X className="h-4 w-4" />
                     {error}
-                  </div>
-                )}
+                  </div>}
                 
                 <div className="text-gray-400 text-xs">
-                  <p>Available codes: BARRUSHKINGS (delivery), BARRUSHKNIGHTS (premium items)</p>
+                  
                 </div>
-              </div>
-            )
-          )}
+              </div>}
       </CardContent>
     </Card>;
 };
