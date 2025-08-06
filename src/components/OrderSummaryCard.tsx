@@ -31,9 +31,11 @@ interface OrderSummaryCardProps {
   appliedDiscount?: {
     code: string;
     amount: number;
+    type?: string;
   } | null;
   discountAmount?: number;
   baseDeliveryFee?: number;
+  baseSubtotal?: number;
 }
 
 const OrderSummaryCard: React.FC<OrderSummaryCardProps> = ({
@@ -48,7 +50,8 @@ const OrderSummaryCard: React.FC<OrderSummaryCardProps> = ({
   totalAmount,
   appliedDiscount,
   discountAmount,
-  baseDeliveryFee
+  baseDeliveryFee,
+  baseSubtotal
 }) => (
   <Card className="bg-barrush-charcoal/80 border-neon-pink border w-full">
     <CardHeader>
@@ -107,15 +110,31 @@ const OrderSummaryCard: React.FC<OrderSummaryCardProps> = ({
       <div className="border-t border-neon-purple pt-4 space-y-2">
         <div className="flex justify-between text-white">
           <span>Subtotal ({getTotalItems()} items):</span>
-          <span>KES {subtotal.toLocaleString()}</span>
+          <span>
+            {appliedDiscount && appliedDiscount.type === 'product_discount' && baseSubtotal ? (
+              <div className="text-right">
+                <span className="line-through text-gray-400">KES {baseSubtotal.toLocaleString()}</span>
+                <span className="ml-2">KES {subtotal.toLocaleString()}</span>
+              </div>
+            ) : (
+              `KES ${subtotal.toLocaleString()}`
+            )}
+          </span>
         </div>
+        
+        {appliedDiscount && appliedDiscount.type === 'product_discount' && (
+          <div className="flex justify-between text-green-400">
+            <span>Product Discount ({appliedDiscount.code}):</span>
+            <span>-KES {appliedDiscount.amount}</span>
+          </div>
+        )}
         
         <div className="flex justify-between text-white">
           <span>
             Express Delivery ({zoneObject ? zoneObject.name : "Zone"}):
           </span>
           <span>
-            {appliedDiscount && baseDeliveryFee && baseDeliveryFee > 0 ? (
+            {appliedDiscount && appliedDiscount.type === 'delivery_discount' && baseDeliveryFee && baseDeliveryFee > 0 ? (
               <div className="text-right">
                 <span className="line-through text-gray-400">KES {baseDeliveryFee}</span>
                 <span className="ml-2">KES {deliveryFee}</span>
@@ -126,9 +145,9 @@ const OrderSummaryCard: React.FC<OrderSummaryCardProps> = ({
           </span>
         </div>
         
-        {appliedDiscount && discountAmount && discountAmount > 0 && (
+        {appliedDiscount && appliedDiscount.type === 'delivery_discount' && discountAmount > 0 && (
           <div className="flex justify-between text-green-400">
-            <span>Discount ({appliedDiscount.code}):</span>
+            <span>Delivery Discount ({appliedDiscount.code}):</span>
             <span>-KES {discountAmount}</span>
           </div>
         )}

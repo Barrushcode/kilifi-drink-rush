@@ -51,16 +51,31 @@ export function useCheckout(
   const [appliedDiscount, setAppliedDiscount] = useState<{
     code: string;
     amount: number;
+    type?: string;
   } | null>(null);
 
   const zoneObject = DELIVERY_ZONES.find(z => z.value === selectedZone);
-  const subtotal = getTotalAmount();
-  const baseDeliveryFee = subtotal > 5000 ? 0 : zoneObject ? zoneObject.fee : 0;
+  const baseSubtotal = getTotalAmount();
+  const baseDeliveryFee = baseSubtotal > 5000 ? 0 : zoneObject ? zoneObject.fee : 0;
   
-  // Apply discount to delivery fee
-  const discountAmount = appliedDiscount ? Math.min(appliedDiscount.amount, baseDeliveryFee) : 0;
-  const deliveryFee = Math.max(0, baseDeliveryFee - discountAmount);
+  // Calculate discounts based on type
+  let productDiscount = 0;
+  let deliveryDiscount = 0;
+  
+  if (appliedDiscount) {
+    if (appliedDiscount.type === 'product_discount') {
+      // For product discounts, apply the discount amount directly to subtotal
+      productDiscount = appliedDiscount.amount;
+    } else {
+      // For delivery discounts, apply to delivery fee
+      deliveryDiscount = Math.min(appliedDiscount.amount, baseDeliveryFee);
+    }
+  }
+  
+  const subtotal = Math.max(0, baseSubtotal - productDiscount);
+  const deliveryFee = Math.max(0, baseDeliveryFee - deliveryDiscount);
   const totalAmount = subtotal + deliveryFee;
+  const discountAmount = productDiscount + deliveryDiscount;
 
   const handleInputChange = (field: string, value: string) => {
     setShippingDetails(prev => ({
@@ -79,8 +94,8 @@ export function useCheckout(
     setSelectedZone(value);
   };
 
-  const handleDiscountApplied = (code: string, amount: number) => {
-    setAppliedDiscount({ code, amount });
+  const handleDiscountApplied = (code: string, amount: number, discountType?: string) => {
+    setAppliedDiscount({ code, amount, type: discountType });
   };
 
   const handleDiscountRemoved = () => {
@@ -145,9 +160,10 @@ export function useCheckout(
         },
         deliveryInstructions: shippingDetails.instructions,
         items,
-        subtotal,
+        subtotal: baseSubtotal,
         deliveryFee,
-        totalAmount
+        totalAmount,
+        appliedDiscount
       };
 
       // Send order confirmation emails (both customer and business)
@@ -177,7 +193,7 @@ export function useCheckout(
         building: shippingDetails.building,
         instructions: shippingDetails.instructions,
         items,
-        subtotal,
+        subtotal: baseSubtotal,
         deliveryFee,
         totalAmount,
         orderReference: reference,
@@ -190,7 +206,7 @@ export function useCheckout(
           type: "test",
           shippingDetails,
           items,
-          subtotal,
+          subtotal: baseSubtotal,
           deliveryZone: zoneObject?.name,
           deliveryFee,
           totalAmount
@@ -222,6 +238,7 @@ export function useCheckout(
     appliedDiscount,
     discountAmount,
     baseDeliveryFee,
+    baseSubtotal,
     handleInputChange,
     handleZoneChange,
     handleDiscountApplied,

@@ -6,13 +6,15 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Tag, Check, X } from 'lucide-react';
 interface DiscountCodeInputProps {
-  onDiscountApplied: (code: string, discount: number) => void;
+  onDiscountApplied: (code: string, discount: number, discountType?: string) => void;
   onDiscountRemoved: () => void;
   appliedDiscount?: {
     code: string;
     amount: number;
+    type?: string;
   } | null;
   subtotal: number; // Add subtotal to check order minimum
+  items: any[]; // Add items to check product profits
 }
 
 // Available discount codes
@@ -21,13 +23,20 @@ const DISCOUNT_CODES = {
     type: 'delivery_discount',
     amount: 100,
     description: 'KES 100 off delivery fee'
+  },
+  'BARRUSHKNIGHTS': {
+    type: 'product_discount',
+    amount: 200,
+    description: 'KES 200 off eligible items',
+    condition: 'profit > 200'
   }
 };
 const DiscountCodeInput: React.FC<DiscountCodeInputProps> = ({
   onDiscountApplied,
   onDiscountRemoved,
   appliedDiscount,
-  subtotal
+  subtotal,
+  items
 }) => {
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
@@ -38,12 +47,6 @@ const DiscountCodeInput: React.FC<DiscountCodeInputProps> = ({
       return;
     }
 
-    // Check if order is below 5000 KES for discount eligibility
-    if (subtotal >= 5000) {
-      setError('Discount codes only apply to orders below KES 5,000. Orders above KES 5,000 get free delivery!');
-      return;
-    }
-
     setIsApplying(true);
     setError('');
 
@@ -51,8 +54,52 @@ const DiscountCodeInput: React.FC<DiscountCodeInputProps> = ({
     await new Promise(resolve => setTimeout(resolve, 500));
     const normalizedCode = code.trim().toUpperCase();
     const discountInfo = DISCOUNT_CODES[normalizedCode as keyof typeof DISCOUNT_CODES];
+    
     if (discountInfo) {
-      onDiscountApplied(normalizedCode, discountInfo.amount);
+      // Handle different discount types
+      if (discountInfo.type === 'delivery_discount') {
+        // Check if order is below 5000 KES for delivery discount eligibility
+        if (subtotal >= 5000) {
+          setError('Delivery discount codes only apply to orders below KES 5,000. Orders above KES 5,000 get free delivery!');
+          setIsApplying(false);
+          return;
+        }
+      } else if (discountInfo.type === 'product_discount') {
+        // Check if any items are eligible based on profit
+        const { supabase } = await import('@/integrations/supabase/client');
+        
+        try {
+          // Get product titles to check their profits
+          const productTitles = items.map(item => item.name);
+          const { data: products, error } = await supabase
+            .from('productprice')
+            .select('Title, Profit')
+            .in('Title', productTitles);
+            
+          if (error) {
+            setError('Error checking product eligibility. Please try again.');
+            setIsApplying(false);
+            return;
+          }
+          
+          // Check if any products have profit > 200
+          const eligibleProducts = products?.filter(product => 
+            product.Profit && product.Profit > 200
+          );
+          
+          if (!eligibleProducts || eligibleProducts.length === 0) {
+            setError('This discount only applies to premium items. No eligible items in your cart.');
+            setIsApplying(false);
+            return;
+          }
+        } catch (err) {
+          setError('Error checking product eligibility. Please try again.');
+          setIsApplying(false);
+          return;
+        }
+      }
+      
+      onDiscountApplied(normalizedCode, discountInfo.amount, discountInfo.type);
       setCode('');
       setError('');
     } else {
@@ -84,7 +131,9 @@ const DiscountCodeInput: React.FC<DiscountCodeInputProps> = ({
                 <Check className="h-4 w-4 text-green-400" />
                 <div>
                   <p className="text-green-400 font-semibold">{appliedDiscount.code}</p>
-                  <p className="text-green-300 text-sm">KES {appliedDiscount.amount} off delivery fee</p>
+                  <p className="text-green-300 text-sm">
+                    KES {appliedDiscount.amount} off {appliedDiscount.type === 'product_discount' ? 'eligible items' : 'delivery fee'}
+                  </p>
                 </div>
               </div>
               <Button onClick={handleRemoveDiscount} variant="ghost" size="sm" className="text-gray-400 hover:text-white">
@@ -115,7 +164,7 @@ const DiscountCodeInput: React.FC<DiscountCodeInputProps> = ({
                       value={code} 
                       onChange={e => setCode(e.target.value)} 
                       onKeyPress={handleKeyPress} 
-                      placeholder="Enter code (e.g. BARRUSHKINGS)" 
+                      placeholder="Enter code (e.g. BARRUSHKINGS, BARRUSHKNIGHTS)" 
                       className="bg-barrush-midnight border-gray-600 text-white placeholder-gray-400 flex-1" 
                       disabled={isApplying} 
                     />
@@ -137,7 +186,7 @@ const DiscountCodeInput: React.FC<DiscountCodeInputProps> = ({
                 )}
                 
                 <div className="text-gray-400 text-xs">
-                  <p>Discount codes apply to orders below KES 5,000</p>
+                  <p>Available codes: BARRUSHKINGS (delivery), BARRUSHKNIGHTS (premium items)</p>
                 </div>
               </div>
             )

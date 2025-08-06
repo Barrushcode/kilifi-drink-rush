@@ -57,6 +57,7 @@ const CheckoutSection: React.FC = () => {
     appliedDiscount,
     discountAmount,
     baseDeliveryFee,
+    baseSubtotal,
     handleDiscountApplied,
     handleDiscountRemoved,
     handleSimulatePayment
@@ -101,6 +102,7 @@ const CheckoutSection: React.FC = () => {
               appliedDiscount={appliedDiscount}
               discountAmount={discountAmount}
               baseDeliveryFee={baseDeliveryFee}
+              baseSubtotal={baseSubtotal}
             />
           </div>
           {/* Right Column - Forms and Payment */}
@@ -110,6 +112,7 @@ const CheckoutSection: React.FC = () => {
               onDiscountRemoved={handleDiscountRemoved}
               appliedDiscount={appliedDiscount}
               subtotal={subtotal}
+              items={items}
             />
             <ShippingInfoForm
               shippingDetails={shippingDetails}
