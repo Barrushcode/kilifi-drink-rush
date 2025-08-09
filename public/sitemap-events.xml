@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <!-- Individual Event Pages with Rich Image Data -->
+  <url>
+    <loc>https://barrush.lovable.app/events/trivia-night-saltys</loc>
+    <lastmod>2025-08-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://barrush.lovable.app/lovable-uploads/777949e3-1d3d-4d1d-845e-69ce6b25f4f9.png</image:loc>
+      <image:caption>Trivia Night at Salty's Kilifi County - Weekly Thursday events with prizes and entertainment</image:caption>
+      <image:title>Trivia Night Salty's Kilifi</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://barrush.lovable.app/events/kamushez-krish-rich-event</loc>
+    <lastmod>2025-08-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://barrush.lovable.app/lovable-uploads/73d2618a-4ea2-43cc-849d-c01f033f5351.png</image:loc>
+      <image:caption>Kamushez, Krish Rich, Mvazi, Evan Rhodes live performance at Kilifi entertainment venue</image:caption>
+      <image:title>Kamushez Krish Rich Mvazi Evan Rhodes Kilifi</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://barrush.lovable.app/events/food-wine-expo-kilifi</loc>
+    <lastmod>2025-08-09</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://barrush.lovable.app/lovable-uploads/100eef3f-025a-437b-9151-435dc9911ef4.png</image:loc>
+      <image:caption>Food & Wine Expo Kilifi County - Premium wine tasting and culinary experience</image:caption>
+      <image:title>Food Wine Expo Kilifi County</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://barrush.lovable.app/events/pre-dinner-party-billionaire</loc>
+    <lastmod>2025-08-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://barrush.lovable.app/lovable-uploads/b5e1045b-bc50-4dc2-b25e-e9e0910d4e49.png</image:loc>
+      <image:caption>Pre-Dinner Party at Billionaire Plaza - Luxury aperitivo evening with live DJ</image:caption>
+      <image:title>Pre-Dinner Party Billionaire Plaza Kilifi</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://barrush.lovable.app/events/no-bad-days-saltys-popup</loc>
+    <lastmod>2025-08-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://barrush.lovable.app/lovable-uploads/1baf5c41-628f-4e61-bcfd-88c926b4a11c.png</image:loc>
+      <image:caption>No Bad Days x Saltys Vintage & Thrift Pop Up - Unique shopping experience Kilifi</image:caption>
+      <image:title>No Bad Days Saltys Vintage Thrift Pop Up</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://barrush.lovable.app/events/masquerave-party-afrohouse</loc>
+    <lastmod>2025-08-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://barrush.lovable.app/lovable-uploads/a4d2a281-40a7-4a00-bfb2-0c417ee3fec1.png</image:loc>
+      <image:caption>MasqueRave Party Afrohouse Experience at Lamu Island - Shangatatu, Krish-Kenya, Dolly Magita</image:caption>
+      <image:title>MasqueRave Afrohouse Lamu Island</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://barrush.lovable.app/events/afrohouse-night-paparemo</loc>
+    <lastmod>2025-08-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://barrush.lovable.app/lovable-uploads/820352fd-b341-488d-a8a4-3634bab17153.png</image:loc>
+      <image:caption>Afrohouse Night at Paparemo Beach - African culture, TeeKay, Shangatatu, African wear dress code</image:caption>
+      <image:title>Afrohouse Night Paparemo Beach Kilifi</image:title>
+    </image:image>
+  </url>
+</urlset>
