@@ -78,4 +78,59 @@
       <image:title>Afrohouse Night Paparemo Beach Kilifi</image:title>
     </image:image>
   </url>
+  <url>
+    <loc>https://barrush.lovable.app/events/mapema-ndio-best-salty</loc>
+    <lastmod>2025-08-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://barrush.lovable.app/lovable-uploads/4a5daf7d-3447-48a7-90f2-71f7dcf74773.png</image:loc>
+      <image:caption>Mapema Ndio Best at Salty's Kite Village - Taio Mataio live performance, free beachside event</image:caption>
+      <image:title>Mapema Ndio Best Saltys Kilifi</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://barrush.lovable.app/events/saltys-reggae-sessions</loc>
+    <lastmod>2025-08-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://barrush.lovable.app/lovable-uploads/4e0c2b61-a34b-4dda-a6a6-7b36a0bdc7e1.png</image:loc>
+      <image:caption>Salty's Reggae Sessions Bofa - Coco Sobo Moto, Hi Grade Music, reggae beach vibes</image:caption>
+      <image:title>Saltys Reggae Sessions Bofa Kilifi</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://barrush.lovable.app/events/heavies-comedy-show</loc>
+    <lastmod>2025-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://barrush.lovable.app/lovable-uploads/fe05a794-15f9-46d1-941f-024712b39a8d.png</image:loc>
+      <image:caption>The Heavies Stand-up Comedy Show - George Waweru, Maina Murumba, Amandeep Jagde comedy night</image:caption>
+      <image:title>Heavies Comedy Show Saltys Kilifi</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://barrush.lovable.app/events/lets-talk-about-it-masculinity</loc>
+    <lastmod>2025-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://barrush.lovable.app/lovable-uploads/41362e50-6c15-45a9-a71f-892c05411028.png</image:loc>
+      <image:caption>Let's Talk About It Masculinity Documentary - Agustin Avellaneda Venezuela, men's safe space</image:caption>
+      <image:title>Masculinity Documentary Terrace Art Space Kilifi</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://barrush.lovable.app/events/mgm-beach-party</loc>
+    <lastmod>2025-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://barrush.lovable.app/lovable-uploads/c2ab7515-f1e9-4a79-8baa-f0862daefd13.png</image:loc>
+      <image:caption>MGM Beach Party Saturday - Beach music entertainment, ladies free, gents KES 500</image:caption>
+      <image:title>MGM Beach Party Kilifi Coast</image:title>
+    </image:image>
+  </url>
 </urlset>
