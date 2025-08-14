@@ -8,7 +8,7 @@ export const upcomingEvents = [
     time: '6:00 PM',
     location: 'The Tamarind Restaurant, Mombasa',
     description: 'An elegant all-white old school affair featuring the best of classic hits and timeless vibes in the heart of Mombasa.',
-    image: '/lovable-uploads/da7e485d-a677-4f61-8808-eb743e0dedb6.png',
+    image: '/lovable-uploads/l-boogie-mombasa.png',
     category: 'Party',
     attendees: '200+',
     featured: true,
