@@ -118,8 +118,13 @@ const EventCard: React.FC<{
                         <Users className="h-4 w-4" />
                         <span><strong>Attendees:</strong> {event.attendees}</span>
                       </div>
-                      {event.entry && <div>
+                      {event.entry && <div className="flex items-center gap-2">
                           <span><strong>Entry:</strong> {event.entry}</span>
+                          {event.entry.toLowerCase().includes('free') && (
+                            <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                              FREE
+                            </Badge>
+                          )}
                         </div>}
                       {event.host && <div>
                           <span><strong>Host:</strong> {event.host}</span>
