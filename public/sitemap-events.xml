@@ -133,4 +133,28 @@
       <image:title>MGM Beach Party Kilifi Coast</image:title>
     </image:image>
   </url>
+  
+  <url>
+    <loc>https://barrush.lovable.app/events/l-boogie-mombasa</loc>
+    <lastmod>2024-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://barrush.lovable.app/lovable-uploads/l-boogie-mombasa.png</image:loc>
+      <image:title>L-Boogie Mombasa All White Old Skool Affair</image:title>
+      <image:caption>Elegant all-white old school affair at The Tamarind Restaurant Mombasa featuring DJ Adrian and DJ Frankee Walker</image:caption>
+    </image:image>
+  </url>
+  
+  <url>
+    <loc>https://barrush.lovable.app/events/love-like-90s-rnb</loc>
+    <lastmod>2024-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://barrush.lovable.app/lovable-uploads/love-like-90s-rnb.png</image:loc>
+      <image:title>The Love Like 90s R&B Old School Brunch</image:title>
+      <image:caption>Original old school R&B brunch concept at Sarova Whitesands Mombasa - falling in love and dancing mandatory</image:caption>
+    </image:image>
+  </url>
 </urlset>

@@ -334,7 +334,7 @@ const Events: React.FC = () => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-              {pastEvents.map(event => <EventCard key={event.id} event={event} isUpcoming={false} />)}
+              {pastEvents.slice(0, 4).map(event => <EventCard key={event.id} event={event} isUpcoming={false} />)}
             </div>
           </div>
         </section>}

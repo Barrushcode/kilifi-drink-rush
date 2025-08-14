@@ -1,6 +1,41 @@
 // Shared events data for both Events page and EventDetail page
 export const upcomingEvents = [
   {
+    id: 25,
+    slug: 'l-boogie-mombasa',
+    title: 'L-Boogie Mombasa - All White Old Skool Affair',
+    date: '2025-08-30',
+    time: '6:00 PM',
+    location: 'The Tamarind Restaurant, Mombasa',
+    description: 'An elegant all-white old school affair featuring the best of classic hits and timeless vibes in the heart of Mombasa.',
+    image: '/lovable-uploads/l-boogie-mombasa.png',
+    category: 'Party',
+    attendees: '200+',
+    featured: true,
+    host: 'L-Boogie Events',
+    contact: 'sherehe.co.ke',
+    entry: 'Limited Tickets',
+    artist: 'DJ Adrian, DJ Frankee Walker',
+    signupLink: 'https://sherehe.co.ke'
+  },
+  {
+    id: 26,
+    slug: 'love-like-90s-rnb',
+    title: 'The Love Like 90\'s R&B - Old School Brunch',
+    date: '2024-08-17',
+    time: '9:00 PM',
+    location: 'Sarova Whitesands, Mombasa',
+    description: 'The original old school R&B brunch concept featuring the smoothest 90s R&B hits. Falling in love and dancing is mandatory!',
+    image: '/lovable-uploads/love-like-90s-rnb.png',
+    category: 'Music',
+    attendees: '150+',
+    featured: true,
+    host: 'OSRNBRUNCH',
+    contact: 'www.osrnbrunch.com',
+    entry: 'Tickets Available',
+    signupLink: 'https://www.osrnbrunch.com'
+  },
+  {
     id: 7,
     slug: 'sunday-brunch-billionaire',
     title: "🌞 Sunday Brunch at Billionaire",
