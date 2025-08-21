@@ -195,6 +195,9 @@ const EventCard: React.FC<{
     </Card>;
 };
 const Events: React.FC = () => {
+  const [showPastEvents, setShowPastEvents] = useState(false);
+  const [showRecentEvents, setShowRecentEvents] = useState(false);
+  
   // Sort events by date (upcoming soonest to latest)
   const sortedUpcomingEvents = [...upcomingEvents].sort((a, b) => {
     const dateA = new Date(a.date);
@@ -295,6 +298,26 @@ const Events: React.FC = () => {
             </p>
           </div>
         </div>
+        
+        {/* Event Category Buttons */}
+        <div className="flex flex-wrap justify-center gap-4 mt-8">
+          <Button 
+            onClick={() => setShowPastEvents(!showPastEvents)}
+            variant={showPastEvents ? "default" : "outline"}
+            className="flex items-center gap-2"
+          >
+            {showPastEvents ? "Hide" : "Show"} Past Events
+            <Badge variant="secondary">{pastEvents.length}</Badge>
+          </Button>
+          <Button 
+            onClick={() => setShowRecentEvents(!showRecentEvents)}
+            variant={showRecentEvents ? "default" : "outline"}
+            className="flex items-center gap-2"
+          >
+            {showRecentEvents ? "Hide" : "Show"} Recent Events
+            <Badge variant="secondary">{recentEvents.length}</Badge>
+          </Button>
+        </div>
       </section>
 
       {/* What We Featured Section */}
@@ -322,7 +345,7 @@ const Events: React.FC = () => {
       </section>
 
       {/* Past Events */}
-      {pastEvents.length > 0 && <section className="py-16 lg:py-20 bg-muted/30">
+      {showPastEvents && pastEvents.length > 0 && <section className="py-16 lg:py-20 bg-muted/30">
           <div className="container mx-auto px-4">
             <div className="text-center space-y-4 mb-12">
               <h2 className="text-3xl lg:text-4xl font-serif font-bold text-foreground">
@@ -340,7 +363,7 @@ const Events: React.FC = () => {
         </section>}
 
       {/* Recent Events */}
-      <section className="py-16 lg:py-20 bg-muted/50">
+      {showRecentEvents && <section className="py-16 lg:py-20 bg-muted/50">
         <div className="container mx-auto px-4">
           <div className="text-center space-y-4 mb-12">
             <h2 className="text-3xl lg:text-4xl font-serif font-bold text-foreground">
@@ -355,7 +378,7 @@ const Events: React.FC = () => {
             {recentEvents.map(event => <EventCard key={event.id} event={event} isUpcoming={false} />)}
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* Call to Action */}
       <section className="py-16 lg:py-20">

@@ -1,24 +1,6 @@
 // Shared events data for both Events page and EventDetail page
 export const upcomingEvents = [
   {
-    id: 25,
-    slug: 'l-boogie-mombasa',
-    title: 'L-Boogie Mombasa - All White Old Skool Affair',
-    date: '2025-08-30',
-    time: '6:00 PM',
-    location: 'The Tamarind Restaurant, Mombasa',
-    description: 'An elegant all-white old school affair featuring the best of classic hits and timeless vibes in the heart of Mombasa.',
-    image: '/lovable-uploads/l-boogie-mombasa.png',
-    category: 'Party',
-    attendees: '200+',
-    featured: true,
-    host: 'L-Boogie Events',
-    contact: 'sherehe.co.ke',
-    entry: 'Limited Tickets',
-    artist: 'DJ Adrian, DJ Frankee Walker',
-    signupLink: 'https://sherehe.co.ke'
-  },
-  {
     id: 26,
     slug: 'love-like-90s-rnb',
     title: 'The Love Like 90\'s R&B - Old School Brunch',
@@ -258,22 +240,6 @@ export const upcomingEvents = [
     entry: "KES 500"
   },
   {
-    id: 14,
-    slug: 'happy-soko',
-    title: "🎪 A Happy Soko",
-    description: "A Happy Soko is a community-driven outdoor marketplace and cultural festival designed to uplift local entrepreneurs, celebrate Kenyan creativity, and spark meaningful human connections. Powered by A Happy Society, this event blends commerce, music, wellness, and storytelling into a vibrant open-air experience for the Kilifi community and beyond. This second edition builds on the success of our June 2025 debut, bringing together SMEs, artists, DJs, and health partners in a curated day-to-night activation of Kilifi's creative spirit — all in the name of freedom, flavor, and festivity.",
-    date: "2025-08-30",
-    time: "10:00 AM till late",
-    location: "Mazingira Park",
-    category: "Festival",
-    image: "/lovable-uploads/e9853dfa-366d-48a2-b18f-e7fa248cea96.png",
-    attendees: "Open",
-    featured: true,
-    host: "A Happy Society",
-    entry: "Various vendor options",
-    signupLink: "https://forms.gle/3FVv9oi5gfc4fb9h7"
-  },
-  {
     id: 15,
     slug: 'pregame-power-hour',
     title: "🌀 Pregame Power Hour",
@@ -309,28 +275,6 @@ export const upcomingEvents = [
     isRecurring: false,
     themes: ["Aperitivo", "Live DJ", "Luxury"],
     organizer: "Billionaire Plaza"
-  },
-  {
-    id: 17,
-    slug: 'no-bad-days-saltys-popup',
-    title: "🛍️ No Bad Days x Saltys – Vintage & Thrift Pop Up",
-    description: "Shop, sip & vibe with us pre-BTB! A vintage and thrift pop-up featuring summer items and exclusive merch. Join us for a unique shopping experience at Saltys.",
-    date: "2025-08-15",
-    time: "3:00 PM onwards",
-    location: "Saltys, Kilifi",
-    category: "Shopping",
-    image: "/lovable-uploads/1baf5c41-628f-4e61-bcfd-88c926b4a11c.png",
-    attendees: "Open",
-    featured: true,
-    host: "@nobaddays_ke",
-    entry: "KES 500 (15th Aug at Saltys Social)",
-    specialOffer: "Summer items & exclusive merch",
-    contact: "@nobaddays_ke",
-    recurring: true,
-    isRecurring: true,
-    dates: ["2025-08-15", "2025-08-17"],
-    themes: ["Vintage", "Thrift", "Shopping"],
-    organizer: "No Bad Days x Saltys"
   },
   {
     id: 18,
