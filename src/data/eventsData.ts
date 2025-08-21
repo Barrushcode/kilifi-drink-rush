@@ -126,6 +126,25 @@ export const upcomingEvents = [
     dates: "December 12th & 13th, 2025"
   },
   {
+    id: 27,
+    slug: 'tales-tides-upepo-wa-kusi',
+    title: 'Tales & Tides - Upepo wa Kusi (2nd Edition)',
+    date: '2025-08-23',
+    time: '6:00 PM - Late',
+    location: 'Le Bois Sacré, Kilifi',
+    description: 'Working around a theme inspired by the passing windy season "Upepo wa Kusi". As the strong winds settle, we gather to release what was carried away, open ears to notice what was brought, and imagine possibilities of what may come. An aural storytelling experience where music, sound and story are tangled into a dancefloor meditation. Narrative structures guide a semi-live DJ performance honoring deep listening, sonic composition and physicality of sound in a journey to reawaken wonder.',
+    image: '/lovable-uploads/dcfe97d2-8d92-485e-b550-13d813141450.png',
+    category: 'Music',
+    attendees: 'Open',
+    featured: true,
+    host: 'Studio Panda-Shuka & Le Bois Sacré',
+    entry: 'KES 350',
+    contact: '0707505045',
+    tillNumber: '8614232',
+    artist: 'Selekta Kakiri, All Turn Natives',
+    specialOffer: 'Aural storytelling experience - dancefloor meditation'
+  },
+  {
     id: 1,
     slug: 'element-sessions',
     title: "🌋 Element Sessions",
