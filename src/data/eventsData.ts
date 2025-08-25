@@ -445,8 +445,8 @@ export const upcomingEvents = [
   },
   {
     id: 30,
-    slug: 'wives-by-dj-jesse',
-    title: "🎵 Wives by DJ Jesse",
+    slug: 'waves-by-dj-jesse',
+    title: "🎵 Waves by DJ Jesse",
     description: "DJ Jesse representing the BADMAN Homeboyz Radio from Nairobi pulling up to make heads BOP, panties DROP & champagne POP! Proper old school vibes with R&B, Kapuka, Soul & Rap.",
     date: "2025-09-06",
     time: "5:00 PM – 11:00 PM",
