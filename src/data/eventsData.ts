@@ -461,6 +461,43 @@ export const upcomingEvents = [
     organizer: "BADMAN Homeboyz Radio",
     specialOffer: "Proper Old Skool R&B / Kapuka / Soul / Rap",
     themes: ["Old School", "R&B", "Kapuka", "Soul", "Rap"]
+  },
+  {
+    id: 31,
+    slug: 'the-twisted-gig-beat-hogs',
+    title: "🎷 The Twisted Gig - The Beat Hogs",
+    description: "The Beat Hogs - A Big Funkin' Band brings their funk sounds to Kilifi for an afternoon of good music & good food. Experience live funk music in an intimate setting.",
+    date: "2025-09-14",
+    time: "2:00 PM – 7:00 PM",
+    location: "The Twisted Gig, Kilifi",
+    category: "Music",
+    image: "/lovable-uploads/1e9ad68f-e1d2-4aba-b900-82279af3bf41.png",
+    attendees: "Open",
+    featured: true,
+    host: "The Twisted Gig",
+    entry: "KES 500",
+    contact: "0798 342 079",
+    lineup: ["The Beat Hogs"],
+    organizer: "The Twisted Gig",
+    specialOffer: "Good music & good food"
+  },
+  {
+    id: 32,
+    slug: 'teekay-live-mix-recording',
+    title: "🎤 TeeKay Live Mix Recording",
+    description: "Join TeeKay for a live mix recording session at The Tribe Bandas. Special guests Shangatatu and Kenia will join for an afternoon of music and vibes. Free entry for all music lovers.",
+    date: "2025-08-25",
+    time: "2:00 PM till late",
+    location: "The Tribe Bandas, Kilifi",
+    category: "Music",
+    image: "/lovable-uploads/188a3d98-39f9-4489-99c7-09dbaf16896b.png",
+    attendees: "Open",
+    featured: true,
+    host: "Lituation Festivals",
+    entry: "Free Entry",
+    lineup: ["TeeKay", "Shangatatu", "Kenia"],
+    organizer: "Lituation Festivals",
+    specialOffer: "Live mix recording session"
   }
 ];
 
