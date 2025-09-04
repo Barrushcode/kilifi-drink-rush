@@ -407,6 +407,24 @@ export const upcomingEvents = [
     organizer: "MGM Events"
   },
   {
+    id: 40,
+    slug: 'alfajiri-club',
+    title: 'Alfajiri Club',
+    date: '2025-09-20',
+    time: '7:00 AM - 9:00 AM',
+    location: 'Vegan Basket, Kilifi',
+    description: 'This is the first of its kind. Kilifi, are you ready? Events by Nkaa introduces Alfajiri Club, which brings morning parties to Kilifi. Start with us on September 20th, 7am to 9am at Vegan Basket Kilifi. Free entry. Food and drinks available!',
+    image: '/lovable-uploads/e3a79a66-7066-4995-a9f0-192ee51884d1.png',
+    category: 'Morning Party',
+    attendees: 'Open',
+    featured: true,
+    host: 'Events by Nkaa',
+    entry: 'Free',
+    contact: '+254 777 347328, +254758029894',
+    specialOffer: 'Food and drinks available, music, parking',
+    organizer: 'Events by Nkaa'
+  },
+  {
     id: 28,
     slug: 'mwangaza-taio-mataio',
     title: "☀️ Mwangaza",
