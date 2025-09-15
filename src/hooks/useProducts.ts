@@ -33,7 +33,7 @@ export const useProducts = () => {
     while (hasMore) {
     const { data, error } = await supabase
       .from('productprice')
-        .select('Title, Description, Price, Category')
+        .select('Title, Description, Price, Category, Discounted')
         .order('Title', { ascending: true })
         .range(offset, offset + batchSize - 1);
 
@@ -80,10 +80,18 @@ export const useProducts = () => {
             return null;
           }
 
-          const productPrice = product.Price;
+          // Use discounted price if available, otherwise use regular price
+          let finalPrice = product.Price;
+          if (product.Discounted && typeof product.Discounted === 'string') {
+            const discountedPrice = parseFloat(product.Discounted);
+            if (!isNaN(discountedPrice) && discountedPrice > 0) {
+              finalPrice = discountedPrice;
+              console.log(`💰 Using discounted price for ${product.Title}: ${finalPrice} (was ${product.Price})`);
+            }
+          }
 
-          if (productPrice < 100 || productPrice > 500000) {
-            console.warn('[⚠️ OUT-OF-BOUNDS PRICE]', product.Title, 'Price:', productPrice);
+          if (finalPrice < 100 || finalPrice > 500000) {
+            console.warn('[⚠️ OUT-OF-BOUNDS PRICE]', product.Title, 'Price:', finalPrice);
           }
 
           const description = product.Description || '';
@@ -103,7 +111,7 @@ export const useProducts = () => {
             return null;
           }
 
-           let category = product.Category || getCategoryFromName(product.Title || 'Unknown Product', productPrice);
+           let category = product.Category || getCategoryFromName(product.Title || 'Unknown Product', finalPrice);
 
            if (description.toLowerCase().includes('beer')) {
              category = 'Beer';
@@ -112,7 +120,7 @@ export const useProducts = () => {
           return {
             id: globalIndex + 1,
             name: correctProductName(product.Title || 'Unknown Product'),
-            price: `KES ${productPrice.toLocaleString()}`,
+            price: `KES ${finalPrice.toLocaleString()}`,
             description,
             category,
             image: productImage
