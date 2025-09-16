@@ -3,6 +3,7 @@ import React from 'react';
 import HeroSection from '@/components/HeroSection';
 import HowItWorksSection from '@/components/HowItWorksSection';
 import CategoriesSlideshow from '@/components/CategoriesSlideshow';
+import TrustSignalsSection from '@/components/TrustSignalsSection';
 import DeliveryZonesSection from '@/components/DeliveryZonesSection';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
@@ -23,6 +24,7 @@ const Index = () => {
         <HeroSection />
         <HowItWorksSection />
         <CategoriesSlideshow />
+        <TrustSignalsSection />
         <DeliveryZonesSection />
         <Footer />
       </div>
